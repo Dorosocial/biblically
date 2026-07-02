@@ -7,11 +7,26 @@ import {COLORS} from './theme';
 // and Gihon trail off into the interior (their real-world identity is
 // disputed), while Tigris and Euphrates run all the way to the Gulf and
 // can be highlighted as "the two that still exist on a modern map."
+// Turkey/Syria/Iraq are similarly simplified zones, not accurate borders.
 type RiverPop = {
 	/** 0-1 draw-in progress, via stroke-dashoffset. */
 	progress: number;
 	/** 0-1+ highlight progress (color shift + scale bounce + label reveal). Omit for rivers that never highlight. */
 	pop?: number;
+};
+
+type CountryHighlights = {
+	/** 0-1+ pop progress (fill/stroke fade in, slight scale pop). */
+	turkey: number;
+	syria: number;
+	iraq: number;
+};
+
+type Pin = {
+	/** 0-1+ drop-in progress (spring, may overshoot past its landing point). */
+	dropProgress: number;
+	/** Continuous scale multiplier for the idle pulse; 1 = resting size. */
+	pulseScale: number;
 };
 
 type MiddleEastMapProps = {
@@ -20,16 +35,30 @@ type MiddleEastMapProps = {
 	gihon: number;
 	tigris: RiverPop;
 	euphrates: RiverPop;
+	countries?: CountryHighlights;
+	pin?: Pin;
 };
 
-const PISHON_PATH =
-	'M340,120 C280,160 220,230 210,320 C205,390 240,450 290,500';
-const GIHON_PATH =
-	'M360,125 C300,190 250,270 230,360 C220,420 245,470 270,505';
+const PISHON_PATH = 'M340,120 C280,160 220,230 210,320 C205,390 240,450 290,500';
+const GIHON_PATH = 'M360,125 C300,190 250,270 230,360 C220,420 245,470 270,505';
 const EUPHRATES_PATH =
 	'M300,130 C280,220 320,280 300,350 C285,410 330,460 400,490 C460,515 540,500 590,462';
 const TIGRIS_PATH =
 	'M380,140 C400,220 370,280 395,350 C410,410 385,460 430,495 C470,520 530,510 585,465';
+
+// Basra sits at the Tigris/Euphrates confluence near the Gulf notch.
+const BASRA_X = 594;
+const BASRA_Y = 470;
+
+const TURKEY_PATH =
+	'M215,68 C320,44 480,44 580,70 C605,90 610,120 598,150 C520,178 400,188 300,182 C245,178 205,158 198,130 C193,105 200,84 215,68 Z';
+const SYRIA_PATH =
+	'M148,190 C215,178 300,185 328,215 C338,255 330,305 308,345 C268,362 195,358 160,328 C133,298 128,245 148,190 Z';
+const IRAQ_PATH =
+	'M330,210 C420,190 520,192 592,218 C645,248 668,300 652,340 C688,368 700,412 674,455 C650,494 610,504 585,470 C562,500 522,510 492,490 C452,510 402,505 372,480 C342,452 330,402 335,352 C318,302 316,252 330,210 Z';
+
+const PIN_PATH =
+	'M-13,-18 A13,13 0 1,1 13,-18 C13,-9 6,-3 0,0 C-6,-3 -13,-9 -13,-18 Z';
 
 const scaleAround = (cx: number, cy: number, scale: number) =>
 	`translate(${cx} ${cy}) scale(${scale}) translate(${-cx} ${-cy})`;
@@ -52,12 +81,58 @@ const DrawnPath: React.FC<{
 	/>
 );
 
+const CountryZone: React.FC<{
+	d: string;
+	progress: number;
+	cx: number;
+	cy: number;
+	label: string;
+	labelX: number;
+	labelY: number;
+}> = ({d, progress, cx, cy, label, labelX, labelY}) => {
+	const clamped = Math.min(Math.max(progress, 0), 1);
+	const fillOpacity = interpolate(clamped, [0, 1], [0, 0.2]);
+	const strokeOpacity = interpolate(clamped, [0, 1], [0, 0.9]);
+	const scale = interpolate(progress, [0, 1], [0.9, 1]);
+	const labelOpacity = interpolate(clamped, [0, 0.4], [0, 1], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
+
+	return (
+		<g transform={scaleAround(cx, cy, scale)}>
+			<path
+				d={d}
+				fill={COLORS.strokeCyan}
+				fillOpacity={fillOpacity}
+				stroke={COLORS.strokeCyan}
+				strokeOpacity={strokeOpacity}
+				strokeWidth={2.5}
+				strokeLinejoin="round"
+			/>
+			<text
+				x={labelX}
+				y={labelY}
+				fill={COLORS.mapLabel}
+				fontSize={18}
+				fontFamily="sans-serif"
+				letterSpacing={1.5}
+				opacity={labelOpacity}
+			>
+				{label}
+			</text>
+		</g>
+	);
+};
+
 export const MiddleEastMap: React.FC<MiddleEastMapProps> = ({
 	width,
 	pishon,
 	gihon,
 	tigris,
 	euphrates,
+	countries,
+	pin,
 }) => {
 	const height = width * (640 / 800);
 
@@ -83,6 +158,14 @@ export const MiddleEastMap: React.FC<MiddleEastMapProps> = ({
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',
 	});
+
+	const pinDropOffsetY = pin ? interpolate(pin.dropProgress, [0, 1], [-260, 0]) : 0;
+	const pinOpacity = pin
+		? interpolate(Math.min(pin.dropProgress, 1), [0, 0.05], [0, 1], {
+				extrapolateLeft: 'clamp',
+				extrapolateRight: 'clamp',
+			})
+		: 0;
 
 	return (
 		<div style={{width, height}}>
@@ -152,6 +235,49 @@ export const MiddleEastMap: React.FC<MiddleEastMapProps> = ({
 				>
 					TIGRIS
 				</text>
+
+				{/* Country highlights (Scene 2) */}
+				{countries && (
+					<>
+						<CountryZone
+							d={TURKEY_PATH}
+							progress={countries.turkey}
+							cx={390}
+							cy={125}
+							label="TURKEY"
+							labelX={330}
+							labelY={118}
+						/>
+						<CountryZone
+							d={SYRIA_PATH}
+							progress={countries.syria}
+							cx={230}
+							cy={270}
+							label="SYRIA"
+							labelX={178}
+							labelY={272}
+						/>
+						<CountryZone
+							d={IRAQ_PATH}
+							progress={countries.iraq}
+							cx={500}
+							cy={350}
+							label="IRAQ"
+							labelX={440}
+							labelY={250}
+						/>
+					</>
+				)}
+
+				{/* Basra location pin (Scene 2) */}
+				{pin && (
+					<g
+						transform={`translate(${BASRA_X}, ${BASRA_Y + pinDropOffsetY}) scale(${pin.pulseScale})`}
+						opacity={pinOpacity}
+					>
+						<path d={PIN_PATH} fill={COLORS.strokeCyan} stroke="white" strokeWidth={1.5} strokeLinejoin="round" />
+					</g>
+				)}
 			</svg>
 		</div>
 	);
