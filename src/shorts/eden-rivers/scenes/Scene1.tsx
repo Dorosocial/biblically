@@ -8,7 +8,27 @@ export const SCENE_1_DURATION = 288; // 9.6s @ 30fps
 
 const BIBLE_SPRING_CONFIG = {damping: 12, stiffness: 110, mass: 1};
 const BIBLE_SPRING_DURATION = 60; // overshoots within 0-45, settled by 60
-const MAP_FADE_IN = [90, 150] as const;
+const MAP_FADE_IN = [60, 150] as const;
+
+// Four rivers draw in staggered by 10 frames within 150-210, each timed to
+// finish right at 210 regardless of when it started.
+const RIVER_DRAW_END = 210;
+const RIVER_STARTS = {
+	pishon: 150,
+	gihon: 160,
+	euphrates: 170,
+	tigris: 180,
+} as const;
+
+const POP_START = 210;
+const POP_DURATION = 30; // 210-240
+const POP_SPRING_CONFIG = {damping: 10, stiffness: 150, mass: 0.8};
+
+const drawProgress = (frame: number, start: number) =>
+	interpolate(frame, [start, RIVER_DRAW_END], [0, 1], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
 
 export const Scene1: React.FC = () => {
 	const frame = useCurrentFrame();
@@ -29,6 +49,24 @@ export const Scene1: React.FC = () => {
 		extrapolateRight: 'clamp',
 	});
 
+	const pishonProgress = drawProgress(frame, RIVER_STARTS.pishon);
+	const gihonProgress = drawProgress(frame, RIVER_STARTS.gihon);
+	const euphratesProgress = drawProgress(frame, RIVER_STARTS.euphrates);
+	const tigrisProgress = drawProgress(frame, RIVER_STARTS.tigris);
+
+	const popLocalFrame = frame - POP_START;
+	const popProgress =
+		popLocalFrame < 0
+			? 0
+			: frame >= POP_START + POP_DURATION
+				? 1
+				: spring({
+						frame: popLocalFrame,
+						fps,
+						config: POP_SPRING_CONFIG,
+						durationInFrames: POP_DURATION,
+					});
+
 	return (
 		<AbsoluteFill>
 			<AbsoluteFill style={{top: 180, alignItems: 'center'}}>
@@ -43,7 +81,13 @@ export const Scene1: React.FC = () => {
 			</AbsoluteFill>
 
 			<AbsoluteFill style={{top: 990, alignItems: 'center', opacity: mapOpacity}}>
-				<MiddleEastMap width={880} />
+				<MiddleEastMap
+					width={880}
+					pishon={pishonProgress}
+					gihon={gihonProgress}
+					euphrates={{progress: euphratesProgress, pop: popProgress}}
+					tigris={{progress: tigrisProgress, pop: popProgress}}
+				/>
 			</AbsoluteFill>
 		</AbsoluteFill>
 	);
