@@ -2,10 +2,14 @@
 // in this video so colors/assets stay in sync as scenes are added.
 import backgroundImg from './assets/background.jpeg';
 import bibleCutout from './assets/processed/bible.png';
+import dryValleyCutout from './assets/processed/dry-valley.png';
+import waterTextureCutout from './assets/processed/water-texture.png';
 
 export const ASSETS = {
 	background: backgroundImg,
 	bible: bibleCutout,
+	dryValley: dryValleyCutout,
+	waterTexture: waterTextureCutout,
 } as const;
 
 export const COLORS = {
@@ -15,4 +19,12 @@ export const COLORS = {
 	strokeCyan: '#00FFFF',
 	mapLine: 'rgba(219, 233, 245, 0.55)',
 	mapLabel: 'rgba(219, 233, 245, 0.85)',
+} as const;
+
+// Shared content-region layout: the Bible cutout is pinned at the top of
+// every scene; map/valley/water imagery sits in this band below it.
+export const LAYOUT = {
+	bibleTop: 180,
+	bibleWidth: 420,
+	contentTop: 990,
 } as const;
