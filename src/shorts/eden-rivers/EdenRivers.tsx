@@ -1,21 +1,20 @@
-import {AbsoluteFill} from 'remotion';
+import {AbsoluteFill, Img, Sequence} from 'remotion';
+import {Scene1, SCENE_1_DURATION} from './scenes/Scene1';
+import {ASSETS} from './theme';
 
 export const EdenRivers: React.FC = () => {
 	return (
-		<AbsoluteFill style={{backgroundColor: '#0b1a12'}}>
-			<AbsoluteFill
-				style={{
-					justifyContent: 'center',
-					alignItems: 'center',
-					color: 'white',
-					fontFamily: 'sans-serif',
-					fontSize: 60,
-					textAlign: 'center',
-					padding: 40,
-				}}
-			>
-				Eden Rivers
-			</AbsoluteFill>
+		<AbsoluteFill>
+			<Img
+				src={ASSETS.background}
+				style={{width: '100%', height: '100%', objectFit: 'cover'}}
+			/>
+
+			<Sequence from={0} durationInFrames={SCENE_1_DURATION} name="Scene 1">
+				<Scene1 />
+			</Sequence>
+
+			{/* Scene 2 goes here: <Sequence from={SCENE_1_DURATION} durationInFrames={...}><Scene2 /></Sequence> */}
 		</AbsoluteFill>
 	);
 };
