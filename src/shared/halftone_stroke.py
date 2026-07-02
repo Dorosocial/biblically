@@ -106,13 +106,14 @@ def process_image(
     stroke_offset: int = DEFAULT_STROKE_OFFSET,
     stroke_width: int = DEFAULT_STROKE_WIDTH,
     stroke_color=CYAN,
+    apply_halftone: bool = True,
 ) -> None:
     rgba = Image.open(src_path).convert("RGBA")
 
     ring = offset_stroke_ring(rgba, offset=stroke_offset, width=stroke_width, color=stroke_color)
-    dots = halftone_dots(rgba, cell_size=cell_size)
+    foreground = halftone_dots(rgba, cell_size=cell_size) if apply_halftone else rgba
 
-    result = Image.alpha_composite(ring, dots)
+    result = Image.alpha_composite(ring, foreground)
     dst_path.parent.mkdir(parents=True, exist_ok=True)
     result.save(dst_path)
 
@@ -126,6 +127,11 @@ def main() -> int:
     parser.add_argument("--cell-size", type=int, default=DEFAULT_CELL_SIZE)
     parser.add_argument("--stroke-offset", type=int, default=DEFAULT_STROKE_OFFSET)
     parser.add_argument("--stroke-width", type=int, default=DEFAULT_STROKE_WIDTH)
+    parser.add_argument(
+        "--no-halftone",
+        action="store_true",
+        help="Keep original full color instead of converting to halftone dots",
+    )
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -141,6 +147,7 @@ def main() -> int:
                 cell_size=args.cell_size,
                 stroke_offset=args.stroke_offset,
                 stroke_width=args.stroke_width,
+                apply_halftone=not args.no_halftone,
             )
             results.append((name, "ok", dst))
         except Exception as exc:  # noqa: BLE001
