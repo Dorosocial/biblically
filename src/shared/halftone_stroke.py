@@ -33,7 +33,8 @@ DEFAULT_STROKE_WIDTH = 3
 CYAN = (0, 255, 255, 255)
 WHITE = (255, 255, 255, 255)
 GOLD = (212, 175, 55, 255)  # #D4AF37
-STROKE_COLOR_PRESETS = {"cyan": CYAN, "white": WHITE, "gold": GOLD}
+SILVER = (184, 196, 204, 255)  # #B8C4CC
+STROKE_COLOR_PRESETS = {"cyan": CYAN, "white": WHITE, "gold": GOLD, "silver": SILVER}
 
 
 def _disk(radius: int) -> np.ndarray:
