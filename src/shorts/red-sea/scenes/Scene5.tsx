@@ -12,7 +12,7 @@ import {Stage} from '../Stage';
 // selling the idea that the geography itself is shifting underneath us.
 export const SCENE_5_DURATION = 210; // 7.0s @ 30fps
 
-export const MAP_WIDTH = 460;
+export const MAP_WIDTH = 780;
 const FADE_WINDOW = [0, 50] as const;
 const SETTLE_WINDOW = [90, 180] as const;
 

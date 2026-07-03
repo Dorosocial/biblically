@@ -13,7 +13,7 @@ type PossibilityMarkerProps = {
 // A code-drawn circular marker (no dedicated asset for this) used for the
 // "two possibilities" beat — a numbered badge with a silver ring and glow
 // that can be individually brightened or dimmed per possibility.
-export const PossibilityMarker: React.FC<PossibilityMarkerProps> = ({label, progress, glow = 0.5, size = 130}) => {
+export const PossibilityMarker: React.FC<PossibilityMarkerProps> = ({label, progress, glow = 0.5, size = 220}) => {
 	const scale = Math.max(progress, 0);
 	const opacity = interpolate(Math.min(progress, 1), [0, 0.15], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 	const g = Math.max(0, Math.min(1, glow));

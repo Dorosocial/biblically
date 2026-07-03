@@ -11,7 +11,7 @@ type StrikeThroughProps = {
 // to cross out/negate a term or image as the VO debunks it. Silver to match
 // the fingerprint's stroke color, with a dark drop-shadow so it reads over
 // both light text and dark image fills.
-export const StrikeThrough: React.FC<StrikeThroughProps> = ({progress, width = 420, height = 90}) => {
+export const StrikeThrough: React.FC<StrikeThroughProps> = ({progress, width = 620, height = 130}) => {
 	const reveal = Math.max(0, Math.min(1, progress));
 
 	return (
@@ -31,7 +31,7 @@ export const StrikeThrough: React.FC<StrikeThroughProps> = ({progress, width = 4
 			<path
 				d={`M12,${height - 14} C${width * 0.35},${height * 0.55} ${width * 0.65},${height * 0.45} ${width - 12},14`}
 				stroke={COLORS.silver}
-				strokeWidth={9}
+				strokeWidth={13}
 				strokeLinecap="round"
 				fill="none"
 				pathLength={100}

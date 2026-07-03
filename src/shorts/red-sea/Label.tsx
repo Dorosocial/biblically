@@ -13,7 +13,7 @@ type LabelProps = {
 
 // A text label that springs in (fade + scale) — used for map/region names.
 // Near-white by default; `dim` for secondary/handed-off labels.
-export const Label: React.FC<LabelProps> = ({text, progress, fontSize = 22, dim = false, style}) => {
+export const Label: React.FC<LabelProps> = ({text, progress, fontSize = 30, dim = false, style}) => {
 	const opacity = interpolate(progress, [0, 0.4], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 	const scale = interpolate(progress, [0, 1], [0.6, 1]);
 

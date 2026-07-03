@@ -13,7 +13,7 @@ export const SCENE_8_DURATION = 240; // 8.0s @ 30fps
 
 const OPEN_SEA_FADE_WINDOW = [0, 60] as const;
 const RISE_WINDOW = [30, 160] as const;
-const MARSH_WIDTH = 500;
+const MARSH_WIDTH = 780;
 
 export const Scene8: React.FC = () => {
 	const frame = useCurrentFrame();

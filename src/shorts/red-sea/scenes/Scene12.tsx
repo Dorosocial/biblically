@@ -20,8 +20,8 @@ export const Scene12: React.FC = () => {
 
 	return (
 		<Stage gap={40}>
-			<TextCard text="TWO POSSIBILITIES" opacity={1} fontSize={48} />
-			<div style={{display: 'flex', gap: 60}}>
+			<TextCard text="TWO POSSIBILITIES" opacity={1} fontSize={72} />
+			<div style={{display: 'flex', gap: 80}}>
 				<PossibilityMarker label="1" progress={1} glow={leftGlow} />
 				<PossibilityMarker label="2" progress={1} glow={rightGlow} />
 			</div>

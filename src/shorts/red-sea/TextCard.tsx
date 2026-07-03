@@ -13,15 +13,15 @@ type TextCardProps = {
 // card (keeps the grid visible through it) with a silver border, matching
 // the silver-stroke fingerprint. A flex child of Stage so it centers with
 // the rest of the scene's group.
-export const TextCard: React.FC<TextCardProps> = ({text, opacity, scale = 1, fontSize = 52, style}) => (
+export const TextCard: React.FC<TextCardProps> = ({text, opacity, scale = 1, fontSize = 76, style}) => (
 	<div
 		style={{
 			opacity,
 			transform: `scale(${scale})`,
 			background: COLORS.cardFill,
-			padding: '24px 40px',
-			borderRadius: 14,
-			border: `2px solid ${COLORS.silver}`,
+			padding: '40px 64px',
+			borderRadius: 20,
+			border: `3px solid ${COLORS.silver}`,
 			...style,
 		}}
 	>

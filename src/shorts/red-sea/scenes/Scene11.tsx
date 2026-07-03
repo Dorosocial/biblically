@@ -28,8 +28,8 @@ export const Scene11: React.FC = () => {
 
 	return (
 		<Stage gap={40}>
-			<TextCard text="TWO POSSIBILITIES" opacity={Math.min(textSpring, 1)} scale={textSpring} fontSize={48} />
-			<div style={{display: 'flex', gap: 60}}>
+			<TextCard text="TWO POSSIBILITIES" opacity={Math.min(textSpring, 1)} scale={textSpring} fontSize={72} />
+			<div style={{display: 'flex', gap: 80}}>
 				<PossibilityMarker label="1" progress={markerSpring(frame, fps, MARKER_DELAYS[0])} glow={0.5} />
 				<PossibilityMarker label="2" progress={markerSpring(frame, fps, MARKER_DELAYS[1])} glow={0.5} />
 			</div>

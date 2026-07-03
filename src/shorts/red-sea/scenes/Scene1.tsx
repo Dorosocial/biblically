@@ -7,7 +7,7 @@ import {Stage} from '../Stage';
 // SILENT — no VO. Cold open.
 export const SCENE_1_DURATION = 150; // 5.0s @ 30fps
 
-export const MARSH_WIDTH = 560;
+export const MARSH_WIDTH = 820;
 const FADE_IN_WINDOW = [0, 45] as const;
 
 const MistWisp: React.FC<{frame: number; fps: number; phase: number; top: string; size: number}> = ({frame, fps, phase, top, size}) => {

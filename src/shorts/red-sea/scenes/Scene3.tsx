@@ -27,8 +27,8 @@ export const Scene3: React.FC = () => {
 	return (
 		<Stage>
 			<div style={{position: 'relative'}}>
-				<TextCard text="RED SEA" opacity={textOpacity} scale={textScale} fontSize={64} />
-				<StrikeThrough progress={strikeProgress} width={420} height={90} />
+				<TextCard text="RED SEA" opacity={textOpacity} scale={textScale} fontSize={104} />
+				<StrikeThrough progress={strikeProgress} width={640} height={140} />
 			</div>
 		</Stage>
 	);

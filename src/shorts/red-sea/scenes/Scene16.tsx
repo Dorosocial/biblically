@@ -30,11 +30,11 @@ export const Scene16: React.FC = () => {
 		<Stage>
 			<MapStack width={MAP_WIDTH} aspect={IMAGE_ASPECT} scale={contentScale}>
 				<ImageLayer src={ASSETS.mapSinai} width="100%" opacity={0.3} />
+				<div style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '78%'}}>
+					<ImageLayer src={ASSETS.openSea} width="100%" opacity={openSeaOpacity} />
+					<StrikeThrough progress={strikeProgress} width={MAP_WIDTH * 0.68} height={MAP_WIDTH * 0.38} />
+				</div>
 			</MapStack>
-			<div style={{position: 'relative', width: 340}}>
-				<ImageLayer src={ASSETS.openSea} width="100%" opacity={openSeaOpacity} />
-				<StrikeThrough progress={strikeProgress} width={310} height={170} />
-			</div>
 		</Stage>
 	);
 };

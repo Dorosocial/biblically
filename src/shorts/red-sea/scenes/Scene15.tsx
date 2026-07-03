@@ -27,10 +27,10 @@ export const Scene15: React.FC = () => {
 		<Stage>
 			<MapStack width={MAP_WIDTH} aspect={IMAGE_ASPECT} scale={contentScale}>
 				<ImageLayer src={ASSETS.mapSinai} width="100%" />
-				<HighlightGlow left={SINAI_SPOT.left} top={SINAI_SPOT.top} size={50} intensity={0.35} frame={frame} fps={fps} />
+				<HighlightGlow left={SINAI_SPOT.left} top={SINAI_SPOT.top} size={58} intensity={0.35} frame={frame} fps={fps} />
 				<ImageLayer src={ASSETS.marshReeds} width="34%" left={SINAI_SPOT.left} top={SINAI_SPOT.top} anchor="center" opacity={0.4} />
-				<HighlightGlow left={NILE_DELTA_SPOT.left} top={NILE_DELTA_SPOT.top} size={44} intensity={glowSpring} frame={frame} fps={fps} />
-				<Label text="NILE DELTA" progress={glowSpring} fontSize={20} style={{left: NILE_DELTA_SPOT.left, top: `calc(${NILE_DELTA_SPOT.top} + 13%)`, transform: 'translate(-50%, 0)'}} />
+				<HighlightGlow left={NILE_DELTA_SPOT.left} top={NILE_DELTA_SPOT.top} size={52} intensity={glowSpring} frame={frame} fps={fps} />
+				<Label text="NILE DELTA" progress={glowSpring} fontSize={28} style={{left: NILE_DELTA_SPOT.left, top: `calc(${NILE_DELTA_SPOT.top} + 13%)`, transform: 'translate(-50%, 0)'}} />
 			</MapStack>
 		</Stage>
 	);

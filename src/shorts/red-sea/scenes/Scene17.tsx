@@ -11,7 +11,7 @@ import {Stage} from '../Stage';
 // fades away — a path that disappears, per the line.
 export const SCENE_17_DURATION = 150; // 5.0s @ 30fps
 
-const MARSH_WIDTH = 460;
+const MARSH_WIDTH = 780;
 const PATH_VIEWBOX = '0 0 334 600';
 const PATH_D = 'M120,50 C190,150 85,230 165,320 C230,395 105,465 150,560';
 const DRAW_WINDOW = [15, 95] as const;
@@ -30,7 +30,7 @@ export const Scene17: React.FC = () => {
 				<RippleDistortion id="scene17-ripple" frame={frame} strength={strength}>
 					<ImageLayer src={ASSETS.marshReeds} width="100%" />
 				</RippleDistortion>
-				<DottedPath d={PATH_D} viewBox={PATH_VIEWBOX} progress={drawProgress} frame={frame} opacity={pathOpacity} strokeWidth={5} />
+				<DottedPath d={PATH_D} viewBox={PATH_VIEWBOX} progress={drawProgress} frame={frame} opacity={pathOpacity} strokeWidth={8} />
 			</div>
 		</Stage>
 	);

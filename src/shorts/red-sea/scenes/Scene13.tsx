@@ -31,8 +31,8 @@ export const Scene13: React.FC = () => {
 		<Stage>
 			<MapStack width={MAP_WIDTH} aspect={IMAGE_ASPECT} scale={contentScale}>
 				<ImageLayer src={ASSETS.mapSinai} width="100%" opacity={mapOpacity} />
-				<HighlightGlow left={SINAI_SPOT.left} top={SINAI_SPOT.top} size={46} intensity={glowSpring} frame={frame} fps={fps} />
-				<Label text="NORTHERN SINAI" progress={glowSpring} fontSize={20} style={{left: SINAI_SPOT.left, top: `calc(${SINAI_SPOT.top} + 14%)`, transform: 'translate(-50%, 0)'}} />
+				<HighlightGlow left={SINAI_SPOT.left} top={SINAI_SPOT.top} size={56} intensity={glowSpring} frame={frame} fps={fps} />
+				<Label text="NORTHERN SINAI" progress={glowSpring} fontSize={28} style={{left: SINAI_SPOT.left, top: `calc(${SINAI_SPOT.top} + 14%)`, transform: 'translate(-50%, 0)'}} />
 			</MapStack>
 		</Stage>
 	);

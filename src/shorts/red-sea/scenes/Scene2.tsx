@@ -25,10 +25,10 @@ export const Scene2: React.FC = () => {
 
 	return (
 		<Stage gap={30}>
-			<div style={{position: 'relative', width: MARSH_WIDTH * 0.82, height: MARSH_WIDTH * 0.82 * IMAGE_ASPECT}}>
+			<div style={{position: 'relative', width: MARSH_WIDTH * 0.86, height: MARSH_WIDTH * 0.86 * IMAGE_ASPECT}}>
 				<ImageLayer src={ASSETS.marshReeds} width="100%" opacity={0.5} scale={marshScale} />
 			</div>
-			<PossibilityMarker label="?" progress={questionSpring} glow={0.7} size={120} />
+			<PossibilityMarker label="?" progress={questionSpring} glow={0.7} size={210} />
 		</Stage>
 	);
 };

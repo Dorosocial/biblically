@@ -10,7 +10,7 @@ import {Stage} from '../Stage';
 // as map-aqaba.png fades in beneath it.
 export const SCENE_18_DURATION = 120; // 4.0s @ 30fps
 
-export const AQABA_WIDTH = 400;
+export const AQABA_WIDTH = 760;
 const MARKER_SPRING_DURATION = 40;
 const MAP_FADE_WINDOW = [25, 75] as const;
 
@@ -24,7 +24,7 @@ export const Scene18: React.FC = () => {
 
 	return (
 		<Stage gap={34}>
-			<PossibilityMarker label="2" progress={markerSpring} glow={1} size={110} />
+			<PossibilityMarker label="2" progress={markerSpring} glow={1} size={190} />
 			<ImageLayer src={ASSETS.mapAqaba} width={AQABA_WIDTH} opacity={mapOpacity} scale={contentScale} />
 		</Stage>
 	);

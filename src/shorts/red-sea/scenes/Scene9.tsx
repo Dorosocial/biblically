@@ -10,7 +10,7 @@ import {Stage} from '../Stage';
 // land/water boundary dissolving.
 export const SCENE_9_DURATION = 120; // 4.0s @ 30fps
 
-const MARSH_WIDTH = 500;
+const MARSH_WIDTH = 780;
 const SWEEP_KEYFRAMES = [0, 55, 120] as const;
 const SWEEP_VALUES = [0.15, 0.85, 0.15] as const;
 

@@ -43,19 +43,19 @@ export const Scene4: React.FC = () => {
 		<Stage>
 			{oldTextOpacity > 0.01 && (
 				<div style={{position: 'relative'}}>
-					<TextCard text="RED SEA" opacity={oldTextOpacity} fontSize={64} />
-					<StrikeThrough progress={1} width={420} height={90} />
+					<TextCard text="RED SEA" opacity={oldTextOpacity} fontSize={104} />
+					<StrikeThrough progress={1} width={640} height={140} />
 				</div>
 			)}
-			<div style={{position: 'relative', width: 560, height: 160}}>
+			<div style={{position: 'relative', width: 820, height: 220}}>
 				{yamOpacity > 0.01 && (
 					<div style={overlayStyle}>
-						<TextCard text="YAM SUPH" opacity={yamOpacity} scale={yamScale} fontSize={64} />
+						<TextCard text="YAM SUPH" opacity={yamOpacity} scale={yamScale} fontSize={104} />
 					</div>
 				)}
 				{reedsOpacity > 0.01 && (
 					<div style={overlayStyle}>
-						<TextCard text="SEA OF REEDS" opacity={reedsOpacity} scale={reedsScale} fontSize={56} />
+						<TextCard text="SEA OF REEDS" opacity={reedsOpacity} scale={reedsScale} fontSize={88} />
 					</div>
 				)}
 			</div>

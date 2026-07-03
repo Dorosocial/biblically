@@ -28,8 +28,8 @@ export const Scene14: React.FC = () => {
 		<Stage>
 			<MapStack width={MAP_WIDTH} aspect={IMAGE_ASPECT} scale={contentScale}>
 				<ImageLayer src={ASSETS.mapSinai} width="100%" />
-				<HighlightGlow left={SINAI_SPOT.left} top={SINAI_SPOT.top} size={50} intensity={1} frame={frame} fps={fps} />
-				<Label text="NORTHERN SINAI" progress={1} fontSize={20} style={{left: SINAI_SPOT.left, top: `calc(${SINAI_SPOT.top} + 14%)`, transform: 'translate(-50%, 0)'}} />
+				<HighlightGlow left={SINAI_SPOT.left} top={SINAI_SPOT.top} size={58} intensity={1} frame={frame} fps={fps} />
+				<Label text="NORTHERN SINAI" progress={1} fontSize={28} style={{left: SINAI_SPOT.left, top: `calc(${SINAI_SPOT.top} + 14%)`, transform: 'translate(-50%, 0)'}} />
 				<ImageLayer
 					src={ASSETS.marshReeds}
 					width="34%"

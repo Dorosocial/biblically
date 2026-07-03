@@ -9,7 +9,7 @@ import {Stage} from '../Stage';
 // HARD RESET — open-sea.png springs in, then gets struck through/negated.
 export const SCENE_7_DURATION = 150; // 5.0s @ 30fps
 
-export const OPEN_SEA_WIDTH = 460;
+export const OPEN_SEA_WIDTH = 760;
 const SPRING_DURATION = 45;
 const STRIKE_WINDOW = [70, 115] as const;
 

@@ -11,9 +11,9 @@ import {Stage} from '../Stage';
 export const SCENE_10_DURATION = 210; // 7.0s @ 30fps
 
 const STEPS = [
-	{delay: 0, x: -70, y: 55, rotate: -10, scale: 0.85},
-	{delay: 22, x: 10, y: 0, rotate: 8, scale: 1},
-	{delay: 44, x: 95, y: -55, rotate: -6, scale: 0.9},
+	{delay: 0, x: -110, y: 85, rotate: -10, scale: 0.85},
+	{delay: 22, x: 16, y: 0, rotate: 8, scale: 1},
+	{delay: 44, x: 148, y: -85, rotate: -6, scale: 0.9},
 ] as const;
 
 const SINK_WINDOW = [110, 165] as const;
@@ -28,7 +28,7 @@ const Footstep: React.FC<{frame: number; fps: number; sink: number; step: (typeo
 	return (
 		<ImageLayer
 			src={ASSETS.footprint}
-			width={130}
+			width={230}
 			left="50%"
 			top="50%"
 			anchor="center"
@@ -36,7 +36,7 @@ const Footstep: React.FC<{frame: number; fps: number; sink: number; step: (typeo
 			scale={step.scale * springIn}
 			rotate={step.rotate}
 			offsetX={step.x}
-			offsetY={step.y + sink * 70}
+			offsetY={step.y + sink * 110}
 		/>
 	);
 };
@@ -60,7 +60,7 @@ export const Scene10: React.FC = () => {
 
 	return (
 		<Stage>
-			<div style={{position: 'relative', width: 500, height: 500 * (600 / 334)}}>
+			<div style={{position: 'relative', width: 780, height: 780 * (600 / 334)}}>
 				<ImageLayer src={ASSETS.marshReeds} width="100%" opacity={marshOpacity} />
 
 				{STEPS.map((step, i) => (
@@ -70,7 +70,7 @@ export const Scene10: React.FC = () => {
 				{compassOpacity > 0.01 && (
 					<ImageLayer
 						src={ASSETS.compass}
-						width={190}
+						width={340}
 						left="50%"
 						top="50%"
 						anchor="center"
