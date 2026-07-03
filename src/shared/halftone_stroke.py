@@ -32,7 +32,8 @@ DEFAULT_STROKE_OFFSET = 4
 DEFAULT_STROKE_WIDTH = 3
 CYAN = (0, 255, 255, 255)
 WHITE = (255, 255, 255, 255)
-STROKE_COLOR_PRESETS = {"cyan": CYAN, "white": WHITE}
+GOLD = (212, 175, 55, 255)  # #D4AF37
+STROKE_COLOR_PRESETS = {"cyan": CYAN, "white": WHITE, "gold": GOLD}
 
 
 def _disk(radius: int) -> np.ndarray:
