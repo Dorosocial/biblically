@@ -13,22 +13,17 @@ import highlightTurkey from './assets/processed/highlight-turkey.png';
 import mapBase from './assets/processed/map-base.png';
 import mountainRange from './assets/processed/mountain-range.png';
 import pinMarker from './assets/processed/pin-marker.png';
-import riverEuphrates from './assets/processed/river-euphrates.png';
-import riverGihon from './assets/processed/river-gihon.png';
-import riverPishon from './assets/processed/river-pishon.png';
-import riverTigris from './assets/processed/river-tigris.png';
 import waterTextureCutout from './assets/processed/water-texture.png';
 
+// Note: the four rivers are code-drawn SVG paths (see River.tsx /
+// riverPaths.ts), not raster cutouts — the river-*.png assets in
+// assets/processed/ are unused by this build.
 export const ASSETS = {
 	background: backgroundImg,
 	bible: bibleCutout,
 	dryValley: dryValleyCutout,
 	waterTexture: waterTextureCutout,
 	mapBase,
-	riverTigris,
-	riverEuphrates,
-	riverPishon,
-	riverGihon,
 	highlightTurkey,
 	highlightSyria,
 	highlightIraq,
@@ -49,15 +44,15 @@ export const COLORS = {
 	labelDim: 'rgba(219, 233, 245, 0.75)',
 } as const;
 
-// Shared content-region layout: the Bible cutout is pinned at the top of
-// every scene; map/valley/water imagery sits in this band below it. All
-// processed map/geography PNGs share the same 334x600 canvas, so a single
-// content width keeps every layer aligned.
+// Shared content-region layout. Every scene composes its elements (Bible,
+// map/valley content, text) as a centered flex column via Stage.tsx rather
+// than pinning them to fixed top offsets — STAGE_GAP is the spacing between
+// those stacked elements. All processed map/geography PNGs share the same
+// 334x600 canvas, so a single content width keeps every layer aligned.
 export const LAYOUT = {
-	bibleTop: 180,
-	bibleWidth: 420,
-	contentTop: 990,
-	contentWidth: 520,
+	bibleWidth: 340,
+	contentWidth: 460,
+	stageGap: 36,
 } as const;
 
 export const IMAGE_ASPECT = 600 / 334;

@@ -1,12 +1,16 @@
-import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {BibleLayer} from '../BibleLayer';
 import {ContentStack} from '../ContentStack';
 import {Label} from '../Label';
 import {MapImageLayer} from '../MapImageLayer';
+import {Stage} from '../Stage';
 import {ASSETS} from '../theme';
 
 // VO: "valley, it is now under approximately 60 metres of water in the
 // Persian Gulf."
+// CONTINUES from Scene 14 — the flooded scene remains visible; depth
+// marker springs in, then holds as the final freeze frame with a subtle
+// zoom-in.
 export const SCENE_15_DURATION = 150; // 5.0s @ 30fps
 
 const MARKER_SPRING_DURATION = 50;
@@ -25,34 +29,32 @@ export const Scene15: React.FC = () => {
 
 	return (
 		<AbsoluteFill style={{transform: `scale(${zoomScale})`, transformOrigin: 'center center'}}>
-			<BibleLayer frame={frame} fps={fps} />
-			<ContentStack>
-				<MapImageLayer src={ASSETS.dryValley} left="0%" top="0%" width="100%" blend="normal" />
-				<MapImageLayer src={ASSETS.riverEuphrates} left="24%" top="8%" width="40%" />
-				<MapImageLayer src={ASSETS.riverTigris} left="46%" top="10%" width="38%" />
-				<MapImageLayer src={ASSETS.riverPishon} left="4%" top="12%" width="46%" />
-				<MapImageLayer src={ASSETS.riverGihon} left="40%" top="14%" width="42%" />
-				<MapImageLayer src={ASSETS.mountainRange} left="0%" top="-4%" width="100%" flipY />
-				<MapImageLayer src={ASSETS.mountainRange} left="0%" top="88%" width="100%" />
-				<Label text="TURKEY" progress={1} style={{left: '32%', top: '6%', fontSize: 22}} />
-				<Label text="ARABIAN PENINSULA" progress={1} style={{left: '16%', top: '92%', fontSize: 22}} />
-				<MapImageLayer src={ASSETS.waterTexture} left="0%" top="0%" width="100%" blend="normal" />
+			<Stage>
+				<BibleLayer frame={frame} fps={fps} />
+				<ContentStack>
+					<Img src={ASSETS.dryValley} style={{position: 'absolute', top: 0, left: 0, width: '100%'}} />
+					<MapImageLayer src={ASSETS.mountainRange} left="0%" top="-4%" width="100%" flipY />
+					<MapImageLayer src={ASSETS.mountainRange} left="0%" top="88%" width="100%" />
+					<Label text="TURKEY" progress={1} style={{left: '32%', top: '6%', fontSize: 22}} />
+					<Label text="ARABIAN PLAINS" progress={1} style={{left: '16%', top: '92%', fontSize: 22}} />
+					<Img src={ASSETS.waterTexture} style={{position: 'absolute', top: 0, left: 0, width: '100%'}} />
 
-				<MapImageLayer
-					src={ASSETS.depthArrow}
-					left="38%"
-					top="38%"
-					width="24%"
-					opacity={markerOpacity}
-					scale={markerSpring}
-				/>
-				<Label
-					text="~60m"
-					progress={markerSpring}
-					fontSize={30}
-					style={{left: '38%', top: '30%', width: '24%', background: 'rgba(6,16,32,0.55)', padding: '6px 0', borderRadius: 8}}
-				/>
-			</ContentStack>
+					<MapImageLayer
+						src={ASSETS.depthArrow}
+						left="38%"
+						top="38%"
+						width="24%"
+						opacity={markerOpacity}
+						scale={markerSpring}
+					/>
+					<Label
+						text="~60m"
+						progress={markerSpring}
+						fontSize={30}
+						style={{left: '38%', top: '30%', width: '24%', background: 'rgba(6,16,32,0.55)', padding: '6px 0', borderRadius: 8}}
+					/>
+				</ContentStack>
+			</Stage>
 		</AbsoluteFill>
 	);
 };

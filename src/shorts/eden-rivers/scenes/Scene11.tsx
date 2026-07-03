@@ -1,54 +1,28 @@
-import {AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
-import {BibleLayer} from '../BibleLayer';
-import {ContentStack} from '../ContentStack';
+import {spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {pulse} from '../motion';
-import {ASSETS, COLORS} from '../theme';
+import {Stage} from '../Stage';
+import {TextCard} from '../TextCard';
 
-// VO: "About 7,500 years ago, sea levels were significantly lower. The entire northern"
+// VO: "About 7,500 years ago, sea levels were significantly lower. The
+// entire northern"
+// HARD RESET — nothing from Scene 10 carries over. Only the text is shown:
+// a bold, text-forward scene, centered, no Bible, no map.
 export const SCENE_11_DURATION = 210; // 7.0s @ 30fps
 
-const DISSOLVE_WINDOW = [120, 210] as const;
-export const TEXT_HANDOFF_OPACITY = 0.3;
-export const VALLEY_HANDOFF_OPACITY = 0.5;
+const SPRING_DURATION = 55;
+const SPRING_CONFIG = {damping: 10, stiffness: 140, mass: 0.9};
 
 export const Scene11: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 
-	const textPulseScale = pulse(frame, fps, 0.03, 0.35);
-	const textOpacity = interpolate(frame, DISSOLVE_WINDOW, [1, TEXT_HANDOFF_OPACITY], {
-		extrapolateLeft: 'clamp',
-		extrapolateRight: 'clamp',
-	});
-	const valleyOpacity = interpolate(frame, DISSOLVE_WINDOW, [0, VALLEY_HANDOFF_OPACITY], {
-		extrapolateLeft: 'clamp',
-		extrapolateRight: 'clamp',
-	});
+	const entrance = frame >= SPRING_DURATION ? 1 : spring({frame, fps, config: SPRING_CONFIG, durationInFrames: SPRING_DURATION});
+	const holdPulse = frame >= SPRING_DURATION ? pulse(frame - SPRING_DURATION, fps, 0.025, 0.3) : 1;
+	const scale = entrance * holdPulse;
 
 	return (
-		<AbsoluteFill>
-			<BibleLayer frame={frame} fps={fps} />
-
-			<ContentStack>
-				<Img src={ASSETS.dryValley} style={{position: 'absolute', top: 0, left: 0, width: '100%', opacity: valleyOpacity}} />
-			</ContentStack>
-
-			<AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
-				<div
-					style={{
-						opacity: textOpacity,
-						transform: `scale(${textPulseScale})`,
-						background: 'rgba(6, 16, 32, 0.55)',
-						padding: '28px 40px',
-						borderRadius: 12,
-						border: `2px solid ${COLORS.stroke}`,
-					}}
-				>
-					<div style={{color: 'white', fontFamily: 'sans-serif', fontWeight: 700, fontSize: 58, letterSpacing: 3, textAlign: 'center'}}>
-						7,500 YEARS AGO
-					</div>
-				</div>
-			</AbsoluteFill>
-		</AbsoluteFill>
+		<Stage>
+			<TextCard text="7,500 YEARS AGO" opacity={Math.min(entrance, 1)} scale={scale} fontSize={64} />
+		</Stage>
 	);
 };

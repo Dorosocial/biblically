@@ -1,12 +1,16 @@
-import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Img, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {BibleLayer} from '../BibleLayer';
 import {ContentStack} from '../ContentStack';
 import {Label} from '../Label';
 import {MapImageLayer} from '../MapImageLayer';
 import {pushIn} from '../motion';
+import {River} from '../River';
+import {CONTENT_VIEWBOX, VALLEY_RIVERS} from '../riverPaths';
+import {Stage} from '../Stage';
 import {ASSETS} from '../theme';
 
 // VO: "sitting between the mountains of Turkey and the Arabian Plains."
+// CONTINUES from Scene 12 — valley and rivers remain visible.
 export const SCENE_13_DURATION = 150; // 5.0s @ 30fps
 
 const TOP_MOUNTAIN_WINDOW = [0, 50] as const;
@@ -35,14 +39,14 @@ export const Scene13: React.FC = () => {
 	const arabiaLabel = interpolate(frame, ARABIA_LABEL_WINDOW, [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
 	return (
-		<AbsoluteFill>
+		<Stage>
 			<BibleLayer frame={frame} fps={fps} />
 			<ContentStack scale={contentScale}>
-				<MapImageLayer src={ASSETS.dryValley} left="0%" top="0%" width="100%" blend="normal" />
-				<MapImageLayer src={ASSETS.riverEuphrates} left="24%" top="8%" width="40%" />
-				<MapImageLayer src={ASSETS.riverTigris} left="46%" top="10%" width="38%" />
-				<MapImageLayer src={ASSETS.riverPishon} left="4%" top="12%" width="46%" />
-				<MapImageLayer src={ASSETS.riverGihon} left="40%" top="14%" width="42%" />
+				<Img src={ASSETS.dryValley} style={{position: 'absolute', top: 0, left: 0, width: '100%'}} />
+				<River d={VALLEY_RIVERS.euphrates} viewBox={CONTENT_VIEWBOX} progress={1} frame={frame} glow={0.4} />
+				<River d={VALLEY_RIVERS.tigris} viewBox={CONTENT_VIEWBOX} progress={1} frame={frame} glow={0.4} />
+				<River d={VALLEY_RIVERS.pishon} viewBox={CONTENT_VIEWBOX} progress={1} frame={frame} glow={0.4} />
+				<River d={VALLEY_RIVERS.gihon} viewBox={CONTENT_VIEWBOX} progress={1} frame={frame} glow={0.4} />
 
 				<MapImageLayer
 					src={ASSETS.mountainRange}
@@ -63,8 +67,8 @@ export const Scene13: React.FC = () => {
 				/>
 
 				<Label text="TURKEY" progress={turkeyLabel} style={{left: '32%', top: '6%', fontSize: 22}} />
-				<Label text="ARABIAN PENINSULA" progress={arabiaLabel} style={{left: '16%', top: '92%', fontSize: 22}} />
+				<Label text="ARABIAN PLAINS" progress={arabiaLabel} style={{left: '16%', top: '92%', fontSize: 22}} />
 			</ContentStack>
-		</AbsoluteFill>
+		</Stage>
 	);
 };
