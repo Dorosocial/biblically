@@ -31,6 +31,8 @@ DEFAULT_CELL_SIZE = 6
 DEFAULT_STROKE_OFFSET = 4
 DEFAULT_STROKE_WIDTH = 3
 CYAN = (0, 255, 255, 255)
+WHITE = (255, 255, 255, 255)
+STROKE_COLOR_PRESETS = {"cyan": CYAN, "white": WHITE}
 
 
 def _disk(radius: int) -> np.ndarray:
@@ -132,7 +134,14 @@ def main() -> int:
         action="store_true",
         help="Keep original full color instead of converting to halftone dots",
     )
+    parser.add_argument(
+        "--stroke-color",
+        choices=sorted(STROKE_COLOR_PRESETS),
+        default="cyan",
+        help="Color of the offset stroke ring",
+    )
     args = parser.parse_args()
+    stroke_color = STROKE_COLOR_PRESETS[args.stroke_color]
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -147,6 +156,7 @@ def main() -> int:
                 cell_size=args.cell_size,
                 stroke_offset=args.stroke_offset,
                 stroke_width=args.stroke_width,
+                stroke_color=stroke_color,
                 apply_halftone=not args.no_halftone,
             )
             results.append((name, "ok", dst))
