@@ -81,6 +81,25 @@ def halftone_dots(rgba: Image.Image, cell_size: int = DEFAULT_CELL_SIZE) -> Imag
     return Image.fromarray(out_arr, mode="RGBA")
 
 
+def solid_fill(rgba: Image.Image, color, alpha_threshold: int = 30) -> Image.Image:
+    """Rebuild the opaque region as a fully-opaque flat `color` silhouette.
+
+    Thin line-art cutouts (e.g. a coastline drawing) are mostly soft
+    anti-aliased edge rather than solid core pixels, which reads as washed-
+    out/pale once displayed at a larger size next to a much wider stroke
+    ring. Binarizing alpha at `alpha_threshold` and flattening every opaque
+    pixel to one solid color turns the line bold and crisp without touching
+    its silhouette shape (so the stroke ring computed from this image lines
+    up exactly where the original line was)."""
+    alpha_arr = np.array(rgba.split()[-1])
+    mask = alpha_arr > alpha_threshold
+
+    w, h = rgba.size
+    out_arr = np.zeros((h, w, 4), dtype=np.uint8)
+    out_arr[mask] = color
+    return Image.fromarray(out_arr, mode="RGBA")
+
+
 def offset_stroke_ring(
     rgba: Image.Image,
     offset: int = DEFAULT_STROKE_OFFSET,
@@ -111,8 +130,12 @@ def process_image(
     stroke_width: int = DEFAULT_STROKE_WIDTH,
     stroke_color=CYAN,
     apply_halftone: bool = True,
+    solid_fill_color=None,
+    solid_fill_alpha_threshold: int = 30,
 ) -> None:
     rgba = Image.open(src_path).convert("RGBA")
+    if solid_fill_color is not None:
+        rgba = solid_fill(rgba, solid_fill_color, alpha_threshold=solid_fill_alpha_threshold)
 
     ring = offset_stroke_ring(rgba, offset=stroke_offset, width=stroke_width, color=stroke_color)
     foreground = halftone_dots(rgba, cell_size=cell_size) if apply_halftone else rgba
@@ -142,8 +165,25 @@ def main() -> int:
         default="cyan",
         help="Color of the offset stroke ring",
     )
+    parser.add_argument(
+        "--solid-fill",
+        type=str,
+        default=None,
+        help="Hex color (e.g. 000000) to flatten thin/anti-aliased line art to before stroking, "
+        "so the line itself reads bold/solid instead of washed out",
+    )
+    parser.add_argument(
+        "--solid-fill-alpha-threshold",
+        type=int,
+        default=30,
+        help="Alpha cutoff (0-255) used to binarize the silhouette when --solid-fill is set",
+    )
     args = parser.parse_args()
     stroke_color = STROKE_COLOR_PRESETS[args.stroke_color]
+    solid_fill_color = None
+    if args.solid_fill:
+        hex_color = args.solid_fill.lstrip("#")
+        solid_fill_color = (*(int(hex_color[i : i + 2], 16) for i in (0, 2, 4)), 255)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -160,6 +200,8 @@ def main() -> int:
                 stroke_width=args.stroke_width,
                 stroke_color=stroke_color,
                 apply_halftone=not args.no_halftone,
+                solid_fill_color=solid_fill_color,
+                solid_fill_alpha_threshold=args.solid_fill_alpha_threshold,
             )
             results.append((name, "ok", dst))
         except Exception as exc:  # noqa: BLE001
