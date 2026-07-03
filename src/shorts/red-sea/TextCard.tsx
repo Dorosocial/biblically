@@ -9,10 +9,10 @@ type TextCardProps = {
 	style?: CSSProperties;
 };
 
-// Bold headline text over the teal grid background — a translucent dark-teal
-// card (keeps the grid visible through it) with a silver border, matching
-// the silver-stroke fingerprint. A flex child of Stage so it centers with
-// the rest of the scene's group.
+// Bold headline text over the white background — a translucent dark-teal
+// card (keeps its own contrast regardless of page background) with a
+// silver border, matching the silver-stroke fingerprint. A flex child of
+// Stage so it centers with the rest of the scene's group.
 export const TextCard: React.FC<TextCardProps> = ({text, opacity, scale = 1, fontSize = 76, style}) => (
 	<div
 		style={{
@@ -27,7 +27,7 @@ export const TextCard: React.FC<TextCardProps> = ({text, opacity, scale = 1, fon
 	>
 		<div
 			style={{
-				color: COLORS.text,
+				color: COLORS.cardText,
 				fontFamily: 'sans-serif',
 				fontWeight: 800,
 				fontSize,

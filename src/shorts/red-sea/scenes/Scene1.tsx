@@ -24,7 +24,7 @@ const MistWisp: React.FC<{frame: number; fps: number; phase: number; top: string
 				width: size,
 				height: size * 0.4,
 				transform: `translate(calc(-50% + ${x}px), ${y}px)`,
-				background: 'radial-gradient(ellipse, rgba(242,249,251,0.9) 0%, rgba(242,249,251,0) 72%)',
+				background: 'radial-gradient(ellipse, rgba(180,200,206,0.85) 0%, rgba(180,200,206,0) 72%)',
 				filter: 'blur(6px)',
 				opacity,
 			}}

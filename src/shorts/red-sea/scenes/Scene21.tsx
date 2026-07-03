@@ -39,7 +39,7 @@ export const Scene21: React.FC = () => {
 							width: `${10 * channelGlow}%`,
 							height: '84%',
 							transform: 'translateX(-50%)',
-							background: 'linear-gradient(rgba(184,196,204,0.55), rgba(184,196,204,0.15))',
+							background: 'linear-gradient(rgba(110,136,148,0.55), rgba(110,136,148,0.12))',
 							filter: 'blur(6px)',
 						}}
 					/>
