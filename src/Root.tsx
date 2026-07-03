@@ -8,7 +8,7 @@ export const RemotionRoot: React.FC = () => {
 			<Composition
 				id="EdenRivers"
 				component={EdenRivers}
-				durationInFrames={2619} // 87.3s @ 30fps
+				durationInFrames={2610} // 87s @ 30fps
 				fps={FPS}
 				width={VIDEO_WIDTH}
 				height={VIDEO_HEIGHT}

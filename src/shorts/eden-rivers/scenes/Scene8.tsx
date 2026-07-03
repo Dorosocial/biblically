@@ -1,59 +1,52 @@
-import {AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {MOUNTAIN_PEAK_COUNT, MountainRange} from '../MountainRange';
-import {RiverOverlay} from '../RiverOverlay';
-import {ASSETS, LAYOUT} from '../theme';
+import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {BibleLayer} from '../BibleLayer';
+import {ContentStack} from '../ContentStack';
+import {Label} from '../Label';
+import {MapImageLayer} from '../MapImageLayer';
+import {DIM_OPACITY, MAP_LAYOUT} from '../mapLayout';
+import {pulse, pushIn} from '../motion';
+import {CUSH_HANDOFF_OPACITY} from './Scene7';
+import {ASSETS} from '../theme';
 
-// VO: "fed by four converging rivers, sitting between the mountains"
-export const SCENE_8_DURATION = 249; // 8.3s @ 30fps
+// VO: "which in ancient geography refers to the region south and east"
+export const SCENE_8_DURATION = 180; // 6.0s @ 30fps
 
-const RIVER_FADE_IN = [0, 78] as const; // 1842-1920
-const MOUNTAIN_WINDOW_START = 78; // 1920
-const MOUNTAIN_STAGGER = 8;
-const MOUNTAIN_SPRING_DURATION = 24;
-
-const VALLEY_WIDTH = 520;
-
-const mountainProgress = (frame: number, fps: number, peakIndex: number) => {
-	const start = MOUNTAIN_WINDOW_START + peakIndex * MOUNTAIN_STAGGER;
-	const local = frame - start;
-	if (local < 0) return 0;
-	if (local >= MOUNTAIN_SPRING_DURATION) return 1;
-	return spring({frame: local, fps, config: {damping: 11, stiffness: 140, mass: 0.7}, durationInFrames: MOUNTAIN_SPRING_DURATION});
-};
+const REGION_OPACITY = 0.65;
+const CUSH_FADE_WINDOW = [0, 60] as const;
+const CUSH_LABEL_WINDOW = [30, 90] as const;
 
 export const Scene8: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 
-	const riverOpacity = interpolate(frame, RIVER_FADE_IN, [0, 1], {
+	const contentScale = pushIn(frame, SCENE_8_DURATION);
+	const cushOpacity = interpolate(frame, CUSH_FADE_WINDOW, [CUSH_HANDOFF_OPACITY, REGION_OPACITY], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
+	const cushLabel = interpolate(frame, CUSH_LABEL_WINDOW, [0, 1], {
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',
 	});
 
-	const peakIndices = Array.from({length: MOUNTAIN_PEAK_COUNT}, (_, i) => i);
-	const topProgress = peakIndices.map((i) => mountainProgress(frame, fps, i));
-	const bottomProgress = peakIndices.map((i) => mountainProgress(frame, fps, i));
-
-	const height = VALLEY_WIDTH * (600 / 334);
-
 	return (
 		<AbsoluteFill>
-			<AbsoluteFill style={{top: LAYOUT.bibleTop, alignItems: 'center'}}>
-				<Img src={ASSETS.bible} style={{width: LAYOUT.bibleWidth}} />
-			</AbsoluteFill>
-
-			<AbsoluteFill style={{top: LAYOUT.contentTop, alignItems: 'center'}}>
-				<div style={{position: 'relative', width: VALLEY_WIDTH, height}}>
-					<Img src={ASSETS.dryValley} style={{width: VALLEY_WIDTH}} />
-					<RiverOverlay width={VALLEY_WIDTH} opacity={riverOpacity} />
-					<div style={{position: 'absolute', top: 0, left: 0, width: '100%'}}>
-						<MountainRange edge="top" progress={topProgress} />
-					</div>
-					<div style={{position: 'absolute', bottom: 0, left: 0, width: '100%'}}>
-						<MountainRange edge="bottom" progress={bottomProgress} />
-					</div>
-				</div>
-			</AbsoluteFill>
+			<BibleLayer frame={frame} fps={fps} />
+			<ContentStack scale={contentScale}>
+				<MapImageLayer src={ASSETS.mapBase} {...MAP_LAYOUT.base} opacity={DIM_OPACITY + 0.1} />
+				<MapImageLayer src={ASSETS.riverEuphrates} {...MAP_LAYOUT.euphrates} opacity={1} glow={0.5} />
+				<MapImageLayer src={ASSETS.riverTigris} {...MAP_LAYOUT.tigris} opacity={1} glow={0.5} />
+				<MapImageLayer src={ASSETS.highlightTurkey} {...MAP_LAYOUT.turkey} opacity={DIM_OPACITY} />
+				<MapImageLayer src={ASSETS.highlightSyria} {...MAP_LAYOUT.syria} opacity={DIM_OPACITY} />
+				<MapImageLayer src={ASSETS.highlightIraq} {...MAP_LAYOUT.iraq} opacity={DIM_OPACITY} />
+				<MapImageLayer src={ASSETS.pinMarker} {...MAP_LAYOUT.pin} scale={pulse(frame, fps, 0.08, 1.25)} />
+				<MapImageLayer src={ASSETS.highlightHavilah} {...MAP_LAYOUT.havilah} opacity={DIM_OPACITY} />
+				<MapImageLayer src={ASSETS.riverPishon} {...MAP_LAYOUT.pishon} opacity={1} glow={0.5} />
+				<MapImageLayer src={ASSETS.riverGihon} {...MAP_LAYOUT.gihon} opacity={1} glow={0.5} />
+				<MapImageLayer src={ASSETS.highlightCush} {...MAP_LAYOUT.cush} opacity={cushOpacity} />
+				<Label text="HAVILAH" progress={1} dim style={{left: '24%', top: '92%'}} />
+				<Label text="CUSH" progress={cushLabel} dim style={{left: '56%', top: '76%'}} />
+			</ContentStack>
 		</AbsoluteFill>
 	);
 };

@@ -1,70 +1,60 @@
-import {AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {MOUNTAIN_PEAK_COUNT, MountainRange} from '../MountainRange';
-import {RiverOverlay} from '../RiverOverlay';
-import {ASSETS, COLORS, LAYOUT} from '../theme';
+import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {BibleLayer} from '../BibleLayer';
+import {ContentStack} from '../ContentStack';
+import {MapImageLayer} from '../MapImageLayer';
+import {DIM_OPACITY, MAP_LAYOUT} from '../mapLayout';
+import {pulse, pushIn} from '../motion';
+import {ASSETS} from '../theme';
 
-// VO: "of Turkey and the Arabian plains."
-export const SCENE_9_DURATION = 150; // 5.0s @ 30fps
+// VO: "of Mesopotamia. Both descriptions point toward the same basin: the
+// northern Persian Gulf."
+export const SCENE_9_DURATION = 210; // 7.0s @ 30fps
 
-const LABEL_SPRING_WINDOW = [0, 40] as const;
-const TURKEY_LABEL_START = 0;
-const ARABIA_LABEL_START = 15;
+const DIM_WINDOW = [0, 60] as const;
+const FINAL_DIM = 0.15;
+const REGION_OPACITY = 0.65;
+const BASIN_RISE_WINDOW = [20, 90] as const;
+const PULSE_START = 90;
 
-const VALLEY_WIDTH = 520;
-const FULL_MOUNTAINS = Array.from({length: MOUNTAIN_PEAK_COUNT}, () => 1);
-
-const labelProgress = (frame: number, fps: number, start: number) => {
-	const local = frame - start;
-	if (local < 0) return 0;
-	if (local >= 30) return 1;
-	return spring({frame: local, fps, config: {damping: 11, stiffness: 130, mass: 0.8}, durationInFrames: 30});
-};
+const dimTo = (frame: number, from: number) =>
+	interpolate(frame, DIM_WINDOW, [from, FINAL_DIM], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
 export const Scene9: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 
-	const turkeyLabel = labelProgress(frame, fps, TURKEY_LABEL_START);
-	const arabiaLabel = labelProgress(frame, fps, ARABIA_LABEL_START);
-
-	const height = VALLEY_WIDTH * (600 / 334);
-
-	const labelStyle = (progress: number): React.CSSProperties => ({
-		opacity: interpolate(progress, [0, 1], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}),
-		transform: `scale(${interpolate(progress, [0, 1], [0.6, 1])})`,
-		color: COLORS.mapLabel,
-		fontFamily: 'sans-serif',
-		fontSize: 26,
-		fontWeight: 700,
-		letterSpacing: 2,
-		textAlign: 'center',
+	const contentScale = pushIn(frame, SCENE_9_DURATION);
+	const basinRise = interpolate(frame, BASIN_RISE_WINDOW, [0, 1], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
 	});
+	const pulseLocal = frame - PULSE_START;
+	const basinGlow = pulseLocal < 0 ? basinRise : pulse(pulseLocal, fps, 0.15, 0.7);
+	const basinScale = interpolate(basinRise, [0, 1], [0.7, 1.15]);
 
 	return (
 		<AbsoluteFill>
-			<AbsoluteFill style={{top: LAYOUT.bibleTop, alignItems: 'center'}}>
-				<Img src={ASSETS.bible} style={{width: LAYOUT.bibleWidth}} />
-			</AbsoluteFill>
-
-			<AbsoluteFill style={{top: LAYOUT.contentTop, alignItems: 'center'}}>
-				<div style={{position: 'relative', width: VALLEY_WIDTH, height}}>
-					<Img src={ASSETS.dryValley} style={{width: VALLEY_WIDTH}} />
-					<RiverOverlay width={VALLEY_WIDTH} opacity={1} />
-					<div style={{position: 'absolute', top: 0, left: 0, width: '100%'}}>
-						<MountainRange edge="top" progress={FULL_MOUNTAINS} />
-					</div>
-					<div style={{position: 'absolute', bottom: 0, left: 0, width: '100%'}}>
-						<MountainRange edge="bottom" progress={FULL_MOUNTAINS} />
-					</div>
-
-					<div style={{position: 'absolute', top: 14, left: 0, width: '100%', ...labelStyle(turkeyLabel)}}>
-						TURKEY
-					</div>
-					<div style={{position: 'absolute', bottom: 14, left: 0, width: '100%', ...labelStyle(arabiaLabel)}}>
-						ARABIAN PENINSULA
-					</div>
-				</div>
-			</AbsoluteFill>
+			<BibleLayer frame={frame} fps={fps} />
+			<ContentStack scale={contentScale}>
+				<MapImageLayer src={ASSETS.mapBase} {...MAP_LAYOUT.base} opacity={dimTo(frame, DIM_OPACITY + 0.1)} />
+				<MapImageLayer src={ASSETS.riverEuphrates} {...MAP_LAYOUT.euphrates} opacity={dimTo(frame, 1)} />
+				<MapImageLayer src={ASSETS.riverTigris} {...MAP_LAYOUT.tigris} opacity={dimTo(frame, 1)} />
+				<MapImageLayer src={ASSETS.riverPishon} {...MAP_LAYOUT.pishon} opacity={dimTo(frame, 1)} />
+				<MapImageLayer src={ASSETS.riverGihon} {...MAP_LAYOUT.gihon} opacity={dimTo(frame, 1)} />
+				<MapImageLayer src={ASSETS.highlightTurkey} {...MAP_LAYOUT.turkey} opacity={dimTo(frame, DIM_OPACITY)} />
+				<MapImageLayer src={ASSETS.highlightSyria} {...MAP_LAYOUT.syria} opacity={dimTo(frame, DIM_OPACITY)} />
+				<MapImageLayer src={ASSETS.highlightIraq} {...MAP_LAYOUT.iraq} opacity={dimTo(frame, DIM_OPACITY)} />
+				<MapImageLayer src={ASSETS.highlightHavilah} {...MAP_LAYOUT.havilah} opacity={dimTo(frame, DIM_OPACITY)} />
+				<MapImageLayer src={ASSETS.highlightCush} {...MAP_LAYOUT.cush} opacity={dimTo(frame, REGION_OPACITY)} />
+				<MapImageLayer src={ASSETS.pinMarker} {...MAP_LAYOUT.pin} opacity={dimTo(frame, 1)} />
+				<MapImageLayer
+					src={ASSETS.highlightGulfBasin}
+					{...MAP_LAYOUT.gulfBasin}
+					opacity={Math.min(basinRise * 1.2, 1)}
+					glow={basinGlow}
+					scale={basinScale}
+				/>
+			</ContentStack>
 		</AbsoluteFill>
 	);
 };

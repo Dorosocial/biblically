@@ -1,53 +1,77 @@
-import {AbsoluteFill, Img, spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {MiddleEastMap} from '../MiddleEastMap';
-import {ASSETS, LAYOUT} from '../theme';
-import {cushProgress, SCENE_STARTS} from '../timeline';
+import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {BibleLayer} from '../BibleLayer';
+import {ContentStack} from '../ContentStack';
+import {MapImageLayer} from '../MapImageLayer';
+import {DIM_OPACITY, MAP_LAYOUT} from '../mapLayout';
+import {pulse, pushIn} from '../motion';
+import {ASSETS} from '../theme';
 
-// VO: "The Pishon is described as encircling the land of Havilah which is
-// a region associated in other biblical texts with the Arabian Peninsula.
-// The Gihon encircles Cush,"
-export const SCENE_5_DURATION = 291; // 9.7s @ 30fps
+// VO: "to flow through Turkey, Syria, and Iraq before meeting near Basra.
+// That intersection is our anchor point."
+export const SCENE_5_DURATION = 210; // 7.0s @ 30fps
 
-const PISHON_POP_WINDOW = [0, 70] as const;
-const HAVILAH_WINDOW = [15, 90] as const;
-const GIHON_POP_WINDOW = [106, 176] as const;
+const FADE_DURATION = 55;
+const COUNTRY_STARTS = {turkey: 0, syria: 30, iraq: 60} as const;
+const INTRO_OPACITY = DIM_OPACITY + 0.15;
 
-const POP_SPRING_CONFIG = {damping: 10, stiffness: 150, mass: 0.8};
+const PIN_DROP_START = 120;
+const PIN_DROP_DURATION = 45;
+const PIN_DROP_SPRING_CONFIG = {damping: 9, stiffness: 120, mass: 1};
+const PULSE_START = PIN_DROP_START + PIN_DROP_DURATION;
 
-const springProgress = (frame: number, fps: number, [start, end]: readonly [number, number]) => {
-	const local = frame - start;
-	if (local < 0) return 0;
-	if (frame >= end) return 1;
-	return spring({frame: local, fps, config: POP_SPRING_CONFIG, durationInFrames: end - start});
-};
+const fadeProgress = (frame: number, start: number) =>
+	interpolate(frame, [start, start + FADE_DURATION], [0, INTRO_OPACITY], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
 
 export const Scene5: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
-	const globalFrame = frame + SCENE_STARTS.scene5;
 
-	const pishonPop = springProgress(frame, fps, PISHON_POP_WINDOW);
-	const havilahProgress = springProgress(frame, fps, HAVILAH_WINDOW);
-	const gihonPop = springProgress(frame, fps, GIHON_POP_WINDOW);
-	const cush = cushProgress(globalFrame);
+	const contentScale = pushIn(frame, SCENE_5_DURATION);
+
+	const turkeyOpacity = fadeProgress(frame, COUNTRY_STARTS.turkey);
+	const syriaOpacity = fadeProgress(frame, COUNTRY_STARTS.syria);
+	const iraqOpacity = fadeProgress(frame, COUNTRY_STARTS.iraq);
+
+	const pinLocal = frame - PIN_DROP_START;
+	const pinDropProgress =
+		pinLocal < 0
+			? 0
+			: frame >= PIN_DROP_START + PIN_DROP_DURATION
+				? 1
+				: spring({frame: pinLocal, fps, config: PIN_DROP_SPRING_CONFIG, durationInFrames: PIN_DROP_DURATION});
+	const pinOffsetY = interpolate(pinDropProgress, [0, 1], [-220, 0]);
+	const pinOpacity = interpolate(Math.min(pinDropProgress, 1), [0, 0.05], [0, 1], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
+	const pinPulseLocal = frame - PULSE_START;
+	const pinScale = pinPulseLocal < 0 ? 1 : pulse(pinPulseLocal, fps, 0.1, 1.25);
 
 	return (
 		<AbsoluteFill>
-			<AbsoluteFill style={{top: LAYOUT.bibleTop, alignItems: 'center'}}>
-				<Img src={ASSETS.bible} style={{width: LAYOUT.bibleWidth}} />
-			</AbsoluteFill>
-
-			<AbsoluteFill style={{top: LAYOUT.contentTop, alignItems: 'center'}}>
-				<MiddleEastMap
-					width={880}
-					pishon={{progress: 1, pop: pishonPop}}
-					gihon={{progress: 1, pop: gihonPop}}
-					euphrates={{progress: 1, pop: 1}}
-					tigris={{progress: 1, pop: 1}}
-					regions={{turkey: 1, syria: 1, iraq: 1, havilah: havilahProgress, cush}}
-					pin={{dropProgress: 1, pulseScale: 1 + 0.08 * Math.sin((frame / fps) * 2 * Math.PI * 1.25)}}
-				/>
-			</AbsoluteFill>
+			<BibleLayer frame={frame} fps={fps} />
+			<ContentStack scale={contentScale}>
+				<MapImageLayer src={ASSETS.mapBase} {...MAP_LAYOUT.base} opacity={DIM_OPACITY + 0.1} />
+				<MapImageLayer src={ASSETS.riverPishon} {...MAP_LAYOUT.pishon} opacity={DIM_OPACITY} />
+				<MapImageLayer src={ASSETS.riverGihon} {...MAP_LAYOUT.gihon} opacity={DIM_OPACITY} />
+				<MapImageLayer src={ASSETS.riverEuphrates} {...MAP_LAYOUT.euphrates} opacity={1} glow={0.6} />
+				<MapImageLayer src={ASSETS.riverTigris} {...MAP_LAYOUT.tigris} opacity={1} glow={0.6} />
+				<MapImageLayer src={ASSETS.highlightTurkey} {...MAP_LAYOUT.turkey} opacity={turkeyOpacity} />
+				<MapImageLayer src={ASSETS.highlightSyria} {...MAP_LAYOUT.syria} opacity={syriaOpacity} />
+				<MapImageLayer src={ASSETS.highlightIraq} {...MAP_LAYOUT.iraq} opacity={iraqOpacity} />
+				{frame >= PIN_DROP_START && (
+					<MapImageLayer
+						src={ASSETS.pinMarker}
+						{...MAP_LAYOUT.pin}
+						opacity={pinOpacity}
+						offsetY={pinOffsetY}
+						scale={pinScale}
+					/>
+				)}
+			</ContentStack>
 		</AbsoluteFill>
 	);
 };

@@ -1,47 +1,25 @@
-import {AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {MiddleEastMap} from '../MiddleEastMap';
-import {ASSETS, LAYOUT} from '../theme';
+import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {BibleLayer} from '../BibleLayer';
 
 // VO: "Genesis chapter 2 gives us the geographic location of Eden with
-// four named rivers. Two of those rivers still exist on a modern map."
-export const SCENE_1_DURATION = 288; // 9.6s @ 30fps
+// four named rivers."
+export const SCENE_1_DURATION = 210; // 7.0s @ 30fps
 
 const BIBLE_SPRING_CONFIG = {damping: 12, stiffness: 110, mass: 1};
-const BIBLE_SPRING_DURATION = 60; // overshoots within 0-45, settled by 60
-const MAP_FADE_IN = [90, 150] as const;
-
-const NO_RIVER = {progress: 0};
+const BIBLE_SPRING_DURATION = 50;
 
 export const Scene1: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 
-	const bibleScale =
+	const entranceScale =
 		frame >= BIBLE_SPRING_DURATION
 			? 1
 			: spring({frame, fps, config: BIBLE_SPRING_CONFIG, durationInFrames: BIBLE_SPRING_DURATION});
 
-	const mapOpacity = interpolate(frame, MAP_FADE_IN, [0, 1], {
-		extrapolateLeft: 'clamp',
-		extrapolateRight: 'clamp',
-	});
-
 	return (
 		<AbsoluteFill>
-			<AbsoluteFill style={{top: LAYOUT.bibleTop, alignItems: 'center'}}>
-				<Img
-					src={ASSETS.bible}
-					style={{
-						width: LAYOUT.bibleWidth,
-						transform: `scale(${bibleScale})`,
-						transformOrigin: 'center top',
-					}}
-				/>
-			</AbsoluteFill>
-
-			<AbsoluteFill style={{top: LAYOUT.contentTop, alignItems: 'center', opacity: mapOpacity}}>
-				<MiddleEastMap width={880} pishon={NO_RIVER} gihon={NO_RIVER} tigris={NO_RIVER} euphrates={NO_RIVER} />
-			</AbsoluteFill>
+			<BibleLayer frame={frame} fps={fps} entranceScale={entranceScale} />
 		</AbsoluteFill>
 	);
 };

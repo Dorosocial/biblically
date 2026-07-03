@@ -10,6 +10,10 @@ import {Scene8, SCENE_8_DURATION} from './scenes/Scene8';
 import {Scene9, SCENE_9_DURATION} from './scenes/Scene9';
 import {Scene10, SCENE_10_DURATION} from './scenes/Scene10';
 import {Scene11, SCENE_11_DURATION} from './scenes/Scene11';
+import {Scene12, SCENE_12_DURATION} from './scenes/Scene12';
+import {Scene13, SCENE_13_DURATION} from './scenes/Scene13';
+import {Scene14, SCENE_14_DURATION} from './scenes/Scene14';
+import {Scene15, SCENE_15_DURATION} from './scenes/Scene15';
 import {ASSETS} from './theme';
 
 const scenes = [
@@ -24,6 +28,10 @@ const scenes = [
 	{Component: Scene9, duration: SCENE_9_DURATION, name: 'Scene 9'},
 	{Component: Scene10, duration: SCENE_10_DURATION, name: 'Scene 10'},
 	{Component: Scene11, duration: SCENE_11_DURATION, name: 'Scene 11'},
+	{Component: Scene12, duration: SCENE_12_DURATION, name: 'Scene 12'},
+	{Component: Scene13, duration: SCENE_13_DURATION, name: 'Scene 13'},
+	{Component: Scene14, duration: SCENE_14_DURATION, name: 'Scene 14'},
+	{Component: Scene15, duration: SCENE_15_DURATION, name: 'Scene 15'},
 ] as const;
 
 export const EdenRivers: React.FC = () => {

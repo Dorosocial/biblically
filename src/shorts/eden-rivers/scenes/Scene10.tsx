@@ -1,66 +1,63 @@
-import {AbsoluteFill, Img, interpolate, useCurrentFrame} from 'remotion';
-import {MOUNTAIN_PEAK_COUNT, MountainRange} from '../MountainRange';
-import {RiverOverlay} from '../RiverOverlay';
-import {ASSETS, COLORS, LAYOUT} from '../theme';
+import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {BibleLayer} from '../BibleLayer';
+import {ContentStack} from '../ContentStack';
+import {MapImageLayer} from '../MapImageLayer';
+import {MAP_LAYOUT} from '../mapLayout';
+import {pushIn} from '../motion';
+import {ASSETS, COLORS} from '../theme';
 
-// VO: "Post-glacial sea level rise flooded that basin completely."
-export const SCENE_10_DURATION = 210; // 7.0s @ 30fps
+// VO: "This is the geographical reality."
+export const SCENE_10_DURATION = 90; // 3.0s @ 30fps
 
-const WATER_RISE_WINDOW = [0, 149] as const; // 2241-2390
-
-const VALLEY_WIDTH = 520;
-const FULL_MOUNTAINS = Array.from({length: MOUNTAIN_PEAK_COUNT}, () => 1);
-
-const labelStyle: React.CSSProperties = {
-	color: COLORS.mapLabel,
-	fontFamily: 'sans-serif',
-	fontSize: 26,
-	fontWeight: 700,
-	letterSpacing: 2,
-	textAlign: 'center',
-};
+const DIM_WINDOW = [0, 60] as const; // continues from Scene 9's settled values down to 0
+const TEXT_SPRING_START = 20;
+const TEXT_SPRING_DURATION = 70;
 
 export const Scene10: React.FC = () => {
 	const frame = useCurrentFrame();
+	const {fps} = useVideoConfig();
 
-	const waterTopInset = interpolate(frame, WATER_RISE_WINDOW, [100, 0], {
+	const contentScale = pushIn(frame, SCENE_10_DURATION);
+	const dimOpacity = interpolate(frame, DIM_WINDOW, [0.15, 0], {
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',
 	});
+	const basinOpacity = interpolate(frame, DIM_WINDOW, [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
-	const height = VALLEY_WIDTH * (600 / 334);
+	const textLocal = frame - TEXT_SPRING_START;
+	const textSpring =
+		textLocal < 0
+			? 0
+			: spring({frame: textLocal, fps, config: {damping: 11, stiffness: 120, mass: 0.8}, durationInFrames: TEXT_SPRING_DURATION});
+	const textScale = interpolate(textSpring, [0, 1], [0.7, 1]);
+	const textOpacity = interpolate(textLocal, [0, 15], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
 	return (
 		<AbsoluteFill>
-			<AbsoluteFill style={{top: LAYOUT.bibleTop, alignItems: 'center'}}>
-				<Img src={ASSETS.bible} style={{width: LAYOUT.bibleWidth}} />
-			</AbsoluteFill>
+			<BibleLayer frame={frame} fps={fps} />
+			<ContentStack scale={contentScale}>
+				<MapImageLayer src={ASSETS.mapBase} {...MAP_LAYOUT.base} opacity={dimOpacity} />
+				<MapImageLayer src={ASSETS.riverEuphrates} {...MAP_LAYOUT.euphrates} opacity={dimOpacity} />
+				<MapImageLayer src={ASSETS.riverTigris} {...MAP_LAYOUT.tigris} opacity={dimOpacity} />
+				<MapImageLayer src={ASSETS.riverPishon} {...MAP_LAYOUT.pishon} opacity={dimOpacity} />
+				<MapImageLayer src={ASSETS.riverGihon} {...MAP_LAYOUT.gihon} opacity={dimOpacity} />
+				<MapImageLayer src={ASSETS.highlightGulfBasin} {...MAP_LAYOUT.gulfBasin} opacity={basinOpacity} glow={basinOpacity} />
+			</ContentStack>
 
-			<AbsoluteFill style={{top: LAYOUT.contentTop, alignItems: 'center'}}>
-				<div style={{position: 'relative', width: VALLEY_WIDTH, height}}>
-					<Img src={ASSETS.dryValley} style={{width: VALLEY_WIDTH}} />
-					<RiverOverlay width={VALLEY_WIDTH} opacity={1} />
-					<div style={{position: 'absolute', top: 0, left: 0, width: '100%'}}>
-						<MountainRange edge="top" progress={FULL_MOUNTAINS} />
+			<AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
+				<div
+					style={{
+						opacity: textOpacity,
+						transform: `scale(${textScale})`,
+						background: 'rgba(6, 16, 32, 0.55)',
+						padding: '28px 40px',
+						borderRadius: 12,
+						border: `2px solid ${COLORS.stroke}`,
+					}}
+				>
+					<div style={{color: 'white', fontFamily: 'sans-serif', fontWeight: 700, fontSize: 58, letterSpacing: 3, textAlign: 'center'}}>
+						7,500 YEARS AGO
 					</div>
-					<div style={{position: 'absolute', bottom: 0, left: 0, width: '100%'}}>
-						<MountainRange edge="bottom" progress={FULL_MOUNTAINS} />
-					</div>
-					<div style={{position: 'absolute', top: 14, left: 0, width: '100%', ...labelStyle}}>TURKEY</div>
-					<div style={{position: 'absolute', bottom: 14, left: 0, width: '100%', ...labelStyle}}>
-						ARABIAN PENINSULA
-					</div>
-
-					<Img
-						src={ASSETS.waterTexture}
-						style={{
-							position: 'absolute',
-							top: 0,
-							left: 0,
-							width: VALLEY_WIDTH,
-							clipPath: `inset(${waterTopInset}% 0 0 0)`,
-						}}
-					/>
 				</div>
 			</AbsoluteFill>
 		</AbsoluteFill>
