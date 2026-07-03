@@ -1,0 +1,67 @@
+import {AbsoluteFill, Img, Sequence} from 'remotion';
+import {Scene1, SCENE_1_DURATION} from './scenes/Scene1';
+import {Scene2, SCENE_2_DURATION} from './scenes/Scene2';
+import {Scene3, SCENE_3_DURATION} from './scenes/Scene3';
+import {Scene4, SCENE_4_DURATION} from './scenes/Scene4';
+import {Scene5, SCENE_5_DURATION} from './scenes/Scene5';
+import {Scene6, SCENE_6_DURATION} from './scenes/Scene6';
+import {Scene7, SCENE_7_DURATION} from './scenes/Scene7';
+import {Scene8, SCENE_8_DURATION} from './scenes/Scene8';
+import {Scene9, SCENE_9_DURATION} from './scenes/Scene9';
+import {Scene10, SCENE_10_DURATION} from './scenes/Scene10';
+import {Scene11, SCENE_11_DURATION} from './scenes/Scene11';
+import {Scene12, SCENE_12_DURATION} from './scenes/Scene12';
+import {Scene13, SCENE_13_DURATION} from './scenes/Scene13';
+import {Scene14, SCENE_14_DURATION} from './scenes/Scene14';
+import {Scene15, SCENE_15_DURATION} from './scenes/Scene15';
+import {Scene16, SCENE_16_DURATION} from './scenes/Scene16';
+import {Scene17, SCENE_17_DURATION} from './scenes/Scene17';
+import {Scene18, SCENE_18_DURATION} from './scenes/Scene18';
+import {Scene19, SCENE_19_DURATION} from './scenes/Scene19';
+import {Scene20, SCENE_20_DURATION} from './scenes/Scene20';
+import {Scene21, SCENE_21_DURATION} from './scenes/Scene21';
+import {ASSETS} from './theme';
+
+const scenes = [
+	{Component: Scene1, duration: SCENE_1_DURATION, name: 'Scene 1'},
+	{Component: Scene2, duration: SCENE_2_DURATION, name: 'Scene 2'},
+	{Component: Scene3, duration: SCENE_3_DURATION, name: 'Scene 3'},
+	{Component: Scene4, duration: SCENE_4_DURATION, name: 'Scene 4'},
+	{Component: Scene5, duration: SCENE_5_DURATION, name: 'Scene 5'},
+	{Component: Scene6, duration: SCENE_6_DURATION, name: 'Scene 6'},
+	{Component: Scene7, duration: SCENE_7_DURATION, name: 'Scene 7'},
+	{Component: Scene8, duration: SCENE_8_DURATION, name: 'Scene 8'},
+	{Component: Scene9, duration: SCENE_9_DURATION, name: 'Scene 9'},
+	{Component: Scene10, duration: SCENE_10_DURATION, name: 'Scene 10'},
+	{Component: Scene11, duration: SCENE_11_DURATION, name: 'Scene 11'},
+	{Component: Scene12, duration: SCENE_12_DURATION, name: 'Scene 12'},
+	{Component: Scene13, duration: SCENE_13_DURATION, name: 'Scene 13'},
+	{Component: Scene14, duration: SCENE_14_DURATION, name: 'Scene 14'},
+	{Component: Scene15, duration: SCENE_15_DURATION, name: 'Scene 15'},
+	{Component: Scene16, duration: SCENE_16_DURATION, name: 'Scene 16'},
+	{Component: Scene17, duration: SCENE_17_DURATION, name: 'Scene 17'},
+	{Component: Scene18, duration: SCENE_18_DURATION, name: 'Scene 18'},
+	{Component: Scene19, duration: SCENE_19_DURATION, name: 'Scene 19'},
+	{Component: Scene20, duration: SCENE_20_DURATION, name: 'Scene 20'},
+	{Component: Scene21, duration: SCENE_21_DURATION, name: 'Scene 21'},
+] as const;
+
+export const RedSea: React.FC = () => {
+	let from = 0;
+
+	return (
+		<AbsoluteFill>
+			<Img src={ASSETS.background} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+
+			{scenes.map(({Component, duration, name}) => {
+				const sequence = (
+					<Sequence key={name} from={from} durationInFrames={duration} name={name}>
+						<Component />
+					</Sequence>
+				);
+				from += duration;
+				return sequence;
+			})}
+		</AbsoluteFill>
+	);
+};
