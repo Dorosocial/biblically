@@ -1,4 +1,4 @@
-import {AbsoluteFill, Sequence} from 'remotion';
+import {AbsoluteFill, Img, Sequence} from 'remotion';
 import {Scene1, SCENE_1_DURATION} from './scenes/Scene1';
 import {Scene2, SCENE_2_DURATION} from './scenes/Scene2';
 import {Scene3, SCENE_3_DURATION} from './scenes/Scene3';
@@ -20,6 +20,7 @@ import {Scene18, SCENE_18_DURATION} from './scenes/Scene18';
 import {Scene19, SCENE_19_DURATION} from './scenes/Scene19';
 import {Scene20, SCENE_20_DURATION} from './scenes/Scene20';
 import {Scene21, SCENE_21_DURATION} from './scenes/Scene21';
+import {ASSETS} from './theme';
 
 const scenes = [
 	{Component: Scene1, duration: SCENE_1_DURATION, name: 'Scene 1'},
@@ -49,7 +50,9 @@ export const RedSea: React.FC = () => {
 	let from = 0;
 
 	return (
-		<AbsoluteFill style={{backgroundColor: '#FFFFFF'}}>
+		<AbsoluteFill>
+			<Img src={ASSETS.background} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+
 			{scenes.map(({Component, duration, name}) => {
 				const sequence = (
 					<Sequence key={name} from={from} durationInFrames={duration} name={name}>

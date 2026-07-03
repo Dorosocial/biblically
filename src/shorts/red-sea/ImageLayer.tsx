@@ -14,7 +14,7 @@ type ImageLayerProps = {
 	offsetX?: number;
 	offsetY?: number;
 	rotate?: number;
-	/** 0-1+ highlight intensity: steel-blue glow bloom around the cutout's stroke. */
+	/** 0-1+ highlight intensity: silver glow bloom around the cutout's stroke. */
 	glow?: number;
 	/** Reveal the image bottom-up (e.g. reeds "rising"), 0 = hidden, 1 = fully shown. */
 	riseReveal?: number;
@@ -22,9 +22,7 @@ type ImageLayerProps = {
 
 // A silver-stroke image cutout. When `left`/`top` are given it's absolutely
 // positioned inside a MapStack; otherwise it's a plain sized flex child of
-// Stage, centering naturally as part of the scene's group. The `glow` uses
-// silverDeep rather than the pale stroke silver — a light bloom would all
-// but disappear against the white page.
+// Stage, centering naturally as part of the scene's group.
 export const ImageLayer: React.FC<ImageLayerProps> = ({
 	src,
 	width,
@@ -55,7 +53,7 @@ export const ImageLayer: React.FC<ImageLayerProps> = ({
 				opacity,
 				transform: `${anchorTranslate}translate(${offsetX}px, ${offsetY}px) rotate(${rotate}deg) scale(${scale})`,
 				clipPath: clip,
-				filter: glow > 0 ? `drop-shadow(0 0 ${glowRadius}px rgba(110,136,148,${glowAlpha}))` : undefined,
+				filter: glow > 0 ? `drop-shadow(0 0 ${glowRadius}px rgba(184,196,204,${glowAlpha}))` : undefined,
 			}}
 		/>
 	);
