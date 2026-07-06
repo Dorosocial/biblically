@@ -105,7 +105,7 @@ export const WhipFlashOut: React.FC<{
 }> = ({ frame, totalFrames, frames = 5 }) => {
   const framesFromEnd = totalFrames - frame;
   if (framesFromEnd > frames || framesFromEnd < 0) return null;
-  const opacity = interpolate(framesFromEnd, [frames, 0], [0, 0.9], {
+  const opacity = interpolate(framesFromEnd, [0, frames], [0.9, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
