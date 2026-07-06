@@ -1,63 +1,44 @@
 import React from "react";
-import { AbsoluteFill, Sequence } from "remotion";
-import { Act1 } from "./acts/Act1";
-import { Act2 } from "./acts/Act2";
-import { Act3 } from "./acts/Act3";
-import { Act4 } from "./acts/Act4";
-import { AnimatedImage } from "./components/AnimatedImage";
-import { DURATION_IN_FRAMES, IMG } from "./constants";
+import { AbsoluteFill, Img, Sequence } from "remotion";
+import { StaticFrame } from "./components/StaticFrame";
+import { IMG } from "./constants";
 
 /**
  * Segment 1 — Cold Open: The Widow at Zarephath (1 Kings 17)
- * 0:00-2:35, 4650 frames @ 30fps, 1920x1080.
  *
- * we1-background.jpeg is a plain-white plate that fills the frame for the
- * entire segment. All 18 other images are transparent silhouettes that
- * composite on top of it and on top of each other, organized into four
- * "acts" (see acts/Act1-4.tsx) that map directly onto the 48 scripted
- * beats. Every layer carries continuous micro-motion (see motion.ts) so
- * nothing is ever fully static, even during held beats.
+ * REBUILD IN PROGRESS. Per the corrected camera-language approach, static
+ * holds are the default; motion is earned, not automatic. Only beat 1 is
+ * implemented so far, as a test of the cut mechanism itself — the
+ * remaining 47 beats are intentionally not yet built, pending sign-off
+ * that this hard-cut approach actually renders as a real discontinuity.
+ *
+ * Beat 1 — we1-widow-gate-scene.png, frames 0-180:
+ *   0-89:   WIDE — full establishing shot, static hold.
+ *   90-179: HARD PUNCH-IN — a real cut (new Sequence, new fixed
+ *           transform) to a tighter crop on her figure. Nothing tweens
+ *           between the two: frame 89 and frame 90 are rendered by two
+ *           entirely separate StaticFrame instances.
  */
 export const Segment1ColdOpen: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#ffffff" }}>
-      {/* we1-statistics-fade.png ships with a genuinely low alpha channel
-          (by design — it's meant to look "faded"), which leaves it nearly
-          invisible against the white plate. brightness/contrast filters
-          don't touch alpha, so this SVG filter remaps the alpha channel
-          directly; referenced via `filter: url(#boost-low-alpha)`. */}
-      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
-        <defs>
-          <filter id="boost-low-alpha">
-            <feComponentTransfer>
-              <feFuncA type="linear" slope={6} intercept={0} />
-            </feComponentTransfer>
-          </filter>
-        </defs>
-      </svg>
-      <AnimatedImage
+      <Img
         src={IMG.background}
-        name="background-plate"
-        durationInFrames={DURATION_IN_FRAMES}
-        motion={{
-          scale: { amount: 0.006, speed: 0.012 },
-          drift: { ampX: 2, ampY: 1.5, speedX: 0.008, speedY: 0.01 },
-        }}
-        style={{ objectFit: "cover" }}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
 
-      <Sequence from={0} durationInFrames={1080} name="Act 1 — Gate scene through flour jar (beats 1-14)">
-        <Act1 />
+      <Sequence from={0} durationInFrames={90} name="Beat 1a — WIDE (establishing)">
+        <StaticFrame src={IMG.widowGateScene} transform="none" />
       </Sequence>
-      <Sequence from={1080} durationInFrames={960} name="Act 2 — Widow alone through 1 Kings 17 (beats 15-26)">
-        <Act2 />
+
+      <Sequence from={90} durationInFrames={90} name="Beat 1b — HARD PUNCH-IN">
+        <StaticFrame
+          src={IMG.widowGateScene}
+          transform="scale(1.8) translateY(-10%)"
+        />
       </Sequence>
-      <Sequence from={2040} durationInFrames={1500} name="Act 3 — Miracle jar through ghost dissolve (beats 27-39)">
-        <Act3 />
-      </Sequence>
-      <Sequence from={3540} durationInFrames={1110} name="Act 4 — Vignette through fade to black (beats 40-48)">
-        <Act4 />
-      </Sequence>
+
+      {/* Beats 2-48 intentionally not yet built. */}
     </AbsoluteFill>
   );
 };
