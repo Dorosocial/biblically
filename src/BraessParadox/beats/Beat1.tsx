@@ -6,8 +6,8 @@ import {BEATS} from '../constants';
 import {SHOTS} from '../shots';
 import {ROUTE_LEFT, ROUTE_RIGHT} from '../geometry';
 
-// Beat 1 (0-90): wide establishing shot, static hold, two roads with even
-// stable flow.
+// Beat 1 (0-270, 0:00-0:09): wide establishing shot, static hold, two roads
+// with even stable flow.
 export const Beat1: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat1.duration;
@@ -25,7 +25,7 @@ export const Beat1: React.FC = () => {
       <Caption
         frame={frame}
         duration={duration}
-        text="A city has two roads from A to B. Traffic is bad, but stable — everyone splits evenly between them."
+        text="A city has two roads from A to B. Traffic is bad but stable and everyone splits evenly between them."
       />
     </>
   );

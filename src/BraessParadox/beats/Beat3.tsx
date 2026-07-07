@@ -11,8 +11,8 @@ import {
   ROUTE_MIX_VIA_M2_FIRST,
 } from '../geometry';
 
-// Beat 3 (180-270): HARD PUNCH-IN onto the new road. A first wave of cars
-// diverts onto it, visibly faster than the two original roads.
+// Beat 3 (480-690, 0:16-0:23): HARD PUNCH-IN onto the new road. A first
+// wave of cars diverts onto it, visibly faster than the two original roads.
 export const Beat3: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat3.duration;
@@ -35,7 +35,7 @@ export const Beat3: React.FC = () => {
       <Caption
         frame={frame}
         duration={duration}
-        text="It opens. And at first, it looks like a win — drivers save time using it."
+        text="So it opens and at first it looks like a win. Drivers save time using it. But every driver"
       />
     </>
   );

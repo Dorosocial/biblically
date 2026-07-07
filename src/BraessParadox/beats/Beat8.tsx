@@ -1,34 +1,39 @@
 import React from 'react';
-import {useCurrentFrame, interpolate, Easing} from 'remotion';
-import {BarGraph} from '../BarGraph';
+import {useCurrentFrame, interpolate} from 'remotion';
+import {NetworkScene} from '../NetworkScene';
 import {Caption} from '../Caption';
+import {TitleCard} from '../TitleCard';
 import {BEATS} from '../constants';
+import {SHOTS} from '../shots';
+import {ROUTE_LEFT, ROUTE_RIGHT} from '../geometry';
 
-// Beat 8 (810-960): HARD CUT to a split-screen bar graph. Bars grow in on
-// entry.
+// Beat 8 (1650-1890, 0:55-1:03): HARD CUT back to the original two-road
+// map. The shortcut fades out (removed), even flow is restored. The title
+// already faded in during beat 7, so it just holds here through the end.
 export const Beat8: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat8.duration;
-  const ease = Easing.out(Easing.cubic);
-  const beforeGrow = interpolate(frame, [10, 46], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: ease,
-  });
-  const afterGrow = interpolate(frame, [18, 62], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: ease,
-  });
+  const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
+  const shortcutOpacity = interpolate(frame, [0, 24], [0.55, 0], clampOpts);
 
   return (
     <>
-      <BarGraph beforeGrow={beforeGrow} afterGrow={afterGrow} />
+      <NetworkScene
+        frame={frame}
+        shot={SHOTS.wide}
+        showShortcut={shortcutOpacity > 0.001}
+        shortcutOpacity={shortcutOpacity}
+        streams={[
+          {route: ROUTE_LEFT, count: 6, speed: 0.0055},
+          {route: ROUTE_RIGHT, count: 6, speed: 0.0055, phase: 0.5},
+        ]}
+      />
       <Caption
         frame={frame}
         duration={duration}
-        text="Every driver made the locally smart choice. The result was a slower city for everyone."
+        text="Seoul and Stuttgart. Some cities have actually closed roads on purpose and traffic got better."
       />
+      <TitleCard opacity={1} />
     </>
   );
 };

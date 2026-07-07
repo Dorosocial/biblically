@@ -6,9 +6,9 @@ import {BEATS} from '../constants';
 import {SHOTS} from '../shots';
 import {ROUTE_LEFT, ROUTE_RIGHT} from '../geometry';
 
-// Beat 2 (90-180): same wide framing continues. The shortcut draws itself
-// in via stroke progress 0 -> 1 across the whole beat, gaining a glow as it
-// completes. Traffic hasn't discovered it yet.
+// Beat 2 (270-480, 0:09-0:16): same wide framing continues. The shortcut
+// draws itself in via stroke progress 0 -> 1 across the whole beat, gaining
+// a glow as it completes. Traffic hasn't discovered it yet.
 export const Beat2: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat2.duration;
@@ -34,7 +34,7 @@ export const Beat2: React.FC = () => {
       <Caption
         frame={frame}
         duration={duration}
-        text="So the city builds a brand new road, connecting the two — a shortcut, meant to fix everything."
+        text="So the city builds a brand new road connecting the two. A shortcut meant to fix everything."
       />
     </>
   );

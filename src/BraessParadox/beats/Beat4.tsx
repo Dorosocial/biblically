@@ -11,8 +11,10 @@ import {
   ROUTE_MIX_VIA_M2_FIRST,
 } from '../geometry';
 
-// Beat 4 (270-390): HARD PULL-BACK to the wide network view. Traffic from
-// both original roads visibly converges toward the shortcut.
+// Beat 4 (690-900, 0:23-0:30): HARD PULL-BACK to the wide network view.
+// Traffic from both original roads visibly converges toward the shortcut.
+// Congestion begins its continuous ramp here — it carries straight through
+// beats 5 and 6 under uninterrupted narration, with no silent gap.
 export const Beat4: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat4.duration;
@@ -55,7 +57,7 @@ export const Beat4: React.FC = () => {
       <Caption
         frame={frame}
         duration={duration}
-        text={'But every driver is thinking the same thing: "this new route is faster for me."'}
+        text="is thinking the same thing. This new route is faster for me. So everyone makes the same smart"
       />
     </>
   );

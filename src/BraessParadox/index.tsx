@@ -10,12 +10,12 @@ import {Beat5} from './beats/Beat5';
 import {Beat6} from './beats/Beat6';
 import {Beat7} from './beats/Beat7';
 import {Beat8} from './beats/Beat8';
-import {Beat9} from './beats/Beat9';
-import {Beat10} from './beats/Beat10';
 
 // "Why Building More Roads Slows Everyone Down" — Braess's Paradox short.
-// Each beat is a Sequence at its exact frame range from the brief; every
-// beat owns its own camera shot, congestion state, and caption.
+// Resynced to the real 63s/8-beat voiceover: each beat is a Sequence at its
+// exact frame range, and the narration is continuous throughout — there is
+// no silent beat. Congestion ramps continuously across beats 4-6 under
+// ongoing narration instead of during a music-only pause.
 export const BraessParadox: React.FC = () => {
   return (
     <AbsoluteFill style={{backgroundColor: COLORS.bg}}>
@@ -42,12 +42,6 @@ export const BraessParadox: React.FC = () => {
       </Sequence>
       <Sequence from={BEATS.beat8.from} durationInFrames={BEATS.beat8.duration}>
         <Beat8 />
-      </Sequence>
-      <Sequence from={BEATS.beat9.from} durationInFrames={BEATS.beat9.duration}>
-        <Beat9 />
-      </Sequence>
-      <Sequence from={BEATS.beat10.from} durationInFrames={BEATS.beat10.duration}>
-        <Beat10 />
       </Sequence>
     </AbsoluteFill>
   );
