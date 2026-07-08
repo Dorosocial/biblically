@@ -1,6 +1,7 @@
 import React from 'react';
 import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
 import {Scene} from '../Scene';
+import {Shirt} from '../Shirt';
 import {PriceTag} from '../PriceTag';
 import {Stamp} from '../Stamp';
 import {Caption} from '../Caption';
@@ -30,6 +31,7 @@ export const Beat1: React.FC = () => {
   return (
     <>
       <Scene>
+        <Shirt x={540} y={560} scale={tagScale} opacity={tagOpacity * 0.6} />
         <PriceTag amount="100" x={540} y={500} scale={tagScale} opacity={tagOpacity} />
         {frame >= STAMP1_START ? (
           <Stamp x={390} y={660} rotation={-18} scale={stamp1Scale} lines={['50%', 'OFF']} />
