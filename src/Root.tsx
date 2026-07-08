@@ -14,6 +14,13 @@ import {
   WIDTH as TUSI_WIDTH,
   HEIGHT as TUSI_HEIGHT,
 } from './TusiCouple/constants';
+import {PercentageTrap} from './PercentageTrap';
+import {
+  FPS as PT_FPS,
+  DURATION_IN_FRAMES as PT_DURATION,
+  WIDTH as PT_WIDTH,
+  HEIGHT as PT_HEIGHT,
+} from './PercentageTrap/constants';
 
 export const Root: React.FC = () => {
   return (
@@ -33,6 +40,14 @@ export const Root: React.FC = () => {
         fps={TUSI_FPS}
         width={TUSI_WIDTH}
         height={TUSI_HEIGHT}
+      />
+      <Composition
+        id="PercentageTrap"
+        component={PercentageTrap}
+        durationInFrames={PT_DURATION}
+        fps={PT_FPS}
+        width={PT_WIDTH}
+        height={PT_HEIGHT}
       />
     </>
   );
