@@ -28,6 +28,13 @@ import {
   WIDTH as TP_WIDTH,
   HEIGHT as TP_HEIGHT,
 } from './TrafficParadox/constants';
+import {BraessHook} from './BraessHook';
+import {
+  FPS as BH_FPS,
+  DURATION_IN_FRAMES as BH_DURATION,
+  WIDTH as BH_WIDTH,
+  HEIGHT as BH_HEIGHT,
+} from './BraessHook/constants';
 
 export const Root: React.FC = () => {
   return (
@@ -63,6 +70,14 @@ export const Root: React.FC = () => {
         fps={TP_FPS}
         width={TP_WIDTH}
         height={TP_HEIGHT}
+      />
+      <Composition
+        id="BraessHook"
+        component={BraessHook}
+        durationInFrames={BH_DURATION}
+        fps={BH_FPS}
+        width={BH_WIDTH}
+        height={BH_HEIGHT}
       />
     </>
   );
