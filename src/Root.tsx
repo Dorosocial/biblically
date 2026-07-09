@@ -21,6 +21,13 @@ import {
   WIDTH as PT_WIDTH,
   HEIGHT as PT_HEIGHT,
 } from './PercentageTrap/constants';
+import {TrafficParadox} from './TrafficParadox';
+import {
+  FPS as TP_FPS,
+  DURATION_IN_FRAMES as TP_DURATION,
+  WIDTH as TP_WIDTH,
+  HEIGHT as TP_HEIGHT,
+} from './TrafficParadox/constants';
 
 export const Root: React.FC = () => {
   return (
@@ -48,6 +55,14 @@ export const Root: React.FC = () => {
         fps={PT_FPS}
         width={PT_WIDTH}
         height={PT_HEIGHT}
+      />
+      <Composition
+        id="TrafficParadox"
+        component={TrafficParadox}
+        durationInFrames={TP_DURATION}
+        fps={TP_FPS}
+        width={TP_WIDTH}
+        height={TP_HEIGHT}
       />
     </>
   );
