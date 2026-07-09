@@ -1,41 +1,27 @@
 import React from 'react';
-import {useCurrentFrame, interpolate} from 'remotion';
-import {NetworkScene} from '../NetworkScene';
-import {RippleEffect} from '../RippleEffect';
+import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
+import {AbsoluteFill} from 'remotion';
+import {BigText} from '../BigText';
 import {Caption} from '../Caption';
+import {COLORS} from '../colors';
 import {BEATS} from '../constants';
-import {ROUTE_LEFT, ROUTE_RIGHT, ROUTE_MIX_VIA_M1_FIRST, ROUTE_MIX_VIA_M2_FIRST} from '../geometry';
 
-// Beat 12 (780-840, 27s-30s): fast pull-back to wide, then a ripple
-// spreads outward from the shortcut — the camera keeps pulling back to
-// track its growth.
+// Beat 12 (1050-1200, 0:35-0:40): "NOT A ROAD PROBLEM" — a clean fade/pop,
+// no shake.
 export const Beat12: React.FC = () => {
   const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
   const duration = BEATS.beat12.duration;
   const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
-  const pullback = interpolate(frame, [0, 15], [0, 1], clampOpts);
-  const rippleTrack = interpolate(frame, [15, duration], [0, 1], clampOpts);
-  const scale = 2.3 - 1.0 * pullback - 0.3 * rippleTrack;
-  const shot = {cx: 540, cy: 890, scale};
+  const popScale = spring({frame, fps, config: {damping: 14, mass: 0.6, stiffness: 170}});
+  const opacity = interpolate(frame, [0, 10], [0, 1], clampOpts);
 
   return (
     <>
-      <NetworkScene
-        frame={frame}
-        shot={shot}
-        showShortcut
-        showMidNodes
-        streams={[
-          {route: ROUTE_LEFT, count: 5, speed: 0.006},
-          {route: ROUTE_RIGHT, count: 5, speed: 0.006, phase: 0.5},
-          {route: ROUTE_MIX_VIA_M1_FIRST, count: 3, speed: 0.013, phase: 0.15, radius: 9},
-          {route: ROUTE_MIX_VIA_M2_FIRST, count: 3, speed: 0.013, phase: 0.6, radius: 9},
-        ]}
-      >
-        <RippleEffect cx={540} cy={890} frame={frame} />
-      </NetworkScene>
-      <Caption frame={frame} duration={duration} text="and save time. But then, everyone notices." />
+      <AbsoluteFill style={{backgroundColor: COLORS.bg}} />
+      <BigText lines={[{text: 'NOT A ROAD PROBLEM', opacity, scale: popScale, color: COLORS.bone, fontSize: 66}]} />
+      <Caption frame={frame} duration={duration} text="The problem isn't that there aren't enough roads." />
     </>
   );
 };

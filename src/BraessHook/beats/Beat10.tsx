@@ -1,40 +1,41 @@
 import React from 'react';
 import {useCurrentFrame, interpolate} from 'remotion';
-import {AbsoluteFill} from 'remotion';
-import {BigText} from '../BigText';
-import {Flash} from '../Flash';
+import {NetworkScene} from '../NetworkScene';
 import {Caption} from '../Caption';
-import {COLORS} from '../colors';
 import {BEATS} from '../constants';
-import {shakeOffset, flashOpacityAt} from '../shake';
+import {ROUTE_MIX_VIA_M1_FIRST, ROUTE_MIX_VIA_M2_FIRST} from '../geometry';
+import {easeOutCubic} from '../ease';
 
-const IMPACT_FRAME = 6;
+const START = {cx: 540, cy: 890, scale: 2.0};
+const WIDE = {cx: 540, cy: 910, scale: 1.15};
 
-// Beat 10 (570-660, 19s-22s): HARD CUT, tight punch-in on bold text
-// slamming in with screen-shake.
+// Beat 10 (900-990, 0:30-0:33): a single pull-back to wide reveals the
+// mass of drivers converging on the shortcut.
 export const Beat10: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat10.duration;
   const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
-  const line1Opacity = interpolate(frame, [0, 6], [0, 1], clampOpts);
-  const line2Opacity = interpolate(frame, [IMPACT_FRAME, IMPACT_FRAME + 8], [0, 1], clampOpts);
-  const pulseScale = 1 + 0.08 * Math.sin(frame / 6);
-  const shake = shakeOffset(frame, IMPACT_FRAME, 18, 12);
-  const flash = flashOpacityAt(frame, IMPACT_FRAME, 0.5, 6);
+  const t = easeOutCubic(interpolate(frame, [0, duration], [0, 1], clampOpts));
+  const shot = {
+    cx: START.cx + (WIDE.cx - START.cx) * t,
+    cy: START.cy + (WIDE.cy - START.cy) * t,
+    scale: START.scale + (WIDE.scale - START.scale) * t,
+  };
 
   return (
     <>
-      <AbsoluteFill style={{backgroundColor: COLORS.bg}} />
-      <BigText
-        shake={shake}
-        lines={[
-          {text: 'MORE ROADS', opacity: line1Opacity, color: COLORS.bone, fontSize: 78},
-          {text: '= LESS TRAFFIC?', opacity: line2Opacity, color: COLORS.pink, fontSize: 78, scale: pulseScale, glow: true},
+      <NetworkScene
+        frame={frame}
+        shot={shot}
+        showShortcut
+        showMidNodes
+        streams={[
+          {route: ROUTE_MIX_VIA_M1_FIRST, count: 10, speed: 0.011, phase: 0.15, radius: 9},
+          {route: ROUTE_MIX_VIA_M2_FIRST, count: 10, speed: 0.011, phase: 0.6, radius: 9},
         ]}
       />
-      <Flash opacity={flash} />
-      <Caption frame={frame} duration={duration} text="More roads should mean less traffic, right?" />
+      <Caption frame={frame} duration={duration} text="Almost every driver chooses the new, faster route." />
     </>
   );
 };

@@ -1,36 +1,29 @@
 import React from 'react';
 import {useCurrentFrame, interpolate} from 'remotion';
-import {NetworkScene} from '../NetworkScene';
+import {AbsoluteFill} from 'remotion';
+import {BigText} from '../BigText';
 import {Caption} from '../Caption';
+import {COLORS} from '../colors';
 import {BEATS} from '../constants';
-import {ROAD_LEFT, segmentPoint, ROUTE_MIX_VIA_M1_FIRST, ROUTE_MIX_VIA_M2_FIRST, ROUTE_LEFT, ROUTE_RIGHT} from '../geometry';
 
-// Beat 13 (840-900, 30s-32s): the camera whip-pans across road_left,
-// following the mass of dots beginning to turn toward the shortcut.
+// Beat 13 (1200-1290, 0:40-0:43): "A CHOICE PROBLEM" — a calm punch-in.
 export const Beat13: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat13.duration;
   const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
-  const t = interpolate(frame, [0, duration], [0.2, 0.52], clampOpts);
-  const pt = segmentPoint(ROAD_LEFT, t);
-  const shot = {cx: pt.x, cy: pt.y, scale: 1.7};
+  const scale = interpolate(frame, [0, 16], [0.85, 1], clampOpts);
+  const opacity = interpolate(frame, [0, 10], [0, 1], clampOpts);
 
   return (
     <>
-      <NetworkScene
+      <AbsoluteFill style={{backgroundColor: COLORS.bg}} />
+      <BigText lines={[{text: 'A CHOICE PROBLEM', opacity, scale, color: COLORS.pink, fontSize: 66, glow: true}]} />
+      <Caption
         frame={frame}
-        shot={shot}
-        showShortcut
-        showMidNodes
-        streams={[
-          {route: ROUTE_LEFT, count: 5, speed: 0.006},
-          {route: ROUTE_RIGHT, count: 5, speed: 0.006, phase: 0.5},
-          {route: ROUTE_MIX_VIA_M1_FIRST, count: 6, speed: 0.012, phase: 0.15, radius: 9},
-          {route: ROUTE_MIX_VIA_M2_FIRST, count: 6, speed: 0.012, phase: 0.6, radius: 9},
-        ]}
+        duration={duration}
+        text="is that everyone is making the same logical choice."
       />
-      <Caption frame={frame} duration={duration} text="Soon, almost every driver" />
     </>
   );
 };

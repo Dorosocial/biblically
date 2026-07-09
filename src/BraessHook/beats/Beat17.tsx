@@ -1,68 +1,43 @@
 import React from 'react';
-import {useCurrentFrame, interpolate} from 'remotion';
-import {NetworkScene} from '../NetworkScene';
-import {DecisionArrow} from '../DecisionArrow';
+import {useCurrentFrame} from 'remotion';
+import {AbsoluteFill} from 'remotion';
+import {CheckoutScene, LANE_X} from '../CheckoutScene';
 import {Caption} from '../Caption';
-import {BEATS} from '../constants';
-import {ROUTE_MIX_VIA_M1_FIRST, ROUTE_MIX_VIA_M2_FIRST} from '../geometry';
+import {COLORS} from '../colors';
+import {WIDTH, HEIGHT, BEATS} from '../constants';
 
-const HOLD = 9; // ~0.3s per driver at 30fps
-const TARGETS = [
-  {t: 0.15, route: ROUTE_MIX_VIA_M1_FIRST, rotation: -20},
-  {t: 0.15, route: ROUTE_MIX_VIA_M2_FIRST, rotation: 20},
-  {t: 0.4, route: ROUTE_MIX_VIA_M1_FIRST, rotation: -8},
-  {t: 0.4, route: ROUTE_MIX_VIA_M2_FIRST, rotation: 8},
-];
-const SNAP_END = TARGETS.length * HOLD;
+const EXPRESS_X = LANE_X[2];
+const SHOT = {cx: EXPRESS_X, cy: 900, scale: 1.6};
 
-// Beat 17 (1110-1230, 40s-44s): the camera punches in on several
-// individual drivers in rapid succession, each showing the same
-// decision-arrow, then pulls back to reveal the pattern.
+// Beat 17 (1830-1860, 1:01-1:02): a static hold on the now-jammed express
+// lane, red highlight.
 export const Beat17: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat17.duration;
-  const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
-  const activeIndex = Math.min(TARGETS.length - 1, Math.floor(frame / HOLD));
-  const target = TARGETS[activeIndex];
-  const targetPt = target.route(target.t);
-
-  const pullback = interpolate(frame, [SNAP_END, SNAP_END + 30], [0, 1], clampOpts);
-  const shot =
-    frame < SNAP_END
-      ? {cx: targetPt.x, cy: targetPt.y, scale: 2.7}
-      : {
-          cx: targetPt.x * (1 - pullback) + 540 * pullback,
-          cy: targetPt.y * (1 - pullback) + 910 * pullback,
-          scale: 2.7 - 1.7 * pullback,
-        };
+  const tx = WIDTH / 2 - SHOT.cx * SHOT.scale;
+  const ty = HEIGHT / 2 - SHOT.cy * SHOT.scale;
 
   return (
     <>
-      <NetworkScene
-        frame={frame}
-        shot={shot}
-        showShortcut
-        showMidNodes
-        streams={[
-          {route: ROUTE_MIX_VIA_M1_FIRST, count: 6, speed: 0.011, phase: 0.15, radius: 9},
-          {route: ROUTE_MIX_VIA_M2_FIRST, count: 6, speed: 0.011, phase: 0.6, radius: 9},
-        ]}
-      >
-        {frame < SNAP_END ? (
-          <DecisionArrow x={targetPt.x} y={targetPt.y} rotationDeg={target.rotation} scale={1.6} />
-        ) : (
-          TARGETS.map((tg, i) => {
-            const p = tg.route(tg.t);
-            return <DecisionArrow key={i} x={p.x} y={p.y} rotationDeg={tg.rotation} scale={1.1} opacity={0.9} />;
-          })
-        )}
-      </NetworkScene>
-      <Caption
-        frame={frame}
-        duration={duration}
-        text="The problem is that everyone is making the same logical choice."
-      />
+      <AbsoluteFill style={{backgroundColor: COLORS.bg}}>
+        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width={WIDTH} height={HEIGHT} style={{position: 'absolute', top: 0, left: 0}}>
+          <g transform={`translate(${tx} ${ty}) scale(${SHOT.scale})`}>
+            <CheckoutScene
+              expressLaneIndex={2}
+              signOpacity={1}
+              signColor={COLORS.red}
+              lanes={[
+                {queueCount: 1, congestion: 0},
+                {queueCount: 1, congestion: 0},
+                {queueCount: 7, congestion: 1},
+                {queueCount: 1, congestion: 0},
+              ]}
+            />
+          </g>
+        </svg>
+      </AbsoluteFill>
+      <Caption frame={frame} duration={duration} text="slowest lane." />
     </>
   );
 };

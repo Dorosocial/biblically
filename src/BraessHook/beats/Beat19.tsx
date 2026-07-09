@@ -1,66 +1,32 @@
 import React from 'react';
-import {useCurrentFrame, interpolate} from 'remotion';
+import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
 import {AbsoluteFill} from 'remotion';
-import {Camera} from '../Camera';
-import {CheckoutScene, LANE_X, LANE_TOP} from '../CheckoutScene';
+import {TitleCard} from '../TitleCard';
 import {Caption} from '../Caption';
 import {COLORS} from '../colors';
-import {WIDTH, HEIGHT, BEATS} from '../constants';
-import {lerpShot} from '../ease';
+import {BEATS} from '../constants';
 
-const WIDE = {cx: 540, cy: 900, scale: 1.3};
-const SIGN_TIGHT = {cx: LANE_X[2], cy: 545, scale: 2.6};
-
-const SNAP_START = 35;
-const SNAP_END = 50;
-const HOLD_END = 75;
-
-// Beat 19 (1350-1500, 45s-56s): HARD CUT to the store scene. The camera
-// snap-zooms onto the EXPRESS LANE sign the instant it's mentioned, then
-// pans across the other lanes.
+// Beat 19 (1980-2130, 1:06-1:11): the title card pops in cleanly — no
+// shake — with Zombie Math branding.
 export const Beat19: React.FC = () => {
   const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
   const duration = BEATS.beat19.duration;
   const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
-  const signOpacity = interpolate(frame, [24, SNAP_START], [0, 1], clampOpts);
-
-  let shot = WIDE;
-  if (frame >= SNAP_START && frame < HOLD_END) {
-    const t = interpolate(frame, [SNAP_START, SNAP_END], [0, 1], clampOpts);
-    shot = lerpShot(WIDE, SIGN_TIGHT, t);
-  } else if (frame >= HOLD_END) {
-    const panT = interpolate(frame, [HOLD_END, duration], [0, 1], clampOpts);
-    const panTarget = {cx: LANE_X[0], cy: 900, scale: 1.9};
-    shot = lerpShot(SIGN_TIGHT, panTarget, panT);
-  }
-
-  const tx = WIDTH / 2 - shot.cx * shot.scale;
-  const ty = HEIGHT / 2 - shot.cy * shot.scale;
+  const scale = spring({frame, fps, config: {damping: 14, mass: 0.6, stiffness: 170}});
+  const opacity = interpolate(frame, [0, 10], [0, 1], clampOpts);
+  const kickerOpacity = interpolate(frame, [16, 34], [0, 1], clampOpts);
+  const glowPulse = 0.8 + 0.3 * Math.sin(frame / 9);
 
   return (
     <>
-      <AbsoluteFill style={{backgroundColor: COLORS.bg}}>
-        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width={WIDTH} height={HEIGHT} style={{position: 'absolute', top: 0, left: 0}}>
-          <g transform={`translate(${tx} ${ty}) scale(${shot.scale})`}>
-            <CheckoutScene
-              expressLaneIndex={2}
-              signOpacity={signOpacity}
-              signColor={COLORS.green}
-              lanes={[
-                {queueCount: 2, congestion: 0},
-                {queueCount: 2, congestion: 0},
-                {queueCount: 2, congestion: 0},
-                {queueCount: 2, congestion: 0},
-              ]}
-            />
-          </g>
-        </svg>
-      </AbsoluteFill>
+      <AbsoluteFill style={{backgroundColor: COLORS.bg}} />
+      <TitleCard scale={scale} opacity={opacity} kickerOpacity={kickerOpacity} glowPulse={glowPulse} />
       <Caption
         frame={frame}
         duration={duration}
-        text="the shortcut connects to the original roads. It's like adding a faster check-out lane"
+        text="This is called Braess's Paradox. It's a mathematical phenomenon"
       />
     </>
   );

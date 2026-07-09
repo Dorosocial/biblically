@@ -25,15 +25,13 @@ import {Beat20} from './beats/Beat20';
 import {Beat21} from './beats/Beat21';
 import {Beat22} from './beats/Beat22';
 import {Beat23} from './beats/Beat23';
-import {Beat24} from './beats/Beat24';
-import {Beat25} from './beats/Beat25';
 
 // "Why Building More Roads Slows Everyone Down" — Braess's Paradox
-// (Zombie Math), retention-cut rebuild. 25 beats, each its own Sequence.
-// Unlike the calmer TrafficParadox composition, almost every beat here
-// computes its camera shot per-frame (dot-tracking, path-following,
-// whip-pans) rather than picking a static named shot, per the critical
-// retention rule: no static wide hold longer than ~2 seconds.
+// (Zombie Math), resynced to the real 84s VO transcript. 23 beats, each
+// its own Sequence. Camera intensity is deliberately restrained here: one
+// distinct camera move per beat (never stacked whip-pans/snap-zooms), and
+// screen-shake/impact-flash is reserved for Beat 7 alone — the shortcut
+// connecting is the only moment that earns it.
 export const BraessHook: React.FC = () => {
   return (
     <AbsoluteFill style={{backgroundColor: COLORS.bg}}>
@@ -60,8 +58,6 @@ export const BraessHook: React.FC = () => {
       <Sequence from={BEATS.beat21.from} durationInFrames={BEATS.beat21.duration}><Beat21 /></Sequence>
       <Sequence from={BEATS.beat22.from} durationInFrames={BEATS.beat22.duration}><Beat22 /></Sequence>
       <Sequence from={BEATS.beat23.from} durationInFrames={BEATS.beat23.duration}><Beat23 /></Sequence>
-      <Sequence from={BEATS.beat24.from} durationInFrames={BEATS.beat24.duration}><Beat24 /></Sequence>
-      <Sequence from={BEATS.beat25.from} durationInFrames={BEATS.beat25.duration}><Beat25 /></Sequence>
     </AbsoluteFill>
   );
 };

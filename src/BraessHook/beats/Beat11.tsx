@@ -1,39 +1,25 @@
 import React from 'react';
 import {useCurrentFrame, interpolate} from 'remotion';
-import {NetworkScene} from '../NetworkScene';
-import {TrackedDot} from '../CarStream';
+import {AbsoluteFill} from 'remotion';
+import {BigText} from '../BigText';
 import {Caption} from '../Caption';
+import {COLORS} from '../colors';
 import {BEATS} from '../constants';
-import {ROUTE_LEFT, ROUTE_RIGHT, ROUTE_MIX_VIA_M1_FIRST} from '../geometry';
-import {easeInOutCubic} from '../ease';
 
-// Beat 11 (660-780, 22s-27s): the camera FOLLOWS one specific car dot as
-// it discovers and turns onto the shortcut — tracking the exact turning
-// path, not a wide shot of it happening.
+// Beat 11 (990-1050, 0:33-0:35): a simple hard cut — no glitch, no shake
+// — just a brief tone-shift text flash.
 export const Beat11: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat11.duration;
   const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
-  const trackedT = easeInOutCubic(interpolate(frame, [0, duration], [0.04, 0.58], clampOpts));
-  const dotPos = ROUTE_MIX_VIA_M1_FIRST(trackedT);
-  const shot = {cx: dotPos.x, cy: dotPos.y, scale: 2.3};
+  const opacity = interpolate(frame, [0, 8, duration - 10, duration], [0, 1, 1, 0], clampOpts);
 
   return (
     <>
-      <NetworkScene
-        frame={frame}
-        shot={shot}
-        showShortcut
-        showMidNodes
-        streams={[
-          {route: ROUTE_LEFT, count: 6, speed: 0.006},
-          {route: ROUTE_RIGHT, count: 6, speed: 0.006, phase: 0.5},
-        ]}
-      >
-        <TrackedDot route={ROUTE_MIX_VIA_M1_FIRST} t={trackedT} radius={13} />
-      </NetworkScene>
-      <Caption frame={frame} duration={duration} text="At first it works, a few drivers discover the shortcut" />
+      <AbsoluteFill style={{backgroundColor: COLORS.bg}} />
+      <BigText lines={[{text: 'THINGS GET WEIRD', opacity, color: COLORS.pink, fontSize: 68, glow: true}]} />
+      <Caption frame={frame} duration={duration} text="And that's where things get weird." />
     </>
   );
 };

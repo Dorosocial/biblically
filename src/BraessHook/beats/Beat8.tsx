@@ -1,49 +1,54 @@
 import React from 'react';
-import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
+import {useCurrentFrame, interpolate} from 'remotion';
 import {NetworkScene} from '../NetworkScene';
-import {Lightbulb} from '../Lightbulb';
-import {Flash} from '../Flash';
+import {TrackedDot} from '../CarStream';
 import {Caption} from '../Caption';
 import {BEATS} from '../constants';
-import {ROUTE_LEFT, ROUTE_RIGHT} from '../geometry';
-import {shakeOffset, flashOpacityAt} from '../shake';
+import {ROUTE_LEFT, ROUTE_RIGHT, ROUTE_MIX_VIA_M1_FIRST} from '../geometry';
+import {COLORS} from '../colors';
+import {easeInOutCubic} from '../ease';
 
-const IMPACT_FRAME = 8;
+const TAG_START = 90;
 
-// Beat 8 (420-480, 14s-16s): extreme close-up on a lightbulb snapping in
-// with a flash/impact frame.
+// Beat 8 (660-810, 0:22-0:27): the camera follows ONE car dot as it
+// discovers and turns onto the shortcut; a "TIME SAVED" tag pops in
+// cleanly once it's through.
 export const Beat8: React.FC = () => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
   const duration = BEATS.beat8.duration;
   const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
-  const scale = interpolate(frame, [0, duration], [2.3, 2.7], clampOpts);
-  const shake = shakeOffset(frame, IMPACT_FRAME, 10, 10);
-  const shot = {cx: 540 + shake.x, cy: 890 + shake.y, scale};
+  const trackedT = easeInOutCubic(interpolate(frame, [0, duration], [0.05, 0.62], clampOpts));
+  const dotPos = ROUTE_MIX_VIA_M1_FIRST(trackedT);
+  const shot = {cx: dotPos.x, cy: dotPos.y, scale: 2.3};
 
-  const bulbScale = spring({
-    frame: Math.max(0, frame - IMPACT_FRAME),
-    fps,
-    config: {damping: 8, mass: 0.6, stiffness: 200},
-  });
-  const pulse = 0.5 + 0.5 * Math.sin(frame / 6);
-  const flash = flashOpacityAt(frame, IMPACT_FRAME, 0.5, 6);
+  const tagOpacity = interpolate(frame, [TAG_START, TAG_START + 12], [0, 1], clampOpts);
 
   return (
     <>
       <NetworkScene
         frame={frame}
         shot={shot}
+        showShortcut
+        showMidNodes
         streams={[
-          {route: ROUTE_LEFT, count: 8, speed: 0.006},
-          {route: ROUTE_RIGHT, count: 8, speed: 0.006, phase: 0.5},
+          {route: ROUTE_LEFT, count: 6, speed: 0.006},
+          {route: ROUTE_RIGHT, count: 6, speed: 0.006, phase: 0.5},
         ]}
       >
-        {frame >= IMPACT_FRAME ? <Lightbulb x={540} y={890} scale={bulbScale} pulse={pulse} /> : null}
+        <TrackedDot route={ROUTE_MIX_VIA_M1_FIRST} t={trackedT} radius={13} />
+        <g opacity={tagOpacity} transform={`translate(${dotPos.x} ${dotPos.y - 70})`}>
+          <rect x={-96} y={-34} width={192} height={56} rx={12} fill="none" stroke={COLORS.green} strokeWidth={4} />
+          <text x={0} y={0} fill={COLORS.green} fontSize={26} fontWeight={800} textAnchor="middle" dominantBaseline="central">
+            TIME SAVED
+          </text>
+        </g>
       </NetworkScene>
-      <Flash opacity={flash} />
-      <Caption frame={frame} duration={duration} text="So the city has an idea," />
+      <Caption
+        frame={frame}
+        duration={duration}
+        text="At first it works — a few drivers discover the shortcut and save time."
+      />
     </>
   );
 };

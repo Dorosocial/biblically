@@ -1,36 +1,38 @@
 import React from 'react';
-import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
-import {AbsoluteFill} from 'remotion';
-import {TitleCard} from '../TitleCard';
-import {Flash} from '../Flash';
+import {useCurrentFrame, interpolate} from 'remotion';
+import {NetworkScene} from '../NetworkScene';
 import {Caption} from '../Caption';
-import {COLORS} from '../colors';
 import {BEATS} from '../constants';
-import {shakeOffset, flashOpacityAt} from '../shake';
+import {ROUTE_LEFT, ROUTE_RIGHT, SHORTCUT, segmentPoint} from '../geometry';
 
-const IMPACT_FRAME = 0;
-
-// Beat 22 (1770-1860, 1:07-1:10): the title card slams in with a
-// camera-shake impact.
+// Beat 22 (2340-2430, 1:18-1:21): the camera follows the shortcut as it
+// begins to fade/erase — reverse of its draw-in.
 export const Beat22: React.FC = () => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
   const duration = BEATS.beat22.duration;
   const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
-  const scale = spring({frame, fps, config: {damping: 10, mass: 0.6, stiffness: 190}});
-  const opacity = interpolate(frame, [0, 6], [0, 1], clampOpts);
-  const kickerOpacity = interpolate(frame, [14, 30], [0, 1], clampOpts);
-  const glowPulse = 0.8 + 0.3 * Math.sin(frame / 9);
-  const shake = shakeOffset(frame, IMPACT_FRAME, 20, 14);
-  const flash = flashOpacityAt(frame, IMPACT_FRAME, 0.5, 8);
+  const eraseProgress = interpolate(frame, [0, duration], [1, 0.45], clampOpts);
+  const leadPt = segmentPoint(SHORTCUT, eraseProgress);
+  const congestion = interpolate(frame, [0, duration], [1, 0.5], clampOpts);
+  const shot = {cx: leadPt.x, cy: leadPt.y, scale: 2.4};
 
   return (
     <>
-      <AbsoluteFill style={{backgroundColor: COLORS.bg}} />
-      <TitleCard scale={scale} opacity={opacity} kickerOpacity={kickerOpacity} glowPulse={glowPulse} shake={shake} />
-      <Flash opacity={flash} />
-      <Caption frame={frame} duration={duration} text="This is called Braess's Paradox." />
+      <NetworkScene
+        frame={frame}
+        shot={shot}
+        showShortcut
+        shortcutProgress={eraseProgress}
+        shortcutCongestion={congestion}
+        leftCongestion={congestion}
+        rightCongestion={congestion}
+        streams={[
+          {route: ROUTE_LEFT, count: 9, speed: 0.006, congestion},
+          {route: ROUTE_RIGHT, count: 9, speed: 0.006, phase: 0.5, congestion},
+        ]}
+      />
+      <Caption frame={frame} duration={duration} text="Sometimes, removing a" />
     </>
   );
 };

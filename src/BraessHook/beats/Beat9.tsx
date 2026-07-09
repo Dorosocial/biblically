@@ -1,49 +1,43 @@
 import React from 'react';
-import {useCurrentFrame, interpolate} from 'remotion';
+import {useCurrentFrame} from 'remotion';
 import {NetworkScene} from '../NetworkScene';
-import {Flash} from '../Flash';
+import {RippleEffect} from '../RippleEffect';
 import {Caption} from '../Caption';
 import {BEATS} from '../constants';
-import {ROUTE_LEFT, ROUTE_RIGHT, SHORTCUT, segmentPoint} from '../geometry';
-import {shakeOffset, flashOpacityAt} from '../shake';
+import {
+  ROUTE_LEFT,
+  ROUTE_RIGHT,
+  ROUTE_MIX_VIA_M1_FIRST,
+  ROUTE_MIX_VIA_M2_FIRST,
+  NODE_M1,
+  NODE_M2,
+} from '../geometry';
 
-const DRAW_END = 68;
+const SHOT = {cx: (NODE_M1.x + NODE_M2.x) / 2, cy: (NODE_M1.y + NODE_M2.y) / 2, scale: 2.0};
 
-// Beat 9 (480-570, 16s-19s): the camera FOLLOWS the shortcut drawing
-// itself in — tracking the leading edge of the line as it draws — with a
-// hard impact/flash when it connects.
+// Beat 9 (810-900, 0:27-0:30): the camera holds steady, tracking a ripple
+// as it spreads outward from the shortcut.
 export const Beat9: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat9.duration;
-  const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
-
-  const drawProgress = interpolate(frame, [4, DRAW_END], [0, 1], clampOpts);
-  const leadPt = segmentPoint(SHORTCUT, drawProgress);
-  const shake = shakeOffset(frame, DRAW_END, 14, 12);
-
-  const pullback = interpolate(frame, [DRAW_END, duration], [0, 1], clampOpts);
-  const scale = 2.6 - 0.9 * pullback;
-  const cx = leadPt.x * (1 - pullback) + 540 * pullback + shake.x;
-  const cy = leadPt.y * (1 - pullback) + 890 * pullback + shake.y;
-  const shot = {cx, cy, scale};
-
-  const flash = flashOpacityAt(frame, DRAW_END, 0.55, 8);
 
   return (
     <>
       <NetworkScene
         frame={frame}
-        shot={shot}
+        shot={SHOT}
         showShortcut
-        shortcutProgress={drawProgress}
-        showMidNodes={drawProgress > 0.05}
+        showMidNodes
         streams={[
-          {route: ROUTE_LEFT, count: 8, speed: 0.006},
-          {route: ROUTE_RIGHT, count: 8, speed: 0.006, phase: 0.5},
+          {route: ROUTE_LEFT, count: 6, speed: 0.006},
+          {route: ROUTE_RIGHT, count: 6, speed: 0.006, phase: 0.5},
+          {route: ROUTE_MIX_VIA_M1_FIRST, count: 4, speed: 0.012, phase: 0.15, radius: 9},
+          {route: ROUTE_MIX_VIA_M2_FIRST, count: 4, speed: 0.012, phase: 0.6, radius: 9},
         ]}
-      />
-      <Flash opacity={flash} />
-      <Caption frame={frame} duration={duration} text="build a new shortcut." />
+      >
+        <RippleEffect cx={SHOT.cx} cy={SHOT.cy} frame={frame} />
+      </NetworkScene>
+      <Caption frame={frame} duration={duration} text="But then, everyone notices." />
     </>
   );
 };

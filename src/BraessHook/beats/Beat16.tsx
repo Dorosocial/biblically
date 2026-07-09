@@ -1,50 +1,73 @@
 import React from 'react';
 import {useCurrentFrame, interpolate} from 'remotion';
-import {NetworkScene} from '../NetworkScene';
-import {BigText} from '../BigText';
-import {Flash} from '../Flash';
+import {AbsoluteFill} from 'remotion';
+import {CheckoutScene, LANE_X, LANE_BOTTOM} from '../CheckoutScene';
 import {Caption} from '../Caption';
 import {COLORS} from '../colors';
-import {BEATS} from '../constants';
-import {ROUTE_MIX_VIA_M1_FIRST, ROUTE_MIX_VIA_M2_FIRST} from '../geometry';
-import {shakeOffset, flashOpacityAt} from '../shake';
+import {WIDTH, HEIGHT, BEATS} from '../constants';
 
-const TEXT_IMPACT = 34;
+const EXPRESS_X = LANE_X[2];
+const ARRIVE_FRAME = 160;
+const WIDE = {cx: 540, cy: 900, scale: 1.15};
+const TIGHT = {cx: EXPRESS_X, cy: 900, scale: 1.6};
 
-// Beat 16 (1020-1110, 37s-40s): camera pulls back to reveal all three
-// roads, "NOT A ROAD PROBLEM" slams in on top.
+const SHOPPER_STARTS = [
+  {x: LANE_X[0], startFrame: 10},
+  {x: LANE_X[1], startFrame: 24},
+  {x: LANE_X[3], startFrame: 18},
+];
+
+// Beat 16 (1560-1830, 0:52-1:01): cut to the store scene — one slow,
+// steady push toward the express lane as shoppers rush into it.
 export const Beat16: React.FC = () => {
   const frame = useCurrentFrame();
   const duration = BEATS.beat16.duration;
   const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
-  const pullback = interpolate(frame, [0, 22], [0, 1], clampOpts);
-  const drift = frame > 22 ? Math.sin((frame - 22) / 26) * 0.04 : 0;
-  const scale = (1.9 - 0.9 * pullback) * (1 + drift);
-  const shot = {cx: 540, cy: 910, scale};
+  const shopperY = LANE_BOTTOM - 200;
+  const movingShoppers = SHOPPER_STARTS.map((s) => {
+    const t = interpolate(frame, [s.startFrame, ARRIVE_FRAME], [0, 1], clampOpts);
+    return {x: s.x + (EXPRESS_X - s.x) * t, y: shopperY, color: COLORS.green};
+  });
 
-  const textOpacity = interpolate(frame, [TEXT_IMPACT, TEXT_IMPACT + 8], [0, 1], clampOpts);
-  const shake = shakeOffset(frame, TEXT_IMPACT, 16, 12);
-  const flash = flashOpacityAt(frame, TEXT_IMPACT, 0.45, 6);
+  const pushT = interpolate(frame, [0, duration], [0, 1], clampOpts);
+  const cx = WIDE.cx + (TIGHT.cx - WIDE.cx) * pushT;
+  const cy = WIDE.cy + (TIGHT.cy - WIDE.cy) * pushT;
+  const scale = WIDE.scale + (TIGHT.scale - WIDE.scale) * pushT;
+
+  const queueCount = Math.round(interpolate(frame, [ARRIVE_FRAME, duration], [2, 7], clampOpts));
+
+  const tx = WIDTH / 2 - cx * scale;
+  const ty = HEIGHT / 2 - cy * scale;
 
   return (
     <>
-      <NetworkScene
+      <AbsoluteFill style={{backgroundColor: COLORS.bg}}>
+        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width={WIDTH} height={HEIGHT} style={{position: 'absolute', top: 0, left: 0}}>
+          <g transform={`translate(${tx} ${ty}) scale(${scale})`}>
+            <CheckoutScene
+              expressLaneIndex={2}
+              signOpacity={1}
+              signColor={frame >= ARRIVE_FRAME ? COLORS.red : COLORS.green}
+              lanes={[
+                {queueCount: 1, congestion: 0},
+                {queueCount: 1, congestion: 0},
+                {
+                  queueCount: frame >= ARRIVE_FRAME ? queueCount : 2,
+                  congestion: frame >= ARRIVE_FRAME ? Math.min(1, (queueCount - 2) / 5) : 0,
+                },
+                {queueCount: 1, congestion: 0},
+              ]}
+              movingShoppers={frame < ARRIVE_FRAME ? movingShoppers : []}
+            />
+          </g>
+        </svg>
+      </AbsoluteFill>
+      <Caption
         frame={frame}
-        shot={shot}
-        showShortcut
-        showMidNodes
-        leftCongestion={0.15}
-        rightCongestion={0.15}
-        shortcutCongestion={0.15}
-        streams={[
-          {route: ROUTE_MIX_VIA_M1_FIRST, count: 9, speed: 0.011, phase: 0.15, radius: 9, congestion: 0.15},
-          {route: ROUTE_MIX_VIA_M2_FIRST, count: 9, speed: 0.011, phase: 0.6, radius: 9, congestion: 0.15},
-        ]}
+        duration={duration}
+        text="It's like adding a faster checkout lane at a store — only for everyone to rush into that one lane until it becomes the"
       />
-      <BigText shake={shake} lines={[{text: 'NOT A ROAD PROBLEM', opacity: textOpacity, color: COLORS.bone, fontSize: 62}]} top={420} />
-      <Flash opacity={flash} />
-      <Caption frame={frame} duration={duration} text="The problem isn't that there isn't enough roads." />
     </>
   );
 };
