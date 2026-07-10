@@ -35,6 +35,13 @@ import {
   WIDTH as BH_WIDTH,
   HEIGHT as BH_HEIGHT,
 } from './BraessHook/constants';
+import {TusiHook} from './TusiHook';
+import {
+  FPS as TH_FPS,
+  DURATION_IN_FRAMES as TH_DURATION,
+  WIDTH as TH_WIDTH,
+  HEIGHT as TH_HEIGHT,
+} from './TusiHook/constants';
 
 export const Root: React.FC = () => {
   return (
@@ -78,6 +85,14 @@ export const Root: React.FC = () => {
         fps={BH_FPS}
         width={BH_WIDTH}
         height={BH_HEIGHT}
+      />
+      <Composition
+        id="TusiHook"
+        component={TusiHook}
+        durationInFrames={TH_DURATION}
+        fps={TH_FPS}
+        width={TH_WIDTH}
+        height={TH_HEIGHT}
       />
     </>
   );
