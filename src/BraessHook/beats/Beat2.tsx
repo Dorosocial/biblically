@@ -1,39 +1,33 @@
 import React from 'react';
-import {useCurrentFrame, interpolate} from 'remotion';
+import {useCurrentFrame} from 'remotion';
 import {NetworkScene} from '../NetworkScene';
-import {Caption} from '../Caption';
-import {BEATS} from '../constants';
-import {ROUTE_LEFT, ROUTE_RIGHT, NODE_B} from '../geometry';
-import {easeOutCubic} from '../ease';
+import {PhraseCaption} from '../PhraseCaption';
+import {ROUTE_LEFT, ROUTE_RIGHT} from '../geometry';
 
-const WIDE = {cx: 540, cy: 910, scale: 1.05};
-const START = {cx: NODE_B.x, cy: NODE_B.y, scale: 3.4};
+const SHOT = {cx: 540, cy: 910, scale: 1.05};
 
-// Beat 2 (120-210, 0:04-0:07): a single pull-back reveals both roads,
-// dense but steady traffic flowing.
+const PHRASES = [
+  {at: 0, words: [{text: 'DRIVERS'}, {text: 'SPLIT'}]},
+  {at: 40, words: [{text: 'BETWEEN'}, {text: 'THE'}, {text: 'ROUTES', accent: true}]},
+  {at: 80, words: [{text: 'EVERYONE'}, {text: 'GETS'}, {text: 'THERE'}]},
+];
+
+// Beat 2 (180-300, 0:06-0:10): camera holds steady on the wide shot — no
+// move here, deliberately, so both roads read evenly.
 export const Beat2: React.FC = () => {
   const frame = useCurrentFrame();
-  const duration = BEATS.beat2.duration;
-  const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
-
-  const t = easeOutCubic(interpolate(frame, [0, duration], [0, 1], clampOpts));
-  const shot = {
-    cx: START.cx + (WIDE.cx - START.cx) * t,
-    cy: START.cy + (WIDE.cy - START.cy) * t,
-    scale: START.scale + (WIDE.scale - START.scale) * t,
-  };
 
   return (
     <>
       <NetworkScene
         frame={frame}
-        shot={shot}
+        shot={SHOT}
         streams={[
           {route: ROUTE_LEFT, count: 9, speed: 0.006},
           {route: ROUTE_RIGHT, count: 9, speed: 0.006, phase: 0.5},
         ]}
       />
-      <Caption frame={frame} duration={duration} text="Traffic is very heavy but predictable." />
+      <PhraseCaption frame={frame} phrases={PHRASES} />
     </>
   );
 };

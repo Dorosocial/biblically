@@ -4,6 +4,7 @@ export const COLORS = {
   amber: '#FFA500',
   red: '#E63946',
   pink: '#FF3EC9',
+  yellow: '#F5FF3D',
   bone: '#E8E4D8',
   boneDim: 'rgba(232,228,216,0.45)',
 };
