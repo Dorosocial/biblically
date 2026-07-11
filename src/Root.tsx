@@ -42,6 +42,13 @@ import {
   WIDTH as TH_WIDTH,
   HEIGHT as TH_HEIGHT,
 } from './TusiHook/constants';
+import {MovingSofa} from './MovingSofa';
+import {
+  FPS as MS_FPS,
+  DURATION_IN_FRAMES as MS_DURATION,
+  WIDTH as MS_WIDTH,
+  HEIGHT as MS_HEIGHT,
+} from './MovingSofa/constants';
 
 export const Root: React.FC = () => {
   return (
@@ -93,6 +100,14 @@ export const Root: React.FC = () => {
         fps={TH_FPS}
         width={TH_WIDTH}
         height={TH_HEIGHT}
+      />
+      <Composition
+        id="MovingSofa"
+        component={MovingSofa}
+        durationInFrames={MS_DURATION}
+        fps={MS_FPS}
+        width={MS_WIDTH}
+        height={MS_HEIGHT}
       />
     </>
   );
