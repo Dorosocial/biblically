@@ -49,6 +49,13 @@ import {
   WIDTH as MS_WIDTH,
   HEIGHT as MS_HEIGHT,
 } from './MovingSofa/constants';
+import {CountForever} from './CountForever';
+import {
+  FPS as CF_FPS,
+  DURATION_IN_FRAMES as CF_DURATION,
+  WIDTH as CF_WIDTH,
+  HEIGHT as CF_HEIGHT,
+} from './CountForever/constants';
 
 export const Root: React.FC = () => {
   return (
@@ -108,6 +115,14 @@ export const Root: React.FC = () => {
         fps={MS_FPS}
         width={MS_WIDTH}
         height={MS_HEIGHT}
+      />
+      <Composition
+        id="CountForever"
+        component={CountForever}
+        durationInFrames={CF_DURATION}
+        fps={CF_FPS}
+        width={CF_WIDTH}
+        height={CF_HEIGHT}
       />
     </>
   );
