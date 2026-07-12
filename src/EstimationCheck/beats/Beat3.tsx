@@ -3,7 +3,6 @@ import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
 import {Scene} from '../Scene';
 import {IconCard} from '../IconCard';
 import {BigText} from '../BigText';
-import {PhraseCaption} from '../PhraseCaption';
 import {COLORS} from '../colors';
 
 const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
@@ -26,20 +25,6 @@ const DocIcon: React.FC<{color: string}> = ({color}) => (
     <line x1={14} y1={32} x2={36} y2={32} stroke={color} strokeWidth={5} strokeLinecap="round" />
   </g>
 );
-
-const PHRASES = [
-  {at: 0, words: [{text: 'LINE'}, {text: 'BY'}, {text: 'LINE'}]},
-  {at: 30, words: [{text: 'THIS'}, {text: 'ACTUALLY'}, {text: 'WORKS'}]},
-  {at: 60, words: [{text: 'ON'}, {text: 'ALGEBRA'}]},
-  {at: 90, words: [{text: 'PERCENTAGES'}]},
-  {at: 115, words: [{text: 'WORD'}, {text: 'PROBLEMS'}]},
-  {at: 150, words: [{text: 'I'}, {text: 'MEAN'}, {text: 'ALMOST'}, {text: 'ANYTHING'}]},
-  {at: 185, words: [{text: 'WITH'}, {text: 'NUMBERS'}]},
-  {at: 215, words: [{text: 'ONE'}, {text: 'HABIT'}]},
-  {at: 245, words: [{text: 'UNLIMITED'}, {text: 'USE'}]},
-  {at: 270, words: [{text: 'ALWAYS'}, {text: 'ESTIMATE'}, {text: 'FIRST'}]},
-  {at: 290, words: [{text: 'SOLVE'}, {text: 'SECOND'}]},
-];
 
 // Beat 3 (600-900, 0:20-0:30): three subject cards (algebra, percentages,
 // word problems) pop in together, then each highlights and gets a green
@@ -108,7 +93,6 @@ export const Beat3: React.FC = () => {
           &#8734;
         </span>
       </div>
-      <PhraseCaption frame={frame} phrases={PHRASES} />
     </>
   );
 };

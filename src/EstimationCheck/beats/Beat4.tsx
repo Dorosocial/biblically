@@ -2,7 +2,6 @@ import React from 'react';
 import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
 import {AbsoluteFill} from 'remotion';
 import {Wordmark} from '../Wordmark';
-import {PhraseCaption} from '../PhraseCaption';
 import {COLORS} from '../colors';
 
 const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
@@ -12,8 +11,6 @@ const LINES = [
   {text: 'SOLVE SECOND.', color: COLORS.cyan, at: 15},
   {text: 'COMPARE.', color: COLORS.pink, at: 30},
 ];
-
-const PHRASES = [{at: 0, words: [{text: 'AND'}, {text: 'COMPARE'}]}];
 
 // Beat 4 (900-960, 0:30-0:32): the three-step mantra lands in rapid,
 // color-coded succession, then the Zombie Math wordmark settles in as
@@ -60,7 +57,6 @@ export const Beat4: React.FC = () => {
         })}
       </div>
       <Wordmark opacity={wordmarkOpacity} />
-      <PhraseCaption frame={frame} phrases={PHRASES} y={1260} />
     </>
   );
 };

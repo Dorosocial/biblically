@@ -2,7 +2,6 @@ import React from 'react';
 import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
 import {Scene} from '../Scene';
 import {Gauge} from '../Gauge';
-import {PhraseCaption} from '../PhraseCaption';
 import {COLORS} from '../colors';
 import {easeInOutCubic} from '../ease';
 
@@ -10,18 +9,6 @@ const PHASE_A_END = 70; // equation + question mark
 const PHASE_B_END = 140; // gauge at GUESSING
 const PHASE_C_END = 200; // "HOPE?" strike-through
 // PHASE_D: 200-300 -- gauge swings to METHOD + checkmark
-
-const PHRASES = [
-  {at: 0, words: [{text: 'YOU'}, {text: 'JUST'}, {text: 'SOLVED'}]},
-  {at: 30, words: [{text: 'A'}, {text: 'MATH'}, {text: 'PROBLEM'}]},
-  {at: 65, words: [{text: 'HOW'}, {text: 'DO'}, {text: 'YOU'}, {text: 'KNOW'}]},
-  {at: 100, words: [{text: 'YOUR'}, {text: 'ANSWER'}, {text: 'IS'}]},
-  {at: 130, words: [{text: 'ACTUALLY'}, {text: 'RIGHT?'}]},
-  {at: 165, words: [{text: 'MOST'}, {text: 'PEOPLE'}, {text: 'JUST'}, {text: 'HOPE'}]},
-  {at: 210, words: [{text: "THAT"}, {text: "THERE'S"}]},
-  {at: 235, words: [{text: 'AN'}, {text: 'ACTUAL'}, {text: 'METHOD'}]},
-  {at: 270, words: [{text: "IT'S..."}]},
-];
 
 const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 
@@ -155,7 +142,6 @@ export const Beat1: React.FC = () => {
           </g>
         ) : null}
       </Scene>
-      <PhraseCaption frame={frame} phrases={PHRASES} />
     </>
   );
 };

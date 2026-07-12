@@ -3,7 +3,6 @@ import {useCurrentFrame, useVideoConfig, spring, interpolate} from 'remotion';
 import {Scene} from '../Scene';
 import {NumberBlock} from '../NumberBlock';
 import {NumberLine} from '../NumberLine';
-import {PhraseCaption} from '../PhraseCaption';
 import {COLORS} from '../colors';
 
 const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
@@ -14,19 +13,6 @@ const ROUND_PROGRESS = [75, 105];
 const BLOCKS_FADE_OUT = [140, 158];
 const LINE1_WINDOW = [150, 268];
 const LINE2_WINDOW = [263, 300];
-
-const PHRASES = [
-  {at: 0, words: [{text: 'CALLED'}, {text: 'ESTIMATION'}]},
-  {at: 35, words: [{text: 'ROUND'}, {text: 'EVERY'}, {text: 'NUMBER'}]},
-  {at: 65, words: [{text: 'IN'}, {text: 'THE'}, {text: 'PROBLEM'}]},
-  {at: 95, words: [{text: 'BEFORE'}, {text: 'YOU'}, {text: 'EVEN'}, {text: 'SOLVE'}, {text: 'IT'}]},
-  {at: 135, words: [{text: 'IF'}, {text: 'YOUR'}, {text: 'REAL'}, {text: 'ANSWER'}]},
-  {at: 165, words: [{text: 'IS'}, {text: 'WAY'}, {text: 'OFF'}]},
-  {at: 190, words: [{text: 'FROM'}, {text: 'YOUR'}, {text: 'ROUNDED'}, {text: 'ESTIMATE'}]},
-  {at: 225, words: [{text: 'YOU'}, {text: 'MADE'}, {text: 'A'}, {text: 'MISTAKE'}]},
-  {at: 260, words: [{text: 'BEFORE'}, {text: 'YOU'}, {text: 'EVEN'}]},
-  {at: 280, words: [{text: 'CHECK'}, {text: 'YOUR'}, {text: 'WORK'}]},
-];
 
 // Beat 2 (300-600, 0:10-0:20): "ESTIMATION" pops in, then "47 x 23"
 // visibly rounds to "50 x 20" (a real snap transition, not a static
@@ -165,7 +151,6 @@ export const Beat2: React.FC = () => {
           </g>
         ) : null}
       </Scene>
-      <PhraseCaption frame={frame} phrases={PHRASES} />
     </>
   );
 };
