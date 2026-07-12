@@ -56,6 +56,13 @@ import {
   WIDTH as CF_WIDTH,
   HEIGHT as CF_HEIGHT,
 } from './CountForever/constants';
+import {EstimationCheck} from './EstimationCheck';
+import {
+  FPS as EC_FPS,
+  DURATION_IN_FRAMES as EC_DURATION,
+  WIDTH as EC_WIDTH,
+  HEIGHT as EC_HEIGHT,
+} from './EstimationCheck/constants';
 
 export const Root: React.FC = () => {
   return (
@@ -123,6 +130,14 @@ export const Root: React.FC = () => {
         fps={CF_FPS}
         width={CF_WIDTH}
         height={CF_HEIGHT}
+      />
+      <Composition
+        id="EstimationCheck"
+        component={EstimationCheck}
+        durationInFrames={EC_DURATION}
+        fps={EC_FPS}
+        width={EC_WIDTH}
+        height={EC_HEIGHT}
       />
     </>
   );
