@@ -27,11 +27,12 @@ export const SECTIONS = {
 	finalHold: {start: 10500, end: 10800},
 } as const;
 
-// Countdown: starts at 5:50 (350s) exactly at frame 300, ticks one second
-// per 30 frames, reaches and holds 0:00 starting at frame 10500 (the top
-// of Final Hold).
+// Countdown starts the moment distractors begin (Round 1). Its displayed
+// value is computed in CenterDot.tsx directly from DURATION and FPS — not
+// from a hardcoded seconds figure — so it always starts at whatever
+// (DURATION - COUNTDOWN_START_FRAME) / FPS works out to (currently 5:50)
+// and always reaches exactly 0:00 on the real final frame.
 export const COUNTDOWN_START_FRAME = SECTIONS.round1.start;
-export const COUNTDOWN_START_SECONDS = 350;
 
 // Deterministic seeds so every render (studio + `remotion render`) produces
 // byte-identical randomness. Never call Math.random() anywhere in this app.

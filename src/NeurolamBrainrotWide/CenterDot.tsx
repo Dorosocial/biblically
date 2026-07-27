@@ -4,9 +4,10 @@ import {
 	CENTER_X,
 	CENTER_Y,
 	COUNTDOWN_START_FRAME,
-	COUNTDOWN_START_SECONDS,
 	DOT_COLOR,
 	DOT_RADIUS,
+	DURATION,
+	FPS,
 } from './constants';
 import {DOT_FLASH} from './dotFlash';
 
@@ -37,9 +38,13 @@ export const CenterDot: React.FC = () => {
 	const isFlashing = frame >= DOT_FLASH.startFrame && frame < flashEnd;
 	const color = isFlashing ? DOT_FLASH.color : DOT_COLOR;
 
+	// Derived directly from the composition's real duration/fps — no
+	// hardcoded "350" or "5:50" anywhere. `DURATION - frame` is the frame
+	// count remaining to the end of the actual rendered video; flooring it
+	// to whole seconds guarantees the display is exactly "0:00" on the
+	// literal final frame (DURATION - 1), whatever DURATION happens to be.
 	const running = frame >= COUNTDOWN_START_FRAME;
-	const secondsElapsed = Math.floor((frame - COUNTDOWN_START_FRAME) / 30);
-	const secondsRemaining = Math.max(0, COUNTDOWN_START_SECONDS - secondsElapsed);
+	const secondsRemaining = Math.max(0, Math.floor((DURATION - frame) / FPS));
 	const label = running ? formatTime(secondsRemaining) : '--:--';
 
 	return (
