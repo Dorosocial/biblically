@@ -36,18 +36,16 @@ export const IMAGE_WINDOWS = {
 } as const;
 
 // --- Motion visual windows ---------------------------------------------------
-// INFERRED from narrative context against schedule.ts (no transcript was
-// available — see build report). Each maps to the VO clip that structurally
-// matches its quoted line: exercise "setup" clips (the ones immediately
-// preceding that exercise's hold) for visuals that foreshadow a mechanic,
-// and post-hold "reflection" clips for the two check-in/tension beats.
+// Confirmed against the actual script. (Originally placed by narrative
+// inference against schedule.ts, since no transcript was available at build
+// time — 5 of the 9 were corrected after a real script check; see git log.)
 export const MOTION_WINDOWS = {
-	attentionDeclineGraph: windowOf('nl-7'), // last intro line before ex1's setup
-	dotFormation: windowOf('nl-8'), // ex1 setup line
+	attentionDeclineGraph: windowOf('nl-5'),
+	dotFormation: windowOf('nl-6'),
 	breathingPulse: spanOf('nl-14', 'nl-16'), // post-ex4-hold "check-in", 3-line span
-	splitFocusCircles: windowOf('nl-17'), // ex5 setup line
-	soundRipple: windowOf('nl-20'), // ex6 setup line
-	hourglassPatience: windowOf('nl-22'), // ex7 setup line
+	splitFocusCircles: windowOf('nl-18'),
+	soundRipple: windowOf('nl-19'),
+	hourglassPatience: windowOf('nl-21'),
 	tensionVignette: windowOf('nl-27'), // last ex9 pause line, right before ex10 setup
 	motionTrailPreview: windowOf('nl-28'), // ex10 setup line
 	mirroredDotFormation: windowOf('nl-29'), // ex11 setup line
