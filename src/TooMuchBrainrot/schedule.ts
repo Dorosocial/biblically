@@ -102,3 +102,9 @@ export const EX10_SHAKE_WINDOW = {
 	start: ex10Window.start + Math.round((ex10Window.end - ex10Window.start) * 0.4),
 	durationInFrames: 24,
 };
+
+// The only two whoosh moments in the video: the cut into ex10 (Speed Remix),
+// and the cut out of ex11's hold into its reveal line (nl-30 — "did you look
+// at the corner?").
+export const EX10_CUT_FRAME = ex10Window.start;
+export const EX11_REVEAL_CUT_FRAME = VO_CLIPS.find((c) => c.name === 'nl-30')!.from;

@@ -20,6 +20,10 @@ export const DISTRACTOR_VIDEOS: Partial<Record<Exercise, string[]>> = {
 	ex10: [`${VIDEO_DIR}/distractor-video-ex10-fastcut1.mp4`, `${VIDEO_DIR}/distractor-video-ex10-fastcut2.mp4`],
 };
 
+export const AMBIENT_BED = `${SOUND_DIR}/distractor-sound-ambient-bed.mp3`;
+export const TRANSITION_WHOOSH_EX10_CUT = `${SOUND_DIR}/distractor-sound-transition-whoosh1.mp3`;
+export const TRANSITION_WHOOSH_EX11_REVEAL = `${SOUND_DIR}/distractor-sound-transition-whoosh2.mp3`;
+
 export const DISTRACTOR_SOUNDS: Partial<Record<Exercise, string[]>> = {
 	ex6: [
 		`${SOUND_DIR}/distractor-sound-ex6-1-notification.mp3`,
