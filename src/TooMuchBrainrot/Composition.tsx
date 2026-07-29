@@ -107,7 +107,7 @@ export const TooMuchBrainrot: React.FC = () => {
 					<HoldWindow exercise="ex11">
 						<ExerciseDistractors exercise="ex11" durationInFrames={getExerciseHoldWindow('ex11')!.end - getExerciseHoldWindow('ex11')!.start} />
 						<CornerReachShape corner="bottomRight" />
-						<NotificationBadge corner="bottomRight" />
+						<NotificationBadge corner="topRight" />
 						<NextVideoThumbnail />
 					</HoldWindow>
 				</AbsoluteFill>
