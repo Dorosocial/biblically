@@ -15,15 +15,21 @@ export const TensionVignette: React.FC = () => {
 		{extrapolateLeft: 'clamp', extrapolateRight: 'clamp'},
 	);
 
+	// A black vignette reads as nearly invisible against the already
+	// near-black background (measured: corner luminance moved by ~2/255) —
+	// a dark maroon tint shifts the corner hue instead of just its
+	// brightness, so the tighten/release is actually perceptible.
+	const edgeStop = 55 - intensity * 25;
+
 	return (
 		<div
 			style={{
 				position: 'absolute',
 				width: WIDTH,
 				height: HEIGHT,
-				boxShadow: `inset 0 0 ${140 + intensity * 120}px ${40 + intensity * 60}px rgba(0,0,0,${
-					intensity * 0.65
-				})`,
+				background: `radial-gradient(circle at 50% 50%, transparent ${edgeStop}%, rgba(46,6,6,${
+					intensity * 0.95
+				}) 100%)`,
 			}}
 		/>
 	);
