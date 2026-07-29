@@ -4,7 +4,7 @@ import {Background} from './Background';
 import {PrimaryDot} from './PrimaryDot';
 import {VoiceOverTrack} from './VoiceOverTrack';
 import {AmbientAndTransitions} from './AmbientAndTransitions';
-import {OverlayLayer} from './overlay/OverlayLayer';
+import {NarratorLayer} from './narrator/NarratorLayer';
 import {ExerciseDistractors} from './DistractorMedia';
 import {EX10_SHAKE_WINDOW, Exercise, INTRO_SPAN, getExerciseHoldWindow} from './schedule';
 import {SecondaryDot} from './elements/SecondaryDot';
@@ -121,8 +121,8 @@ export const TooMuchBrainrot: React.FC = () => {
 			<VoiceOverTrack />
 			<AmbientAndTransitions />
 
-			{/* Purely additive overlay layer — narrator images + motion visuals. Never touches anything above. */}
-			<OverlayLayer />
+			{/* Opaque full-scene narrator layer — cuts away entirely during narrator/preview windows, invisible everywhere else. */}
+			<NarratorLayer />
 		</AbsoluteFill>
 	);
 };

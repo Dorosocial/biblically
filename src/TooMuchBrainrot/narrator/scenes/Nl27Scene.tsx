@@ -2,8 +2,10 @@ import React from 'react';
 import {interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {HEIGHT, WIDTH} from '../../constants';
 
-// Screen edges darken and tighten briefly, then release. Under 1 second.
-export const TensionVignette: React.FC = () => {
+// Tension vignette — the validated fix from the previous build (a black
+// inset shadow reads as invisible against a near-black background; a dark
+// maroon radial gradient shifts hue as well as brightness).
+export const Nl27Scene: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 
@@ -14,11 +16,6 @@ export const TensionVignette: React.FC = () => {
 		[0, 1, 0],
 		{extrapolateLeft: 'clamp', extrapolateRight: 'clamp'},
 	);
-
-	// A black vignette reads as nearly invisible against the already
-	// near-black background (measured: corner luminance moved by ~2/255) —
-	// a dark maroon tint shifts the corner hue instead of just its
-	// brightness, so the tighten/release is actually perceptible.
 	const edgeStop = 55 - intensity * 25;
 
 	return (
