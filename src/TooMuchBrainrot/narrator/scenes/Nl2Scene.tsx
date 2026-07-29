@@ -1,49 +1,42 @@
 import React from 'react';
-import {interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {interpolate, useCurrentFrame} from 'remotion';
 import {CENTER_X, CENTER_Y, HEIGHT, WIDTH} from '../../constants';
 import {driftValue} from '../../drift';
+import {BUST_ANCHOR_Y, BUST_SCALE} from '../layout';
 import {NL2_BEATS} from '../narratorSchedule';
 import {NarratorFigure} from '../NarratorFigure';
 import {CREAM, PALE_GOLD} from '../palette';
 
 const SettledMan: React.FC<{localFrame: number}> = ({localFrame}) => {
-	const scale = 3.1 + driftValue(localFrame, 130, 0.05);
+	const scale = BUST_SCALE + driftValue(localFrame, 130, 0.04);
 	const panX = driftValue(localFrame, 170, 6);
 	return (
-		<g transform={`translate(${CENTER_X + panX}, ${CENTER_Y + 60}) scale(${scale})`}>
+		<g transform={`translate(${CENTER_X + panX}, ${BUST_ANCHOR_Y}) scale(${scale})`}>
 			<NarratorFigure bustOnly armPose="atSide" headTurn={driftValue(localFrame, 220, 3)} />
 		</g>
 	);
 };
 
 const ThoughtSpark: React.FC<{localFrame: number; duration: number}> = ({localFrame, duration}) => {
-	const scale = 3.1;
 	const riseProgress = interpolate(localFrame, [0, duration], [0, 1], {
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',
 	});
 	// Dissolves before completing its path — never reaches full opacity/height.
 	const opacity = interpolate(riseProgress, [0, 0.35, 0.75, 1], [0, 0.8, 0.3, 0]);
-	const sparkY = CENTER_Y + 60 - riseProgress * 160;
+	const sparkY = CENTER_Y - 260 - riseProgress * 220;
 
 	return (
 		<>
-			<g transform={`translate(${CENTER_X}, ${CENTER_Y + 60}) scale(${scale})`}>
+			<g transform={`translate(${CENTER_X}, ${BUST_ANCHOR_Y}) scale(${BUST_SCALE})`}>
 				<NarratorFigure bustOnly armPose="atSide" />
 			</g>
-			<circle
-				cx={CENTER_X + 70}
-				cy={sparkY - 190}
-				r={10 + riseProgress * 6}
-				fill={PALE_GOLD}
-				opacity={opacity}
-			/>
+			<circle cx={CENTER_X + 190} cy={sparkY} r={16 + riseProgress * 10} fill={PALE_GOLD} opacity={opacity} />
 		</>
 	);
 };
 
 const PhoneReach: React.FC<{localFrame: number; duration: number}> = ({localFrame, duration}) => {
-	const scale = 3.1;
 	const reach = interpolate(localFrame, [0, duration * 0.6], [0, 1], {
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',
@@ -54,7 +47,7 @@ const PhoneReach: React.FC<{localFrame: number; duration: number}> = ({localFram
 	});
 
 	return (
-		<g transform={`translate(${CENTER_X}, ${CENTER_Y + 60}) scale(${scale})`}>
+		<g transform={`translate(${CENTER_X}, ${BUST_ANCHOR_Y}) scale(${BUST_SCALE})`}>
 			<NarratorFigure bustOnly armPose="reachingForward" />
 			<rect
 				x={64 + (1 - reach) * 10}
@@ -73,14 +66,17 @@ const PhoneReach: React.FC<{localFrame: number; duration: number}> = ({localFram
 };
 
 const FIVE_OBJECTS: {label: string; x: number; y: number}[] = [
-	{label: 'book', x: -260, y: -40},
-	{label: 'cup', x: -120, y: 60},
-	{label: 'phone', x: 40, y: -70},
-	{label: 'pen', x: 180, y: 40},
-	{label: 'laptop', x: 300, y: -30},
+	{label: 'book', x: -540, y: -60},
+	{label: 'cup', x: -260, y: 130},
+	{label: 'phone', x: 0, y: -160},
+	{label: 'pen', x: 320, y: 100},
+	{label: 'laptop', x: 580, y: -50},
 ];
 
-const ObjectGlyph: React.FC<{label: string; size: number}> = ({label, size}) => {
+const OBJECT_SIZE = 150;
+
+const ObjectGlyph: React.FC<{label: string}> = ({label}) => {
+	const size = OBJECT_SIZE;
 	if (label === 'cup') {
 		return <rect width={size * 0.6} height={size} rx={size * 0.1} fill={CREAM} />;
 	}
@@ -88,7 +84,7 @@ const ObjectGlyph: React.FC<{label: string; size: number}> = ({label, size}) => 
 		return <rect width={size * 0.55} height={size} rx={size * 0.12} fill={CREAM} />;
 	}
 	if (label === 'pen') {
-		return <rect width={size * 0.18} height={size} rx={size * 0.09} fill={CREAM} />;
+		return <rect width={size * 0.16} height={size} rx={size * 0.08} fill={CREAM} />;
 	}
 	if (label === 'laptop') {
 		return <rect width={size} height={size * 0.65} rx={size * 0.06} fill={CREAM} />;
@@ -96,6 +92,8 @@ const ObjectGlyph: React.FC<{label: string; size: number}> = ({label, size}) => 
 	return <rect width={size} height={size * 0.75} rx={size * 0.05} fill={CREAM} />;
 };
 
+// Close on a pair of full-frame hands — never settling, sweeping large
+// between five large object silhouettes.
 const FiveObjectHands: React.FC<{localFrame: number; duration: number}> = ({localFrame, duration}) => {
 	const fps = 30;
 	const reachEvery = Math.max(duration / FIVE_OBJECTS.length, fps * 0.35);
@@ -110,8 +108,8 @@ const FiveObjectHands: React.FC<{localFrame: number; duration: number}> = ({loca
 					extrapolateLeft: 'clamp',
 					extrapolateRight: 'clamp',
 				});
-				const opacity = isActive ? 0.5 + reach * 0.5 : 0.35;
-				const scale = isActive ? 1 + reach * 0.15 : 1;
+				const opacity = isActive ? 0.55 + reach * 0.45 : 0.4;
+				const scale = isActive ? 1 + reach * 0.18 : 1;
 
 				return (
 					<g
@@ -119,19 +117,19 @@ const FiveObjectHands: React.FC<{localFrame: number; duration: number}> = ({loca
 						transform={`translate(${CENTER_X + obj.x}, ${CENTER_Y + obj.y}) scale(${scale})`}
 						opacity={opacity}
 					>
-						<ObjectGlyph label={obj.label} size={52} />
+						<ObjectGlyph label={obj.label} />
 					</g>
 				);
 			})}
-			{/* A pair of hands sweeping toward whichever object is currently "active". */}
+			{/* A pair of large hands sweeping toward whichever object is currently "active". */}
 			{(() => {
 				const target = FIVE_OBJECTS[activeIndex];
 				const hx = CENTER_X + target.x;
-				const hy = CENTER_Y + target.y + 40;
+				const hy = CENTER_Y + target.y + OBJECT_SIZE * 0.7;
 				return (
 					<g transform={`translate(${hx}, ${hy})`}>
-						<circle cx={-14} cy={0} r={16} fill={CREAM} opacity={0.85} />
-						<circle cx={14} cy={0} r={16} fill={CREAM} opacity={0.85} />
+						<circle cx={-46} cy={0} r={52} fill={CREAM} opacity={0.85} />
+						<circle cx={46} cy={0} r={52} fill={CREAM} opacity={0.85} />
 					</g>
 				);
 			})()}

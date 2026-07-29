@@ -2,6 +2,7 @@ import React from 'react';
 import {useCurrentFrame} from 'remotion';
 import {CENTER_X, CENTER_Y} from '../../constants';
 import {driftValue} from '../../drift';
+import {FULL_ANCHOR_Y, FULL_SCALE} from '../layout';
 import {NarratorFigure} from '../NarratorFigure';
 import {SOFT_GRAY} from '../palette';
 
@@ -10,7 +11,7 @@ import {SOFT_GRAY} from '../palette';
 export const Nl26Scene: React.FC = () => {
 	const frame = useCurrentFrame();
 
-	const scale = 3.6 + driftValue(frame, 160, 0.03);
+	const scale = FULL_SCALE + driftValue(frame, 160, 0.025);
 
 	const streaks = [0, 1, 2, 3].map((i) => {
 		const angle = (frame / 340) * Math.PI * 2 + (i * Math.PI) / 2;
@@ -37,7 +38,7 @@ export const Nl26Scene: React.FC = () => {
 					opacity={s.opacity}
 				/>
 			))}
-			<g transform={`translate(${CENTER_X}, ${CENTER_Y + 150}) scale(${scale})`}>
+			<g transform={`translate(${CENTER_X}, ${FULL_ANCHOR_Y}) scale(${scale})`}>
 				<NarratorFigure armPose="atSide" legPose="standing" />
 			</g>
 		</svg>
