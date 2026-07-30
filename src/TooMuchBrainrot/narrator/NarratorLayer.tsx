@@ -1,22 +1,40 @@
 import React from 'react';
 import {AbsoluteFill, Sequence} from 'remotion';
 import {HEIGHT, WIDTH} from '../constants';
-import {NARRATOR_WINDOWS, PREVIEW_WINDOWS, Window} from './narratorSchedule';
+import {
+	NARRATOR_EXTENDED_END,
+	NARRATOR_WINDOWS,
+	NL23_WINDOWS,
+	NL26_WINDOWS,
+	NL2_WINDOWS,
+	NL_OUTRO_WINDOW,
+	PREVIEW_WINDOWS,
+	Window,
+} from './narratorSchedule';
 import {NARRATOR_BG} from './palette';
 import {MinimalBeat} from './MinimalBeat';
-import {Nl2Scene} from './scenes/Nl2Scene';
+import {SilhouetteImageBeat} from './SilhouetteImageBeat';
+import {Nl2ThoughtScene} from './scenes/Nl2ThoughtScene';
+import {Nl2FiveObjectsScene} from './scenes/Nl2FiveObjectsScene';
 import {Nl3Scene} from './scenes/Nl3Scene';
+import {Nl4Scene} from './scenes/Nl4Scene';
 import {Nl5Scene} from './scenes/Nl5Scene';
 import {Nl6Scene} from './scenes/Nl6Scene';
-import {Nl1516Scene} from './scenes/Nl1516Scene';
+import {Nl7Scene} from './scenes/Nl7Scene';
+import {Nl9Scene} from './scenes/Nl9Scene';
+import {Nl12Scene} from './scenes/Nl12Scene';
+import {Nl14Scene} from './scenes/Nl14Scene';
+import {Nl15Scene} from './scenes/Nl15Scene';
+import {Nl16Scene} from './scenes/Nl16Scene';
 import {Nl18Scene} from './scenes/Nl18Scene';
 import {Nl19Scene} from './scenes/Nl19Scene';
 import {Nl21Scene} from './scenes/Nl21Scene';
-import {Nl23Scene} from './scenes/Nl23Scene';
-import {Nl26Scene} from './scenes/Nl26Scene';
 import {Nl27Scene} from './scenes/Nl27Scene';
+import {Nl30Scene} from './scenes/Nl30Scene';
+import {Nl31Scene} from './scenes/Nl31Scene';
 import {Nl32Scene} from './scenes/Nl32Scene';
-import {Nl34Scene} from './scenes/Nl34Scene';
+import {Nl33Scene} from './scenes/Nl33Scene';
+import {FilmstripRecapScene} from './scenes/FilmstripRecapScene';
 import {
 	Ex1Preview,
 	Ex2Preview,
@@ -35,140 +53,210 @@ const OpaqueBg: React.FC = () => (
 	<AbsoluteFill style={{backgroundColor: NARRATOR_BG, width: WIDTH, height: HEIGHT}} />
 );
 
-const Beat: React.FC<{window: Window; children: React.ReactNode}> = ({window, children}) => (
+// Narrator scenes: background extends to NARRATOR_EXTENDED_END (closing the
+// systemic 15f gap after every narrator-owned line), while content still
+// animates against its own original, unextended window — so entrance/exit
+// timing relative to the spoken words never changes, only the opaque
+// background's persistence.
+const NarratorBeat: React.FC<{window: Window; extendedEnd: number; children: React.ReactNode}> = ({
+	window,
+	extendedEnd,
+	children,
+}) => (
+	<Sequence from={window.start} durationInFrames={extendedEnd - window.start}>
+		<OpaqueBg />
+		{children}
+	</Sequence>
+);
+
+// Exercise-preview panels: unchanged from the previous build. They never
+// have a trailing gap (their clip always transitions straight into its
+// exercise's hold, zero gap, by construction), so no extension is needed.
+const PreviewBeat: React.FC<{window: Window; children: React.ReactNode}> = ({window, children}) => (
 	<Sequence from={window.start} durationInFrames={window.end - window.start}>
 		<OpaqueBg />
 		{children}
 	</Sequence>
 );
 
-// Opaque, full-scene narrator layer. Mounted once at the top of the
-// composition tree (after everything else), so every window here fully
-// occludes the exercise environment beneath it — nl-intro and every
-// exercise HOLD window have no Sequence here at all, so they render
-// completely untouched.
 export const NarratorLayer: React.FC = () => {
 	const w = NARRATOR_WINDOWS;
 	const p = PREVIEW_WINDOWS;
 
 	return (
 		<>
-			<Beat window={w.nl2}>
-				<Nl2Scene />
-			</Beat>
-			<Beat window={w.nl3}>
+			{/* nl-2: 4 beats, image / built / image / built */}
+			<NarratorBeat window={NL2_WINDOWS.standingAlone} extendedEnd={NARRATOR_EXTENDED_END.standingAlone}>
+				<SilhouetteImageBeat
+					file="narrator-nl2-1-standing-alone.png"
+					contentDuration={NL2_WINDOWS.standingAlone.end - NL2_WINDOWS.standingAlone.start}
+				/>
+			</NarratorBeat>
+			<NarratorBeat window={NL2_WINDOWS.thought} extendedEnd={NARRATOR_EXTENDED_END.thought}>
+				<Nl2ThoughtScene />
+			</NarratorBeat>
+			<NarratorBeat window={NL2_WINDOWS.phoneReach} extendedEnd={NARRATOR_EXTENDED_END.phoneReach}>
+				<SilhouetteImageBeat
+					file="narrator-nl2-3-phone-reach.png"
+					contentDuration={NL2_WINDOWS.phoneReach.end - NL2_WINDOWS.phoneReach.start}
+				/>
+			</NarratorBeat>
+			<NarratorBeat window={NL2_WINDOWS.fiveObjects} extendedEnd={NARRATOR_EXTENDED_END.fiveObjects}>
+				<Nl2FiveObjectsScene />
+			</NarratorBeat>
+
+			<NarratorBeat window={w.nl3} extendedEnd={NARRATOR_EXTENDED_END.nl3}>
 				<Nl3Scene />
-			</Beat>
-			<Beat window={w.nl4}>
-				<MinimalBeat intensity={0.7} />
-			</Beat>
-			<Beat window={w.nl5}>
+			</NarratorBeat>
+			<NarratorBeat window={w.nl4} extendedEnd={NARRATOR_EXTENDED_END.nl4}>
+				<Nl4Scene />
+			</NarratorBeat>
+			<NarratorBeat window={w.nl5} extendedEnd={NARRATOR_EXTENDED_END.nl5}>
 				<Nl5Scene durationInFrames={w.nl5.end - w.nl5.start} />
-			</Beat>
-			<Beat window={w.nl6}>
+			</NarratorBeat>
+			<NarratorBeat window={w.nl6} extendedEnd={NARRATOR_EXTENDED_END.nl6}>
 				<Nl6Scene />
-			</Beat>
-			<Beat window={w.nl7}>
-				<MinimalBeat intensity={0.3} />
-			</Beat>
+			</NarratorBeat>
+			<NarratorBeat window={w.nl7} extendedEnd={NARRATOR_EXTENDED_END.nl7}>
+				<Nl7Scene durationInFrames={w.nl7.end - w.nl7.start} />
+			</NarratorBeat>
 
-			<Beat window={p.ex1}>
+			<PreviewBeat window={p.ex1}>
 				<Ex1Preview />
-			</Beat>
+			</PreviewBeat>
 
-			<Beat window={w.nl9}>
-				<MinimalBeat intensity={0.35} />
-			</Beat>
+			<NarratorBeat window={w.nl9} extendedEnd={NARRATOR_EXTENDED_END.nl9}>
+				<Nl9Scene />
+			</NarratorBeat>
 
-			<Beat window={p.ex2}>
+			<PreviewBeat window={p.ex2}>
 				<Ex2Preview />
-			</Beat>
-			<Beat window={p.ex3}>
+			</PreviewBeat>
+			<PreviewBeat window={p.ex3}>
 				<Ex3Preview durationInFrames={p.ex3.end - p.ex3.start} />
-			</Beat>
+			</PreviewBeat>
 
-			<Beat window={w.nl12}>
-				<MinimalBeat intensity={0.4} />
-			</Beat>
+			<NarratorBeat window={w.nl12} extendedEnd={NARRATOR_EXTENDED_END.nl12}>
+				<Nl12Scene />
+			</NarratorBeat>
 
-			<Beat window={p.ex4}>
+			<PreviewBeat window={p.ex4}>
 				<Ex4Preview durationInFrames={p.ex4.end - p.ex4.start} />
-			</Beat>
+			</PreviewBeat>
 
-			<Beat window={w.nl14}>
-				<MinimalBeat intensity={0.3} />
-			</Beat>
-			<Beat window={w.nl1516}>
-				<Nl1516Scene durationInFrames={w.nl1516.end - w.nl1516.start} />
-			</Beat>
+			<NarratorBeat window={w.nl14} extendedEnd={NARRATOR_EXTENDED_END.nl14}>
+				<Nl14Scene />
+			</NarratorBeat>
+			<NarratorBeat window={w.nl15} extendedEnd={NARRATOR_EXTENDED_END.nl15}>
+				<Nl15Scene />
+			</NarratorBeat>
+			<NarratorBeat window={w.nl16} extendedEnd={NARRATOR_EXTENDED_END.nl16}>
+				<Nl16Scene />
+			</NarratorBeat>
 
-			<Beat window={p.ex5}>
+			<PreviewBeat window={p.ex5}>
 				<Ex5Preview />
-			</Beat>
+			</PreviewBeat>
 
-			<Beat window={w.nl18}>
+			<NarratorBeat window={w.nl18} extendedEnd={NARRATOR_EXTENDED_END.nl18}>
 				<Nl18Scene durationInFrames={w.nl18.end - w.nl18.start} />
-			</Beat>
-			<Beat window={w.nl19}>
+			</NarratorBeat>
+			<NarratorBeat window={w.nl19} extendedEnd={NARRATOR_EXTENDED_END.nl19}>
 				<Nl19Scene />
-			</Beat>
+			</NarratorBeat>
 
-			<Beat window={p.ex6}>
+			<PreviewBeat window={p.ex6}>
 				<Ex6Preview />
-			</Beat>
+			</PreviewBeat>
 
-			<Beat window={w.nl21}>
+			<NarratorBeat window={w.nl21} extendedEnd={NARRATOR_EXTENDED_END.nl21}>
 				<Nl21Scene />
-			</Beat>
+			</NarratorBeat>
 
-			<Beat window={p.ex7}>
+			<PreviewBeat window={p.ex7}>
 				<Ex7Preview />
-			</Beat>
+			</PreviewBeat>
 
-			<Beat window={w.nl23}>
-				<Nl23Scene durationInFrames={w.nl23.end - w.nl23.start} />
-			</Beat>
+			{/* nl-23: 3 image beats */}
+			<NarratorBeat window={NL23_WINDOWS.headTurn} extendedEnd={NARRATOR_EXTENDED_END.headTurn}>
+				<SilhouetteImageBeat
+					file="narrator-nl23-1-head-turn.png"
+					contentDuration={NL23_WINDOWS.headTurn.end - NL23_WINDOWS.headTurn.start}
+				/>
+			</NarratorBeat>
+			<NarratorBeat window={NL23_WINDOWS.alertPosture} extendedEnd={NARRATOR_EXTENDED_END.alertPosture}>
+				<SilhouetteImageBeat
+					file="narrator-nl23-2-alert-posture.png"
+					contentDuration={NL23_WINDOWS.alertPosture.end - NL23_WINDOWS.alertPosture.start}
+				/>
+			</NarratorBeat>
+			<NarratorBeat window={NL23_WINDOWS.leanForward} extendedEnd={NARRATOR_EXTENDED_END.leanForward}>
+				<SilhouetteImageBeat
+					file="narrator-nl23-3-lean-forward.png"
+					contentDuration={NL23_WINDOWS.leanForward.end - NL23_WINDOWS.leanForward.start}
+				/>
+			</NarratorBeat>
 
-			<Beat window={p.ex8}>
+			<PreviewBeat window={p.ex8}>
 				<Ex8Preview durationInFrames={p.ex8.end - p.ex8.start} />
-			</Beat>
-			<Beat window={p.ex9}>
+			</PreviewBeat>
+			<PreviewBeat window={p.ex9}>
 				<Ex9Preview />
-			</Beat>
+			</PreviewBeat>
 
-			<Beat window={w.nl26}>
-				<Nl26Scene />
-			</Beat>
-			<Beat window={w.nl27}>
+			{/* nl-26: 2 image beats + filmstrip recap tail */}
+			<NarratorBeat window={NL26_WINDOWS.seatedStill} extendedEnd={NARRATOR_EXTENDED_END.seatedStill}>
+				<SilhouetteImageBeat
+					file="narrator-nl26-1-seated-still.png"
+					contentDuration={NL26_WINDOWS.seatedStill.end - NL26_WINDOWS.seatedStill.start}
+				/>
+			</NarratorBeat>
+			<NarratorBeat window={NL26_WINDOWS.centered} extendedEnd={NARRATOR_EXTENDED_END.centered}>
+				<SilhouetteImageBeat
+					file="narrator-nl26-2-centered.png"
+					contentDuration={NL26_WINDOWS.centered.end - NL26_WINDOWS.centered.start}
+				/>
+			</NarratorBeat>
+			<NarratorBeat window={NL26_WINDOWS.filmstripRecap} extendedEnd={NARRATOR_EXTENDED_END.filmstripRecap}>
+				<FilmstripRecapScene />
+			</NarratorBeat>
+
+			<NarratorBeat window={w.nl27} extendedEnd={NARRATOR_EXTENDED_END.nl27}>
 				<Nl27Scene />
-			</Beat>
+			</NarratorBeat>
 
-			<Beat window={p.ex10}>
+			<PreviewBeat window={p.ex10}>
 				<Ex10Preview />
-			</Beat>
+			</PreviewBeat>
 
-			<Beat window={p.ex11}>
+			<PreviewBeat window={p.ex11}>
 				<Ex11Preview durationInFrames={p.ex11.end - p.ex11.start} />
-			</Beat>
+			</PreviewBeat>
 
-			<Beat window={w.nl30}>
-				<MinimalBeat intensity={0.2} />
-			</Beat>
-			<Beat window={w.nl31}>
-				<MinimalBeat intensity={0.25} />
-			</Beat>
-			<Beat window={w.nl32}>
-				<Nl32Scene />
-			</Beat>
-			<Beat window={w.nl33}>
-				<MinimalBeat intensity={0.55} />
-			</Beat>
-			<Beat window={w.nl34}>
-				<Nl34Scene durationInFrames={w.nl34.end - w.nl34.start} />
-			</Beat>
-			<Beat window={w.nlOutro}>
+			<NarratorBeat window={w.nl30} extendedEnd={NARRATOR_EXTENDED_END.nl30}>
+				<Nl30Scene />
+			</NarratorBeat>
+			<NarratorBeat window={w.nl31} extendedEnd={NARRATOR_EXTENDED_END.nl31}>
+				<Nl31Scene />
+			</NarratorBeat>
+			<NarratorBeat window={w.nl32} extendedEnd={NARRATOR_EXTENDED_END.nl32}>
+				<Nl32Scene durationInFrames={w.nl32.end - w.nl32.start} />
+			</NarratorBeat>
+			<NarratorBeat window={w.nl33} extendedEnd={NARRATOR_EXTENDED_END.nl33}>
+				<Nl33Scene />
+			</NarratorBeat>
+			<NarratorBeat window={w.nl34} extendedEnd={NARRATOR_EXTENDED_END.nl34}>
+				<SilhouetteImageBeat
+					file="narrator-nl34-1-open-stance.png"
+					contentDuration={w.nl34.end - w.nl34.start}
+				/>
+			</NarratorBeat>
+
+			{/* nl-outro is out of this rebuild's scope — unchanged minimal treatment. */}
+			<Sequence from={NL_OUTRO_WINDOW.start} durationInFrames={NL_OUTRO_WINDOW.end - NL_OUTRO_WINDOW.start}>
+				<OpaqueBg />
 				<MinimalBeat intensity={0.3} />
-			</Beat>
+			</Sequence>
 		</>
 	);
 };

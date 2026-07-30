@@ -1,33 +1,44 @@
 import React from 'react';
-import {interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {useCurrentFrame} from 'remotion';
 import {CENTER_X, CENTER_Y} from '../../constants';
-import {SOFT_GRAY} from '../palette';
+import {RED} from '../palette';
 
-// Full-frame ripple: one clean outward wave from center, quick.
+const BAR_COUNT = 26;
+
+// "...harder to ignore: sound." An irregular, chaotic waveform visualizer —
+// not a clean musical beat.
 export const Nl19Scene: React.FC = () => {
 	const frame = useCurrentFrame();
-	const {fps} = useVideoConfig();
 
-	const rippleFrames = fps * 0.9;
-	const progress = interpolate(frame, [0, rippleFrames], [0, 1], {
-		extrapolateLeft: 'clamp',
-		extrapolateRight: 'clamp',
-	});
-	const radius = 40 + progress * 640;
-	const opacity = 1 - progress;
+	const barW = 22;
+	const gap = 10;
+	const totalW = BAR_COUNT * barW + (BAR_COUNT - 1) * gap;
+	const left = CENTER_X - totalW / 2;
 
 	return (
-		<div
-			style={{
-				position: 'absolute',
-				left: CENTER_X - radius,
-				top: CENTER_Y - radius,
-				width: radius * 2,
-				height: radius * 2,
-				borderRadius: '50%',
-				border: `5px solid ${SOFT_GRAY}`,
-				opacity,
-			}}
-		/>
+		<svg width="100%" height="100%" style={{position: 'absolute'}}>
+			{Array.from({length: BAR_COUNT}).map((_, i) => {
+				// Irregular: mix of a few non-harmonic sine waves per bar, seeded by index.
+				const seed = i * 7.31;
+				const h =
+					60 +
+					Math.abs(Math.sin(frame * 0.31 + seed) * 140) +
+					Math.abs(Math.sin(frame * 0.17 + seed * 2.1) * 90);
+				const x = left + i * (barW + gap);
+
+				return (
+					<rect
+						key={i}
+						x={x}
+						y={CENTER_Y - h / 2}
+						width={barW}
+						height={h}
+						rx={4}
+						fill={RED}
+						opacity={0.85}
+					/>
+				);
+			})}
+		</svg>
 	);
 };

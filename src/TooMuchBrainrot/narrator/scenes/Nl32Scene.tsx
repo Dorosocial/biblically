@@ -1,49 +1,54 @@
 import React from 'react';
-import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {CENTER_X} from '../../constants';
-import {driftValue} from '../../drift';
-import {FULL_ANCHOR_Y, FULL_SCALE} from '../layout';
-import {NarratorFigure} from '../NarratorFigure';
-import {PALE_GOLD} from '../palette';
+import {interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {CENTER_X, CENTER_Y} from '../../constants';
+import {GRAY, YELLOW} from '../palette';
 
-// Local feet y (hip 228 + leg length 160) scaled into screen space, so the
-// light trails originate exactly at the figure's feet.
-const FEET_Y = FULL_ANCHOR_Y + 388 * FULL_SCALE;
+interface Props {
+	durationInFrames: number;
+}
 
-// The core thesis image: a fork, two diverging light trails, one arm raised
-// as if choosing. Full-frame scale — this is the longest-lingering narrator
-// scene, so the entrance settles early and holds calmly.
-export const Nl32Scene: React.FC = () => {
+// Core-thesis beat: two thin diverging light-trails split from a single
+// point; one brightens and solidifies (the "chosen" path), the other dims
+// and fades — deciding, and keeping that decision. Longest linger.
+export const Nl32Scene: React.FC<Props> = ({durationInFrames}) => {
 	const frame = useCurrentFrame();
-	const {fps} = useVideoConfig();
 
-	const entrance = spring({frame, fps, config: {mass: 1, stiffness: 80, damping: 20}, durationInFrames: 45});
-	const trailLength = interpolate(entrance, [0, 1], [0, 1]);
-	const scale = FULL_SCALE + driftValue(frame, 170, 0.025);
+	const split = interpolate(frame, [0, durationInFrames * 0.35], [0, 1], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
+	const commit = interpolate(frame, [durationInFrames * 0.35, durationInFrames * 0.7], [0, 1], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
+
+	const chosenOpacity = 0.55 + commit * 0.45;
+	const chosenWidth = 4 + commit * 5;
+	const fadedOpacity = 0.45 * (1 - commit * 0.85);
 
 	return (
 		<svg width="100%" height="100%" style={{position: 'absolute'}}>
 			<line
 				x1={CENTER_X}
-				y1={FEET_Y}
-				x2={CENTER_X - 620 * trailLength}
-				y2={FEET_Y - 480 * trailLength}
-				stroke={PALE_GOLD}
-				strokeWidth={5}
-				opacity={0.5 * trailLength}
+				y1={CENTER_Y}
+				x2={CENTER_X - 640 * split}
+				y2={CENTER_Y - 260 * split}
+				stroke={YELLOW}
+				strokeWidth={chosenWidth}
+				strokeLinecap="round"
+				opacity={chosenOpacity}
 			/>
 			<line
 				x1={CENTER_X}
-				y1={FEET_Y}
-				x2={CENTER_X + 620 * trailLength}
-				y2={FEET_Y - 220 * trailLength}
-				stroke={PALE_GOLD}
-				strokeWidth={5}
-				opacity={0.3 * trailLength}
+				y1={CENTER_Y}
+				x2={CENTER_X + 640 * split}
+				y2={CENTER_Y - 180 * split}
+				stroke={GRAY}
+				strokeWidth={4}
+				strokeLinecap="round"
+				opacity={fadedOpacity}
 			/>
-			<g transform={`translate(${CENTER_X}, ${FULL_ANCHOR_Y}) scale(${scale})`}>
-				<NarratorFigure armPose="raisedFork" legPose="standing" />
-			</g>
+			<circle cx={CENTER_X} cy={CENTER_Y} r={14} fill={YELLOW} opacity={0.9} />
 		</svg>
 	);
 };
