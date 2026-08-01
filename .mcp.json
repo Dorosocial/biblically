@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "pexels": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-pexels"
+      ],
+      "env": {
+        "PEXELS_API_KEY": "${PEXELS_API_KEY}"
+      }
+    }
+  }
+}
