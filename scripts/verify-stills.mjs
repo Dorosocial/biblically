@@ -74,7 +74,7 @@ for (const layer of timeline) {
   }
 }
 
-await browser.close();
+await browser.close({ silent: true });
 
 fs.writeFileSync(
   path.join(root, "out", "stills-manifest.json"),

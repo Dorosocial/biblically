@@ -5,17 +5,19 @@ import { useIdleMotion } from "./useIdleMotion";
 
 export const WireframeImage: React.FC<{
   file: string;
-  entranceFrom: number;
   variant: EntranceVariant;
   seed: string;
   /** Shrinks + left-anchors the figure so Bucket B overlays have room on the right. */
   sideBySide?: boolean;
-}> = ({ file, entranceFrom, variant, seed, sideBySide = false }) => {
-  const frame = useCurrentFrame();
+}> = ({ file, variant, seed, sideBySide = false }) => {
+  // Already local to the wrapping <Sequence from={...}>, so this IS the
+  // entrance-relative frame -- do not subtract the layer's global `from`
+  // again here (that double-offset was a real bug: it drove local frame
+  // negative, which clamps entrance progress to 0 and renders nothing).
+  const localFrame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const localFrame = frame - entranceFrom;
   const entrance = getEntranceStyle(variant, localFrame, fps);
-  const idle = useIdleMotion(frame, fps, seed, "breathing");
+  const idle = useIdleMotion(localFrame, fps, seed, "breathing");
 
   return (
     <AbsoluteFill

@@ -19,7 +19,6 @@ export const NaosWireframe: React.FC = () => {
             >
               <WireframeImage
                 file={layer.file}
-                entranceFrom={layer.from}
                 variant={layer.variant}
                 seed={`${layer.id}-${layer.from}`}
                 sideBySide={layer.sideBySide}
@@ -38,7 +37,6 @@ export const NaosWireframe: React.FC = () => {
             >
               <WireframeGraphic
                 item={layer.item}
-                entranceFrom={layer.from}
                 variant={layer.variant}
                 seed={`${layer.id}-${layer.from}`}
                 mode="overlay"
@@ -57,7 +55,6 @@ export const NaosWireframe: React.FC = () => {
           >
             <WireframeGraphic
               item={layer.item}
-              entranceFrom={layer.from}
               variant={layer.variant}
               seed={`${layer.id}-${layer.from}`}
               mode="cutaway"

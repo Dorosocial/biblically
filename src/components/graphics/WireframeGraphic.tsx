@@ -10,16 +10,16 @@ const OVERLAY_SCALE = 0.5;
 
 export const WireframeGraphic: React.FC<{
   item: BucketBItem;
-  entranceFrom: number;
   variant: EntranceVariant;
   seed: string;
   mode: "overlay" | "cutaway";
-}> = ({ item, entranceFrom, variant, seed, mode }) => {
-  const frame = useCurrentFrame();
+}> = ({ item, variant, seed, mode }) => {
+  // Already local to the wrapping <Sequence from={...}> -- see the same note
+  // in WireframeImage.tsx. Do not subtract the layer's global `from` again.
+  const localFrame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const localFrame = frame - entranceFrom;
   const groupEntrance = getEntranceStyle(variant, localFrame, fps);
-  const idle = useIdleMotion(frame, fps, seed, "shimmer");
+  const idle = useIdleMotion(localFrame, fps, seed, "shimmer");
   const scale = mode === "cutaway" ? CUTAWAY_SCALE : OVERLAY_SCALE;
 
   const containerStyle: React.CSSProperties =
