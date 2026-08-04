@@ -4,11 +4,9 @@
 
 This repo is configured to use the [wavespeed-mcp](https://pypi.org/project/wavespeed-mcp/) server for AI image/video generation via Claude Code.
 
-Setup:
+Setup (each collaborator registers it locally, so no API key is committed):
 
 ```
 pip install -r requirements.txt
-export WAVESPEED_API_KEY=your_api_key_here
+claude mcp add wavespeed -e WAVESPEED_API_KEY=your_api_key_here -- wavespeed-mcp
 ```
-
-The server is declared in `.mcp.json` and will be picked up automatically by Claude Code in this repo.
