@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "wavespeed": {
+      "command": "uvx",
+      "args": ["wavespeed-mcp"],
+      "env": {
+        "WAVESPEED_API_KEY": "${WAVESPEED_API_KEY}",
+        "WAVESPEED_API_RESOURCE_MODE": "url"
+      }
+    }
+  }
+}
