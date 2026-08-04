@@ -1,0 +1,258 @@
+{
+  "fps": 30,
+  "audioFile": "assets/audio/wp-full-narration.mp3",
+  "audioDurationSeconds": 375.771429,
+  "audioDurationFrames": 11274,
+  "beats": [
+    {
+      "beat": 1,
+      "label": "We've all prayed before. In fact,\u2026",
+      "text": "We've all prayed before. In fact, for most of us, it has become our way of life.",
+      "start_seconds": 0.0,
+      "end_seconds": 5.46,
+      "start_frame": 0,
+      "end_frame": 164,
+      "duration_frames": 164
+    },
+    {
+      "beat": 2,
+      "label": "Yet we pray like God is\u2026",
+      "text": "Yet we pray like God is somewhere far above us, and the goal of prayer is to somehow close that distance.",
+      "start_seconds": 6.14,
+      "end_seconds": 13.16,
+      "start_frame": 184,
+      "end_frame": 395,
+      "duration_frames": 211
+    },
+    {
+      "beat": 3,
+      "label": "We think we need to pray\u2026",
+      "text": "We think we need to pray loud enough, maybe long enough, and with enough faith, He may hear us.",
+      "start_seconds": 14.2,
+      "end_seconds": 20.44,
+      "start_frame": 426,
+      "end_frame": 613,
+      "duration_frames": 187
+    },
+    {
+      "beat": 4,
+      "label": "But what if that picture is\u2026",
+      "text": "But what if that picture is completely wrong?",
+      "start_seconds": 21.34,
+      "end_seconds": 24.1,
+      "start_frame": 640,
+      "end_frame": 723,
+      "duration_frames": 83
+    },
+    {
+      "beat": 5,
+      "label": "You see, Paul writes something in\u2026",
+      "text": "You see, Paul writes something in 1 Corinthians 6 verse 19. He says, Do you not know that your body is a temple of the Holy Spirit within you?",
+      "start_seconds": 24.86,
+      "end_seconds": 36.58,
+      "start_frame": 746,
+      "end_frame": 1097,
+      "duration_frames": 351
+    },
+    {
+      "beat": 6,
+      "label": "Paul didn't say God visits when\u2026",
+      "text": "Paul didn't say God visits when you worship, or that God comes near when you pray hard enough. He says your body is a temple. A dwelling place. God is already inside you.",
+      "start_seconds": 37.4,
+      "end_seconds": 51.24,
+      "start_frame": 1122,
+      "end_frame": 1537,
+      "duration_frames": 415
+    },
+    {
+      "beat": 7,
+      "label": "But here is what makes that\u2026",
+      "text": "But here is what makes that bigger than it sounds.",
+      "start_seconds": 51.24,
+      "end_seconds": 54.88,
+      "start_frame": 1537,
+      "end_frame": 1646,
+      "duration_frames": 109
+    },
+    {
+      "beat": 8,
+      "label": "In Greek, there were two words\u2026",
+      "text": "In Greek, there were two words for the Temple in Jerusalem. The first one was hieron \u2014 and hieron means the whole complex, the outer courts or the public areas anyone could enter. But Paul does not use that word. What he uses is naos.",
+      "start_seconds": 56.38,
+      "end_seconds": 77.32,
+      "start_frame": 1691,
+      "end_frame": 2320,
+      "duration_frames": 629
+    },
+    {
+      "beat": 9,
+      "label": "Now, naos means the inner sanctuary,\u2026",
+      "text": "Now, naos means the inner sanctuary, the Holy of Holies. The one room so sacred that only one person on earth was permitted to enter it \u2014 the high priest \u2014 and only once a year. The high priest entered with bells on his robe so people outside could hear he was still moving, and a rope tied to his ankle so they could pull him out if he died in there.",
+      "start_seconds": 78.38,
+      "end_seconds": 104.26,
+      "start_frame": 2351,
+      "end_frame": 3128,
+      "duration_frames": 777
+    },
+    {
+      "beat": 10,
+      "label": "That room. Paul says that room\u2026",
+      "text": "That room. Paul says that room is now you. In you.",
+      "start_seconds": 105.12,
+      "end_seconds": 110.88,
+      "start_frame": 3154,
+      "end_frame": 3326,
+      "duration_frames": 172
+    },
+    {
+      "beat": 11,
+      "label": "The most sacred space in the\u2026",
+      "text": "The most sacred space in the entire Jewish world \u2014 the room where God's presence lived, the same room people died for entering wrongly \u2014 is now inside every believer.",
+      "start_seconds": 111.84,
+      "end_seconds": 125.38,
+      "start_frame": 3355,
+      "end_frame": 3761,
+      "duration_frames": 406
+    },
+    {
+      "beat": 12,
+      "label": "In John 4, we see Jesus\u2026",
+      "text": "In John 4, we see Jesus sitting at a well talking to a Samaritan woman. The woman then asks Him a question that her entire community had been arguing about for generations. She says, our fathers worshiped on this mountain, but you Jews say Jerusalem is the place. Where is the right place to meet God? Which location? Which mountain?",
+      "start_seconds": 126.88,
+      "end_seconds": 151.8,
+      "start_frame": 3806,
+      "end_frame": 4554,
+      "duration_frames": 748
+    },
+    {
+      "beat": 13,
+      "label": "And Jesus says something profound. The\u2026",
+      "text": "And Jesus says something profound. The time is coming \u2014 and it is already here \u2014 when true worshippers will worship the Father in spirit and truth. Not on a mountain or a city. But in spirit.",
+      "start_seconds": 152.9,
+      "end_seconds": 168.32,
+      "start_frame": 4587,
+      "end_frame": 5050,
+      "duration_frames": 463
+    },
+    {
+      "beat": 14,
+      "label": "The word spirit is pneuma in\u2026",
+      "text": "The word spirit is pneuma in Greek and ruach in Hebrew, and it did not mean feelings or emotions to the people Jesus was speaking to. It meant the breath of God. The living presence of God. The same breath that hovered over the waters in Genesis 1 before anything existed. So in essence, Jesus was saying that the location of God is no longer a building, but his own presence living inside people.",
+      "start_seconds": 169.74,
+      "end_seconds": 203.8,
+      "start_frame": 5092,
+      "end_frame": 6114,
+      "duration_frames": 1022
+    },
+    {
+      "beat": 15,
+      "label": "And then He proved it.",
+      "text": "And then He proved it.",
+      "start_seconds": 204.46,
+      "end_seconds": 206.73,
+      "start_frame": 6134,
+      "end_frame": 6202,
+      "duration_frames": 68
+    },
+    {
+      "beat": 16,
+      "label": "In Matthew 27 verse 51, the\u2026",
+      "text": "In Matthew 27 verse 51, the moment Jesus died on the cross, the veil of the Temple tore in two. From top to bottom. That veil was the barrier between the outer courts and the Holy of Holies.",
+      "start_seconds": 208.0,
+      "end_seconds": 223.2,
+      "start_frame": 6240,
+      "end_frame": 6696,
+      "duration_frames": 456
+    },
+    {
+      "beat": 17,
+      "label": "It did not tear from the\u2026",
+      "text": "It did not tear from the bottom up. It did not tear because of a crowd or an earthquake. It tore from the top down. Something on the other side opened it. And what was behind that veil \u2014 the presence of God \u2014 was no longer contained in one room or building.",
+      "start_seconds": 224.24,
+      "end_seconds": 245.62,
+      "start_frame": 6727,
+      "end_frame": 7369,
+      "duration_frames": 642
+    },
+    {
+      "beat": 18,
+      "label": "So when you pray, you are\u2026",
+      "text": "So when you pray, you are not sending a message to someone far away and hoping it arrives. You are turning your attention toward someone who has never left the room. Who is closer to you than your own heartbeat.",
+      "start_seconds": 245.62,
+      "end_seconds": 260.24,
+      "start_frame": 7369,
+      "end_frame": 7807,
+      "duration_frames": 438
+    },
+    {
+      "beat": 19,
+      "label": "Which raises the question I really\u2026",
+      "text": "Which raises the question I really want you to sit with. If God is that close, and if the same presence that filled the Holy of Holies is actually living inside you \u2014 why does He feel so far away most of the time?",
+      "start_seconds": 262.06,
+      "end_seconds": 278.82,
+      "start_frame": 7862,
+      "end_frame": 8365,
+      "duration_frames": 503
+    },
+    {
+      "beat": 20,
+      "label": "The Jewish prayer tradition has a\u2026",
+      "text": "The Jewish prayer tradition has a word that gets closer to the real answer. That word is kavanah. And it means direction. The orientation of your heart toward the one you are talking to. The rabbis said prayer without kavanah was like a body without a soul.",
+      "start_seconds": 280.08,
+      "end_seconds": 300.38,
+      "start_frame": 8402,
+      "end_frame": 9011,
+      "duration_frames": 609
+    },
+    {
+      "beat": 21,
+      "label": "So you could say all the\u2026",
+      "text": "So you could say all the right words, be in the right position and the right building, and still be completely turned away from the person you are supposedly talking to.",
+      "start_seconds": 301.18,
+      "end_seconds": 312.68,
+      "start_frame": 9035,
+      "end_frame": 9380,
+      "duration_frames": 345
+    },
+    {
+      "beat": 22,
+      "label": "That is what most of us\u2026",
+      "text": "That is what most of us do without realising it. We perform prayer instead of practicing presence. We talk toward God instead of actually talking to God. And then we wonder why nothing feels real.",
+      "start_seconds": 314.4,
+      "end_seconds": 330.46,
+      "start_frame": 9432,
+      "end_frame": 9914,
+      "duration_frames": 482
+    },
+    {
+      "beat": 23,
+      "label": "The veil is already torn. The\u2026",
+      "text": "The veil is already torn. The naos \u2014 the Holy of Holies \u2014 is already inside you. The presence that the high priest trembled before is not behind a curtain anymore. It is in you. Right now. In this moment. Whether you feel it or not.",
+      "start_seconds": 331.64,
+      "end_seconds": 352.14,
+      "start_frame": 9949,
+      "end_frame": 10564,
+      "duration_frames": 615
+    },
+    {
+      "beat": 24,
+      "label": "The only question is are you\u2026",
+      "text": "The only question is \u2014 are you turned toward it?",
+      "start_seconds": 352.94,
+      "end_seconds": 356.52,
+      "start_frame": 10588,
+      "end_frame": 10696,
+      "duration_frames": 108
+    },
+    {
+      "beat": 25,
+      "label": "So before your next prayer, stop\u2026",
+      "text": "So before your next prayer, stop before you say anything. Remember where you are. You are not trying to reach someone far away. You are turning toward someone who has been present inside the very place you keep forgetting to look.",
+      "start_seconds": 357.58,
+      "end_seconds": 375.18,
+      "start_frame": 10727,
+      "end_frame": 11255,
+      "duration_frames": 528
+    }
+  ]
+}
