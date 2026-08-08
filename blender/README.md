@@ -60,3 +60,30 @@ blender --background magnet_model.blend --python setup_hdri_lighting.py -- hdri/
 # Render a preview image
 blender --background magnet_model_hdri.blend --python render_magnet.py -- magnet_hdri_render.png
 ```
+
+## Studio backdrop (infinity cove)
+
+- `setup_studio_backdrop.py` — builds a curved "infinity cove" backdrop (floor
+  smoothly curving into a wall, no visible seam) with a dark grid material, and
+  adds it to the scene.
+- `compose_studio_scene.py` — arranges the subject on the backdrop: rotates
+  the cove so its floor faces the camera's preferred side, lifts the subject
+  to rest on the floor (instead of clipping through it, since the imported
+  model's origin isn't at its base), and frames a camera on the *subject*
+  rather than the whole (much larger) backdrop.
+- `render_studio_scene.py` — renders using the scene's already-configured
+  camera, without re-framing (re-framing on the full scene bounding box would
+  zoom out to fit the backdrop and shrink the subject to a speck).
+- `magnet_scene_with_backdrop.blend` — the composed scene.
+- `studio_scene_render.png` — a preview render.
+
+```sh
+# Build the backdrop
+blender --background magnet_model_hdri.blend --python setup_studio_backdrop.py -- --output magnet_scene_with_backdrop.blend
+
+# Arrange the subject + camera on it
+blender --background magnet_scene_with_backdrop.blend --python compose_studio_scene.py -- --output magnet_scene_with_backdrop.blend
+
+# Render a preview image
+blender --background magnet_scene_with_backdrop.blend --python render_studio_scene.py -- studio_scene_render.png
+```
