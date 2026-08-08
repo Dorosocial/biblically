@@ -42,3 +42,21 @@ blender --background magnet_model.blend --python render_magnet.py -- magnet_rend
 Note: Blender's bundled Python needs `numpy` for the glTF importer
 (`apt install python3-numpy` on Debian/Ubuntu, since Blender uses the system
 Python here).
+
+## HDRI world lighting
+
+- `hdri/studio.exr` — equirectangular HDRI (4096×2048) used to light scenes.
+- `setup_hdri_lighting.py` — wires the World's node tree as
+  `Environment Texture (HDRI) -> Background -> World Output`, so both the
+  lighting and the background reflect the HDRI. Image is stored as a
+  blend-relative path (`//hdri/studio.exr`) so it stays portable with the repo.
+- `magnet_model_hdri.blend` — the magnet scene with HDRI world lighting applied.
+- `magnet_hdri_render.png` — a preview render showing the HDRI-lit magnet.
+
+```sh
+# Apply HDRI world lighting to an existing scene
+blender --background magnet_model.blend --python setup_hdri_lighting.py -- hdri/studio.exr magnet_model_hdri.blend [strength]
+
+# Render a preview image
+blender --background magnet_model_hdri.blend --python render_magnet.py -- magnet_hdri_render.png
+```
