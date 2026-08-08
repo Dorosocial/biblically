@@ -1,0 +1,22 @@
+{
+  "name": "earth-stops-spinning",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Remotion video: the physics of what happens if Earth's rotation stopped instantly for one second.",
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render EarthStopsSpinning out/earth-stops-spinning.mp4",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.507",
+    "@remotion/google-fonts": "4.0.507",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.507"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.1",
+    "typescript": "5.5.4"
+  }
+}
