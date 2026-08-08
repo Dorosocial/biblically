@@ -87,3 +87,71 @@ blender --background magnet_scene_with_backdrop.blend --python compose_studio_sc
 # Render a preview image
 blender --background magnet_scene_with_backdrop.blend --python render_studio_scene.py -- studio_scene_render.png
 ```
+
+## Magnet levitation animation
+
+A 5-second (150 frames @ 30fps), 1920x1080 animation of one magnet falling
+and settling into a hover above another, with a cinematic camera push-in.
+Built on a copy of `magnet_model_hdri.blend` (no studio backdrop - see
+below for why) using **Blender 5.2.0 LTS**, not the apt-installed 4.0.2:
+that version predates EEVEE Next / ray tracing, and its Action API differs
+(pre-4.4 `action.fcurves` vs. the newer layered
+`action.layers[].strips[].channelbags[].fcurves`, which the scripts below
+handle via a compatibility shim).
+
+- `setup_levitation.py` — duplicates the magnet into `BottomMagnet` (world
+  origin) and `TopMagnet`, then animates `TopMagnet` falling and settling
+  into a hover above `BottomMagnet` with a decaying bounce. Uses Blender's
+  Bounce/EaseOut easing between exactly two keyframes (start height, hover
+  height) - this interpolation is a convex blend of the two values, so it's
+  mathematically guaranteed to never overshoot past the hover height, i.e.
+  the magnets can never touch.
+- `setup_levitation_camera.py` — aims the camera at the gap between the two
+  magnets and animates a slow push-in. The safe framing distance is derived
+  from the camera's actual field of view at the target resolution, not a
+  guessed constant.
+- `setup_levitation_render_settings.py` — sets the render engine to EEVEE
+  Next (`BLENDER_EEVEE` is the only/renamed EEVEE identifier from Blender
+  4.2 onward) with `use_raytracing` enabled, 1920x1080 resolution, and a
+  subtle depth-of-field (f/2.8, focused on the gap). Sample count is tuned
+  down from EEVEE's 64 default to 32, since this environment has no GPU and
+  EEVEE Next's ray tracing runs on CPU software rasterization - 32 was
+  visually indistinguishable from 64 in test renders of this scene.
+- `render_levitation_animation.py` — renders the animation as a PNG
+  sequence. **Not** an FFMPEG/MP4 direct render: this Blender build's
+  `image_settings.file_format` rejects `'FFMPEG'` at assignment time
+  (`TypeError`) despite `bpy.app.build_options.codec_ffmpeg` reporting
+  `True` - the runtime enum excludes it in this environment regardless.
+- `encode_video.sh` — muxes the PNG sequence into an MP4 (H.264) with a
+  standalone `ffmpeg` binary, sidestepping Blender's muxer entirely.
+- `magnet_levitation.blend` — the built scene.
+- `magnet_levitation.mp4` — the final rendered video.
+
+Why no studio backdrop: placing `BottomMagnet` at the literal world origin
+(0,0,0), as requested, puts it exactly where the studio cove's curve peaks
+at its maximum height - geometrically hidden from any front-facing camera
+on the open floor side (confirmed by tracing the camera ray against the
+curve's profile). Rather than move the magnet off the requested coordinate
+or fight the backdrop's geometry, this scene drops the backdrop and keeps
+just the HDRI environment lighting.
+
+```sh
+# All scripts below assume a Blender 4.2+ build (this repo used 5.2.0 LTS,
+# installed separately since the apt package here is 4.0.2). Substitute
+# your own `blender` binary path.
+BLENDER=/opt/blender-5.2.0/blender
+
+# 1: duplicate + fall/settle animation
+$BLENDER --background magnet_model_hdri.blend --python setup_levitation.py -- --output magnet_levitation.blend
+
+# 2: camera push-in
+$BLENDER --background magnet_levitation.blend --python setup_levitation_camera.py -- --output magnet_levitation.blend
+
+# 3: render engine / resolution / DOF
+$BLENDER --background magnet_levitation.blend --python setup_levitation_render_settings.py -- --output magnet_levitation.blend
+
+# 4: render PNG sequence, then mux to MP4
+mkdir -p frames
+$BLENDER --background magnet_levitation.blend --python render_levitation_animation.py -- --output frames/frame_
+./encode_video.sh frames/frame_ magnet_levitation.mp4 30
+```
