@@ -27,7 +27,8 @@ def parse_args():
     args = {
         "output": None,
         "rot_period": "3.0",   # seconds per full revolution, placeholder
-        "duration": "36.0",
+        "duration": "57.2865",  # confirmed: matches audio/8f8241d5-aballrotating.mp3
+                                 # (the narration track), not the 36s originally assumed
         "fps": "30",
     }
     i = 0

@@ -2,6 +2,25 @@
 
 Status: **technical foundation validated, shot content not yet built.**
 
+**Correction (confirmed by user):** the video's actual runtime is **57.2865s**
+(1719 frames @ 30fps), matching `audio/8f8241d5-aballrotating.mp3` - that
+file is the narration track, not a sound effect. Everything below that
+still says "36s" is describing the placeholder state before this
+correction; `build_cameras.py`'s default duration is now fixed to match
+the narration and the pipeline has been rebuilt against it.
+
+I don't have a speech-to-text tool available, so I can't transcribe the
+narration's actual words or map its content to specific shots - that
+would be guessing. What I *can* verify from the audio itself
+(`ffmpeg -af silencedetect`): mostly small word-level pauses throughout,
+plus one clearly larger gap at **34.68-34.98s** (0.3s of silence, the
+single biggest pause in the track), which is a plausible section
+boundary - some kind of transition or tonal shift probably lands near
+there. There's also an unusually long *pause-free* stretch from ~41.7s to
+~50.8s (9s with no detected gaps at all), meaning that's one continuous
+sentence/phrase, not several short ones. None of this says what's being
+said - it's just measurable structure, offered as a starting point.
+
 ## What's here
 
 A reproducible pipeline (`build_all.sh`, chaining the four `build_*.py`
