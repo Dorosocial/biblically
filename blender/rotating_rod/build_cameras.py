@@ -90,9 +90,14 @@ def main():
         for kf in fcurve.keyframe_points:
             kf.interpolation = "LINEAR"
 
-    # Fixed outside camera: looks at the rig's pivot from a normal 3/4
-    # elevated angle, distance derived from the rig's rough size the same
-    # way the levitation scene's camera distance was computed.
+    # Fixed outside camera: looks at the rig from a normal 3/4 elevated
+    # angle. NOTE (bug fixed during testing): framing on rig_pivot.location
+    # alone put the ball outside frame once the camera was pulled in to fit
+    # inside the circular backdrop's wall - the pivot is one END of the
+    # rod, not its center, so a tight distance around the pivot doesn't
+    # leave room for the rod+ball extending off to one side. Framing on the
+    # rod's midpoint, with distance derived from the camera's actual FOV
+    # (not a guessed multiplier), fixes this regardless of rod length.
     if "FixedCamera" in bpy.data.objects:
         bpy.data.objects.remove(bpy.data.objects["FixedCamera"], do_unlink=True)
     cam_data = bpy.data.cameras.new("FixedCamera")
@@ -100,10 +105,20 @@ def main():
     bpy.context.collection.objects.link(fixed_cam)
     scene.render.resolution_x = 1080
     scene.render.resolution_y = 1920
-    target = rig_pivot.location.copy()
-    direction = Vector((0.0, -1.0, 0.2)).normalized()
+
+    ball_radius = ball.dimensions.x / 2.0  # sphere, any axis works
     rod_length = ball_local_pos.length
-    distance = rod_length * 6.0
+    # Target the pivot (the orbit's center), sized to fit the ball's FULL
+    # swept circle (radius rod_length+ball_radius) - not just its frame-1
+    # position - since this is a static camera and the ball orbits all the
+    # way around over time.
+    target = rig_pivot.location.copy()
+    half_extent = rod_length + ball_radius
+    margin = 1.3
+    half_fov = min(cam_data.angle_x, cam_data.angle_y) / 2.0
+    distance = half_extent * margin / math.tan(half_fov)
+
+    direction = Vector((0.0, -1.0, 0.2)).normalized()
     fixed_cam.location = target + direction * distance
     look_dir = target - fixed_cam.location
     fixed_cam.rotation_euler = look_dir.to_track_quat("-Z", "Y").to_euler()
@@ -122,7 +137,7 @@ def main():
     # along the rod's local +X axis (this offset never changes even as
     # RigPivot rotates in world space - that's what "locks" the camera to
     # the rotating frame).
-    local_distance = rod_length * 3.0
+    local_distance = rod_length * 2.5
     local_offset = ball_local_pos + Vector((0.0, -local_distance, local_distance * 0.4))
     rot_cam.location = local_offset
     local_look_dir = ball_local_pos - local_offset
