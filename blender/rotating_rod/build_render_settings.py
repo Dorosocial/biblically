@@ -27,7 +27,7 @@ import sys
 def parse_args():
     argv = sys.argv
     argv = argv[argv.index("--") + 1:] if "--" in argv else []
-    args = {"output": None, "samples": "8", "fstop": "4.0"}
+    args = {"output": None, "samples": "8", "fstop": "4.0", "world_strength": "2.0"}
     i = 0
     while i < len(argv):
         key = argv[i].lstrip("-").replace("-", "_")
@@ -61,10 +61,23 @@ def main():
     render.resolution_y = 1920
     render.resolution_percentage = 100
 
+    # World exposure pass: the enclosed circular backdrop is lit by one SUN
+    # light (energy 2.0) plus the HDRI's own ambient contribution
+    # (Background strength, was 1.0). With a single directional light and a
+    # camera that can face any azimuth, the wall opposite the sun reads
+    # noticeably dark - confirmed by comparing strength 1.0/1.8/2.5 renders
+    # from both cameras. 2.0 lifts the shadow side to a clean, evenly-lit
+    # look without blowing out the chrome ball's reflections.
+    world = scene.world
+    bg_node = world.node_tree.nodes.get("Background")
+    if bg_node is not None:
+        bg_node.inputs["Strength"].default_value = float(ARGS["world_strength"])
+
     print(f"Render settings: engine={render.engine}, raytracing={scene.eevee.use_raytracing}, "
           f"samples={scene.eevee.taa_render_samples}, trace_max_roughness="
           f"{scene.eevee.ray_tracing_options.trace_max_roughness}, "
-          f"res={render.resolution_x}x{render.resolution_y}")
+          f"res={render.resolution_x}x{render.resolution_y}, "
+          f"world_strength={ARGS['world_strength']}")
 
     if ARGS["output"]:
         bpy.ops.wm.save_as_mainfile(filepath=ARGS["output"])

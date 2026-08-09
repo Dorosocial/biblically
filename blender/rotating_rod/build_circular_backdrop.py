@@ -28,7 +28,6 @@ def parse_args():
     args = {
         "output": None,
         "wall_radius": "8.0",
-        "floor_depth": "6.0",
         "curve_radius": "2.5",
         "wall_height": "8.0",
         "segments": "64",
@@ -99,7 +98,7 @@ def emission_free_grid_material(grid_color=(0.08, 0.09, 0.11)):
     return mat
 
 
-def build_circular_backdrop(center_xy, wall_radius, floor_depth, curve_radius,
+def build_circular_backdrop(center_xy, wall_radius, curve_radius,
                              wall_height, segments):
     """Revolves a (radius, z) profile around the vertical axis through
     center_xy to build a fully circular floor-curving-into-wall enclosure.
@@ -161,7 +160,6 @@ def build_circular_backdrop(center_xy, wall_radius, floor_depth, curve_radius,
 
 def main():
     wall_radius = float(ARGS["wall_radius"])
-    floor_depth = float(ARGS["floor_depth"])
     curve_radius = float(ARGS["curve_radius"])
     wall_height = float(ARGS["wall_height"])
     segments = int(ARGS["segments"])
@@ -173,11 +171,11 @@ def main():
     rig_pivot = bpy.data.objects["RigPivot"]
     center_xy = (rig_pivot.location.x, rig_pivot.location.y)
 
-    build_circular_backdrop(center_xy, wall_radius, floor_depth, curve_radius,
+    build_circular_backdrop(center_xy, wall_radius, curve_radius,
                              wall_height, segments)
 
     print(f"Circular backdrop built: center={center_xy}, wall_radius={wall_radius}, "
-          f"outer_radius={wall_radius + floor_depth}, wall_height={wall_height}, "
+          f"floor spans r=0 to {wall_radius}, wall_height={wall_height}, "
           f"segments={segments}")
 
     if ARGS["output"]:
