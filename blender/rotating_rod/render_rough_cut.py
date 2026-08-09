@@ -14,6 +14,8 @@ Run headless:
 import bpy
 import sys
 import time
+import subprocess
+import os
 
 
 def parse_args():
@@ -35,11 +37,12 @@ def parse_args():
 ARGS = parse_args()
 
 # (start_seconds, camera_name) - camera holds until the next entry's start
-# time. Matches SHOT_LIST.md's table.
+# time. Matches SHOT_LIST.md's table. "SPLIT" means both cameras,
+# composited side-by-side (left=FixedCamera, right=RotatingCamera).
 SHOT_TIMING = [
     (0.0, "FixedCamera"),      # establish
     (14.0, "FixedCamera"),     # reset + annotated orbit (arrow not yet built)
-    (38.0, "FixedCamera"),     # split-screen window - placeholder single-cam for now
+    (38.0, "SPLIT"),           # split-screen: left=outside, right=rotating frame
     (46.0, "FixedCamera"),     # both-arrows reinforcement
     (53.0, "FixedCamera"),     # closing
 ]
@@ -55,10 +58,44 @@ def camera_for_time(t):
     return cam
 
 
+def render_split_frame(scene, out_path, tmp_dir):
+    """Renders FixedCamera and RotatingCamera separately, then crops each
+    to its center half-width and hstacks them into a single 1080x1920
+    frame at out_path - same technique as the original isolated
+    split-screen test (test_renders/split_screen_isolated_test.mp4),
+    now wired into the main render path instead of a one-off script."""
+    res_x = scene.render.resolution_x * scene.render.resolution_percentage // 100
+    res_y = scene.render.resolution_y * scene.render.resolution_percentage // 100
+    half_w = res_x // 2
+
+    left_path = f"{tmp_dir}/split_left.png"
+    right_path = f"{tmp_dir}/split_right.png"
+
+    scene.camera = bpy.data.objects["FixedCamera"]
+    scene.render.filepath = left_path[:-4]  # Blender appends .png itself
+    bpy.ops.render.render(write_still=True)
+
+    scene.camera = bpy.data.objects["RotatingCamera"]
+    scene.render.filepath = right_path[:-4]
+    bpy.ops.render.render(write_still=True)
+
+    crop_x = (res_x - half_w) // 2
+    subprocess.run([
+        "ffmpeg", "-y", "-i", left_path, "-i", right_path,
+        "-filter_complex",
+        f"[0:v]crop={half_w}:{res_y}:{crop_x}:0[left];"
+        f"[1:v]crop={half_w}:{res_y}:{crop_x}:0[right];"
+        f"[left][right]hstack=inputs=2[out]",
+        "-map", "[out]", out_path,
+    ], check=True, capture_output=True)
+
+
 def main():
     scene = bpy.context.scene
     fps = scene.render.fps
     out_dir = ARGS["out_dir"].rstrip("/")
+    tmp_dir = f"{out_dir}/_tmp_split"
+    os.makedirs(tmp_dir, exist_ok=True)
 
     scene.render.resolution_percentage = int(ARGS["res_percent"])
     scene.eevee.taa_render_samples = int(ARGS["samples"])
@@ -73,10 +110,14 @@ def main():
     for i, frame in enumerate(frames):
         t = (frame - 1) / fps
         cam_name = camera_for_time(t)
-        scene.camera = bpy.data.objects[cam_name]
         scene.frame_set(frame)
-        scene.render.filepath = f"{out_dir}/frame_{frame:04d}"
-        bpy.ops.render.render(write_still=True)
+        out_path = f"{out_dir}/frame_{frame:04d}.png"
+        if cam_name == "SPLIT":
+            render_split_frame(scene, out_path, tmp_dir)
+        else:
+            scene.camera = bpy.data.objects[cam_name]
+            scene.render.filepath = out_path[:-4]
+            bpy.ops.render.render(write_still=True)
         if i % 10 == 0:
             elapsed = time.time() - t0
             eta = elapsed / (i + 1) * (len(frames) - i - 1)

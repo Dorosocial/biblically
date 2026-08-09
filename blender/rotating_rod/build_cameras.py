@@ -62,32 +62,57 @@ def get_fcurves(action):
     return fcurves
 
 
-def bake_location_fcurves(obj, name, samples_xyz):
-    """samples_xyz: list of (frame, x, y, z). Bulk-inserts linear keyframes -
-    same technique build_motion.py uses for the ball, so long bakes stay
-    fast (no per-frame keyframe_insert operator calls)."""
-    action = bpy.data.actions.new(name)
-    obj.animation_data_create()
-    obj.animation_data.action = action
+def get_or_create_action_fcurve_source(obj, name):
+    """One action per object, reused across multiple bake_fcurves() calls -
+    each call used to create its OWN fresh action and overwrite
+    obj.animation_data.action, silently discarding whatever the previous
+    call had baked (e.g. baking rotation after location wiped location).
+    Bug caught before ever running it, fixed by sharing one action."""
+    if obj.animation_data and obj.animation_data.action:
+        action = obj.animation_data.action
+    else:
+        action = bpy.data.actions.new(name)
+        obj.animation_data_create()
+        obj.animation_data.action = action
     try:
-        layer = action.layers.new("Layer")
-        strip = layer.strips.new(type="KEYFRAME")
-        channelbag = strip.channelbags.new(slot=action.slots.new(id_type="OBJECT", name=name))
-        obj.animation_data.action_slot = action.slots[0]
-        fcurve_source = channelbag
+        if action.layers:
+            channelbag = action.layers[0].strips[0].channelbags[0]
+        else:
+            layer = action.layers.new("Layer")
+            strip = layer.strips.new(type="KEYFRAME")
+            channelbag = strip.channelbags.new(slot=action.slots.new(id_type="OBJECT", name=name))
+            obj.animation_data.action_slot = action.slots[0]
+        return channelbag
     except AttributeError:
-        fcurve_source = action
+        return action
 
-    for axis_idx in range(3):
-        fcurve = fcurve_source.fcurves.new(data_path="location", index=axis_idx)
-        fcurve.keyframe_points.add(len(samples_xyz))
+
+def bake_fcurves(obj, name, data_path, samples):
+    """samples: list of (frame, v0, v1, ...) matching data_path's
+    dimensionality (3 for location/rotation_euler). Bulk-inserts linear
+    keyframes - same technique build_motion.py uses for the ball, so long
+    bakes stay fast (no per-frame keyframe_insert operator calls)."""
+    fcurve_source = get_or_create_action_fcurve_source(obj, name)
+    num_components = len(samples[0]) - 1
+    for axis_idx in range(num_components):
+        fcurve = fcurve_source.fcurves.new(data_path=data_path, index=axis_idx)
+        fcurve.keyframe_points.add(len(samples))
         flat = []
-        for (frame, x, y, z) in samples_xyz:
-            flat.extend((float(frame), (x, y, z)[axis_idx]))
+        for row in samples:
+            flat.extend((float(row[0]), row[1 + axis_idx]))
         fcurve.keyframe_points.foreach_set("co", flat)
         for kf in fcurve.keyframe_points:
             kf.interpolation = "LINEAR"
         fcurve.update()
+
+
+def bake_location_fcurves(obj, name, samples_xyz):
+    bake_fcurves(obj, name, "location", samples_xyz)
+
+
+def bake_rotation_fcurves(obj, name, samples_xyz):
+    obj.rotation_mode = "XYZ"
+    bake_fcurves(obj, name, "rotation_euler", samples_xyz)
 
 
 def main():
@@ -126,14 +151,29 @@ def main():
 
     ball_radius = ball.dimensions.x / 2.0  # sphere, any axis works
     rod_length = ball_local_pos.length
-    # Target the pivot (the orbit's center) and never re-aim - only the
-    # DISTANCE along a fixed viewing direction changes per frame, so the
-    # camera zooms in/out but never swivels.
+    # Target the pivot (the orbit's center). Distance (zoom) AND now the
+    # viewing angle both vary per frame - see orbit drift note below.
     target = rig_pivot.location.copy()
     base_half_extent = rod_length + ball_radius
     margin = 1.3
     half_fov = min(cam_data.angle_x, cam_data.angle_y) / 2.0
-    direction = Vector((0.0, -1.0, 0.2)).normalized()
+    base_direction = Vector((0.0, -1.0, 0.2)).normalized()
+
+    # Slow orbital drift: user feedback on the first rough cut was that
+    # long static holds (11s+ of just watching the rod spin from one fixed
+    # angle) read as dead camera work. Rather than cut more, the camera
+    # itself slowly circles the rig - gentle and continuous across the
+    # whole timeline (not paused during releases; it's slow enough not to
+    # fight those beats). total_drift_degrees is deliberately small - this
+    # is a subtle drift, not an orbit shot.
+    total_drift_degrees = 30.0
+
+    def direction_at(t):
+        angle = math.radians(total_drift_degrees) * (t / duration)
+        cos_a, sin_a = math.cos(angle), math.sin(angle)
+        return Vector((base_direction.x * cos_a - base_direction.y * sin_a,
+                        base_direction.x * sin_a + base_direction.y * cos_a,
+                        base_direction.z))
 
     # Dynamic zoom, baked per frame: reads the ball's ALREADY-BAKED motion
     # (build_motion.py) via its fcurves directly (fast - no per-frame
@@ -151,8 +191,11 @@ def main():
     max_half_extent = 15.0  # world units the ball can be from the pivot before capping
 
     samples = []
+    rotations = []
     dist_from_pivot_by_frame = {}  # reused below for RotatingCamera's own dynamic zoom
     for frame in range(scene.frame_start, scene.frame_end + 1):
+        t = (frame - 1) / fps
+        direction = direction_at(t)
         ball_pos = Vector((ball_fcurves[0].evaluate(frame),
                             ball_fcurves[1].evaluate(frame),
                             ball_fcurves[2].evaluate(frame)))
@@ -162,13 +205,11 @@ def main():
         frame_distance = frame_half_extent * margin / math.tan(half_fov)
         cam_pos = target + direction * frame_distance
         samples.append((frame, cam_pos.x, cam_pos.y, cam_pos.z))
+        look_dir = target - cam_pos
+        rotations.append((frame, *look_dir.to_track_quat("-Z", "Y").to_euler()))
 
     bake_location_fcurves(fixed_cam, "FixedCameraZoom", samples)
-    # Rotation is constant (same direction, distance-only zoom), so just
-    # set it once rather than keyframing - evaluate at the base distance.
-    base_cam_pos = target + direction * (base_half_extent * margin / math.tan(half_fov))
-    look_dir = target - base_cam_pos
-    fixed_cam.rotation_euler = look_dir.to_track_quat("-Z", "Y").to_euler()
+    bake_rotation_fcurves(fixed_cam, "FixedCameraDrift", rotations)
     scene.camera = fixed_cam
 
     # Rotating-frame camera: parented to RigPivot, positioned in RigPivot's
