@@ -16,7 +16,10 @@ SCENE=rotating_rod/scene.blend
   --python rotating_rod/build_rig.py -- --output "$SCENE"
 
 "$BLENDER" --background "$SCENE" \
-  --python rotating_rod/build_circular_backdrop.py -- --output "$SCENE" --wall-radius 24
+  --python rotating_rod/build_motion.py -- --output "$SCENE"
+
+"$BLENDER" --background "$SCENE" \
+  --python rotating_rod/build_circular_backdrop.py -- --output "$SCENE" --wall-radius 140
 
 "$BLENDER" --background "$SCENE" \
   --python rotating_rod/build_cameras.py -- --output "$SCENE"

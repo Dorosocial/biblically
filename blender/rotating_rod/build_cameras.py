@@ -1,14 +1,18 @@
 """
 build_cameras.py
-Adds a constant-angular-velocity rotation to RigPivot (placeholder motion
-for isolated testing - the real per-shot speed profile comes later) and two
-cameras:
+Adds two cameras to the rig (rod rotation + ball attach/release motion is
+built by build_motion.py, which must run first):
   - FixedCamera: a normal world-space camera aimed at the rig, for the
     "outside" shots.
   - RotatingCamera: parented to RigPivot so it rotates WITH the rod. Framed
-    on the ball at a fixed local offset, so in its view the ball appears
-    stationary while the background sweeps past - the rotating reference
-    frame the split-screen shot needs.
+    on the ball at a fixed local offset, so while the ball is attached it
+    appears stationary in this view as the background sweeps past - and
+    once released, since the rig keeps spinning under this camera while
+    the ball goes straight, the ball appears to swing outward on its own.
+    That illusion is exactly the "why does it look like the ball wants to
+    fly outward" the split-screen shot needs, and falls out of this
+    camera's fixed framing for free once build_motion.py's release is in
+    place - no extra work here.
 
 Run headless:
   blender --background rotating_rod/scene.blend --python rotating_rod/build_cameras.py -- \
@@ -26,7 +30,6 @@ def parse_args():
     argv = argv[argv.index("--") + 1:] if "--" in argv else []
     args = {
         "output": None,
-        "rot_period": "3.0",   # seconds per full revolution, placeholder
         "duration": "57.2865",  # confirmed: matches audio/8f8241d5-aballrotating.mp3
                                  # (the narration track), not the 36s originally assumed
         "fps": "30",
@@ -59,8 +62,35 @@ def get_fcurves(action):
     return fcurves
 
 
+def bake_location_fcurves(obj, name, samples_xyz):
+    """samples_xyz: list of (frame, x, y, z). Bulk-inserts linear keyframes -
+    same technique build_motion.py uses for the ball, so long bakes stay
+    fast (no per-frame keyframe_insert operator calls)."""
+    action = bpy.data.actions.new(name)
+    obj.animation_data_create()
+    obj.animation_data.action = action
+    try:
+        layer = action.layers.new("Layer")
+        strip = layer.strips.new(type="KEYFRAME")
+        channelbag = strip.channelbags.new(slot=action.slots.new(id_type="OBJECT", name=name))
+        obj.animation_data.action_slot = action.slots[0]
+        fcurve_source = channelbag
+    except AttributeError:
+        fcurve_source = action
+
+    for axis_idx in range(3):
+        fcurve = fcurve_source.fcurves.new(data_path="location", index=axis_idx)
+        fcurve.keyframe_points.add(len(samples_xyz))
+        flat = []
+        for (frame, x, y, z) in samples_xyz:
+            flat.extend((float(frame), (x, y, z)[axis_idx]))
+        fcurve.keyframe_points.foreach_set("co", flat)
+        for kf in fcurve.keyframe_points:
+            kf.interpolation = "LINEAR"
+        fcurve.update()
+
+
 def main():
-    rot_period = float(ARGS["rot_period"])
     duration = float(ARGS["duration"])
     fps = int(ARGS["fps"])
 
@@ -71,25 +101,12 @@ def main():
 
     rig_pivot = bpy.data.objects["RigPivot"]
     ball = bpy.data.objects["Ball"]
-    # NOTE: ball.location is NOT the local-to-pivot offset here - build_rig.py
-    # parented the ball with a custom matrix_parent_inverse (keep-transform),
-    # so .location still holds its original *world*-space creation
-    # coordinates. The true local position must go through the matrices.
+    # ball's real motion (attach/orbit/release/flight) is set up by
+    # build_motion.py, which must run before this script - it also
+    # force-evaluates frame 1 before saving, so this read is correct.
+    # NOTE: ball.location alone is NOT reliable here even post-motion-bake -
+    # go through matrix_world as build_motion.py itself does.
     ball_local_pos = rig_pivot.matrix_world.inverted() @ ball.matrix_world.translation
-
-    # Placeholder constant rotation for isolated testing - simple linear
-    # keyframes across the whole timeline, one full turn every rot_period
-    # seconds. The real shot-by-shot speed profile (freeze, slow-mo, release
-    # into a straight line, etc.) replaces this once each section is built.
-    rig_pivot.rotation_mode = "XYZ"
-    turns = duration / rot_period
-    rig_pivot.rotation_euler[2] = 0.0
-    rig_pivot.keyframe_insert(data_path="rotation_euler", index=2, frame=scene.frame_start)
-    rig_pivot.rotation_euler[2] = turns * 2 * math.pi
-    rig_pivot.keyframe_insert(data_path="rotation_euler", index=2, frame=scene.frame_end)
-    for fcurve in get_fcurves(rig_pivot.animation_data.action):
-        for kf in fcurve.keyframe_points:
-            kf.interpolation = "LINEAR"
 
     # Fixed outside camera: looks at the rig from a normal 3/4 elevated
     # angle. NOTE (bug fixed during testing): framing on rig_pivot.location
@@ -109,44 +126,93 @@ def main():
 
     ball_radius = ball.dimensions.x / 2.0  # sphere, any axis works
     rod_length = ball_local_pos.length
-    # Target the pivot (the orbit's center), sized to fit the ball's FULL
-    # swept circle (radius rod_length+ball_radius) - not just its frame-1
-    # position - since this is a static camera and the ball orbits all the
-    # way around over time.
+    # Target the pivot (the orbit's center) and never re-aim - only the
+    # DISTANCE along a fixed viewing direction changes per frame, so the
+    # camera zooms in/out but never swivels.
     target = rig_pivot.location.copy()
-    half_extent = rod_length + ball_radius
+    base_half_extent = rod_length + ball_radius
     margin = 1.3
     half_fov = min(cam_data.angle_x, cam_data.angle_y) / 2.0
-    distance = half_extent * margin / math.tan(half_fov)
-
     direction = Vector((0.0, -1.0, 0.2)).normalized()
-    fixed_cam.location = target + direction * distance
-    look_dir = target - fixed_cam.location
+
+    # Dynamic zoom, baked per frame: reads the ball's ALREADY-BAKED motion
+    # (build_motion.py) via its fcurves directly (fast - no per-frame
+    # depsgraph evaluation) rather than re-deriving attach/release timing
+    # here, so this camera logic stays decoupled from the specific release
+    # schedule. NOTE (bug found during testing): a static frame-1 distance
+    # only fit the attached orbit circle - once released, the ball's speed
+    # (tangent velocity = rod_length * omega) carries it out of that tight
+    # frame in well under a second, so "shoots straight off" was invisible,
+    # just an instant vanish. Widening per frame up to a capped maximum lets
+    # a release read as a beat (~2s visible) instead of a blink, while
+    # still snapping back to the tight orbit framing once re-attached.
+    ball_fcurves = {fc.array_index: fc for fc in get_fcurves(ball.animation_data.action)
+                     if fc.data_path == "location"}
+    max_half_extent = 15.0  # world units the ball can be from the pivot before capping
+
+    samples = []
+    dist_from_pivot_by_frame = {}  # reused below for RotatingCamera's own dynamic zoom
+    for frame in range(scene.frame_start, scene.frame_end + 1):
+        ball_pos = Vector((ball_fcurves[0].evaluate(frame),
+                            ball_fcurves[1].evaluate(frame),
+                            ball_fcurves[2].evaluate(frame)))
+        dist_from_pivot = (ball_pos - target).length
+        dist_from_pivot_by_frame[frame] = dist_from_pivot
+        frame_half_extent = min(max(base_half_extent, dist_from_pivot + ball_radius), max_half_extent)
+        frame_distance = frame_half_extent * margin / math.tan(half_fov)
+        cam_pos = target + direction * frame_distance
+        samples.append((frame, cam_pos.x, cam_pos.y, cam_pos.z))
+
+    bake_location_fcurves(fixed_cam, "FixedCameraZoom", samples)
+    # Rotation is constant (same direction, distance-only zoom), so just
+    # set it once rather than keyframing - evaluate at the base distance.
+    base_cam_pos = target + direction * (base_half_extent * margin / math.tan(half_fov))
+    look_dir = target - base_cam_pos
     fixed_cam.rotation_euler = look_dir.to_track_quat("-Z", "Y").to_euler()
     scene.camera = fixed_cam
 
     # Rotating-frame camera: parented to RigPivot, positioned in RigPivot's
-    # LOCAL space offset from the ball so it keeps the ball framed
-    # regardless of the pivot's world rotation.
+    # LOCAL space offset from the ball so it keeps the ball framed while
+    # attached, regardless of the pivot's world rotation.
     if "RotatingCamera" in bpy.data.objects:
         bpy.data.objects.remove(bpy.data.objects["RotatingCamera"], do_unlink=True)
     rot_cam_data = bpy.data.cameras.new("RotatingCamera")
     rot_cam = bpy.data.objects.new("RotatingCamera", rot_cam_data)
     bpy.context.collection.objects.link(rot_cam)
     rot_cam.parent = rig_pivot
-    # Local-space offset: behind and above the ball, looking back at it
-    # along the rod's local +X axis (this offset never changes even as
-    # RigPivot rotates in world space - that's what "locks" the camera to
-    # the rotating frame).
-    local_distance = rod_length * 2.5
-    local_offset = ball_local_pos + Vector((0.0, -local_distance, local_distance * 0.4))
-    rot_cam.location = local_offset
-    local_look_dir = ball_local_pos - local_offset
+    # Local-space direction: behind and above the ball, looking back at it
+    # along the rod's local +X axis. The TARGET point and direction never
+    # change (that's what "locks" the camera to the rotating frame and is
+    # exactly why a released ball visibly drifts in this view instead of
+    # staying centered) - only the distance along that direction is
+    # dynamic, same fix and same reason as FixedCamera above: a released
+    # ball's distance from the pivot axis is rotation-invariant, so the
+    # exact per-frame dist_from_pivot values computed for FixedCamera
+    # apply here unchanged, just converted to a LOCAL-space offset scale.
+    base_local_distance = rod_length * 2.5
+    base_reach = rod_length  # what base_local_distance was calibrated to frame
+    max_reach = 15.0  # match FixedCamera's cap
+    local_direction = Vector((0.0, -1.0, 0.4)).normalized()
+
+    rot_samples = []
+    for frame in range(scene.frame_start, scene.frame_end + 1):
+        dist_from_pivot = dist_from_pivot_by_frame[frame]
+        frame_reach = min(max(base_reach, dist_from_pivot + ball_radius), max_reach)
+        scale = frame_reach / base_reach
+        frame_local_distance = base_local_distance * scale
+        cam_local_pos = ball_local_pos + local_direction * frame_local_distance
+        rot_samples.append((frame, cam_local_pos.x, cam_local_pos.y, cam_local_pos.z))
+
+    bake_location_fcurves(rot_cam, "RotatingCameraZoom", rot_samples)
+    # Rotation constant, evaluated at the base (attached) distance.
+    base_local_offset = ball_local_pos + local_direction * base_local_distance
+    local_look_dir = ball_local_pos - base_local_offset
     rot_cam.rotation_euler = local_look_dir.to_track_quat("-Z", "Y").to_euler()
 
-    print(f"Cameras built. FixedCamera at world {tuple(round(v, 2) for v in fixed_cam.location)}, "
-          f"RotatingCamera local offset {tuple(round(v, 2) for v in local_offset)} "
-          f"(parented to RigPivot). Rotation: {turns:.2f} turns over {duration}s.")
+    print(f"Cameras built. FixedCamera base distance {base_half_extent * margin / math.tan(half_fov):.2f} "
+          f"(dynamic zoom, max_half_extent={max_half_extent}), "
+          f"RotatingCamera base local distance {base_local_distance:.2f} "
+          f"(dynamic zoom, max_reach={max_reach}, parented to RigPivot). Timeline: {duration}s.")
 
     if ARGS["output"]:
         bpy.ops.wm.save_as_mainfile(filepath=ARGS["output"])
