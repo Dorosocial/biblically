@@ -53,16 +53,24 @@ at 8 samples, 1080×1920, EEVEE Next + ray tracing).
   building shot content, rather than guessing from what's here.
 - **Graphics overlays** (on-screen text, arrows, labels like
   "CENTRIFUGAL FORCE") — not started.
-- **Audio sync** — sound assets exist in the working session's scratchpad
-  (whooshes, a rotating-ball loop, impact/riser stings) but are not wired
-  into the timeline or committed to the repo.
+- **Audio sync.** Sound assets are now preserved in `audio/` (see
+  `audio/MANIFEST.md`) but not wired into any timeline/edit. One file,
+  `aballrotating.mp3` (57s, mono — unlike every SFX here, which are
+  stereo), is flagged in the manifest as possibly being a narration/VO
+  track rather than a sound effect; if so its pacing likely determines
+  real shot timing and is worth checking before building shot content.
 - **Full-quality render of the whole 36s sequence.** At current per-frame
   timing (~16-20s/frame, single camera, 8 samples/1080p) a full 1080-frame
   render is roughly 5-6 hours; shots needing both cameras cost double for
   their span. Draft-quality (8 samples) is what's used above; a final
   pass should compare against a higher sample count before committing to
   a multi-hour render.
-- **Lighting/exposure style pass.** Some RotatingCamera close-ups render
-  with a notably dark backdrop wall in frame (real ray-traced shadow, not
-  a bug — see `test_renders/`) — worth a deliberate look/exposure decision
-  rather than the default inherited from the magnet-scene HDRI setup.
+
+## Resolved since first written
+
+- ~~Lighting/exposure style pass~~ — done. World background (HDRI ambient)
+  strength raised from 1.0 to 2.0 in `build_render_settings.py`, fixing a
+  noticeably dark backdrop wall on the side opposite the single SUN light
+  (the RotatingCamera can face any azimuth, so with only one directional
+  light some angle was always going to be underlit). Compared 1.0/1.8/2.5
+  side by side from both cameras before picking 2.0.
