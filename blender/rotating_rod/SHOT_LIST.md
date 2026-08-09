@@ -26,21 +26,36 @@ below, which reads as one continuous argument rather than separate beats.
 
 ## What this requires that doesn't exist yet
 
-1. **Orbit → release → straight-line flight motion**, repeated 3 times
-   (raw demo, annotated demo, split-screen demo) at different timestamps.
-   Physically: while attached, the ball orbits at constant radius; at the
-   release instant, it continues at the exact tangent velocity it had
-   (direction perpendicular to the rod, magnitude = radius × angular
-   velocity) — Newton's first law, not an "outward" force. This is the
-   core mechanic and doesn't exist in the current placeholder (constant
-   rotation forever, no release).
+1. ~~**Orbit → release → straight-line flight motion**~~ — **done**
+   (`build_motion.py`). Attach windows at 0-7s/14-25s/38-42s/46s-end,
+   releases at 7/25/42s, verified by direct position sampling (constant
+   radius while attached, growing during flight, hard reset at each
+   window start) and by render comparison, not just code review.
+
+   Building this surfaced a second problem, also fixed: both cameras'
+   framing was calibrated to the tight attached orbit, so a released
+   ball's tangent velocity carried it out of frame in well under a
+   second — "shoots straight off" was an instant vanish. Both cameras now
+   bake a dynamic per-frame zoom that widens during flight and snaps back
+   once re-attached (`build_cameras.py`). Confirmed visually that
+   RotatingCamera now shows the intended illusion clearly: 1s after
+   release, the empty rod keeps spinning one way while the ball has
+   visibly swung off on its own in that fixed view.
+
 2. **Force-arrow graphics** (inward, and separately outward/apparent) —
    not started.
 3. **Text overlays** ("CENTRIFUGAL FORCE" and possibly other labels) —
    not started.
-4. **Camera cut timing** matching the table above — current cameras exist
-   but aren't sequenced to these specific windows.
-5. **Audio mix**: narration + whichever SFX land on release/reset/transition
+4. **Camera cut timing** matching the table above — `render_rough_cut.py`
+   cuts FixedCamera/RotatingCamera per this table at draft quality (no
+   graphics/audio yet) to validate pacing before investing further;
+   result pending as of this writing.
+5. **Split-screen composite** for the 0:38-0:46 window — the mechanism
+   was already validated (see `test_renders/`, though at the wrong
+   timing/duration before the transcript correction) but isn't wired into
+   the rough cut or final edit yet.
+6. **Audio mix**: narration + whichever SFX land on release/reset/transition
    moments, per `audio/MANIFEST.md`.
 
-Building #1 first since every other row in the table depends on it.
+Next: review the rough cut for pacing, then build arrows/text (#2-3) and
+the real edit (#4-6) together.
