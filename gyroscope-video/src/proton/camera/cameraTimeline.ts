@@ -42,15 +42,18 @@ export const getCameraState = (frame: number): CameraState => {
   let lookAt = ORIGIN.clone();
   let fov = 40;
 
-  // ---- Shot 1: hook — extreme wide, rapid push, then snap to the dot -----
+  // ---- Shot 1: hook — extreme wide push straight at the lone proton, then
+  // snap in tight as the basketball fades in beside it for scale ----------
+  // The proton is the subject of the opening line, so the camera opens on
+  // it (wide negative space around a tiny dot) rather than on the basketball.
   if (frame < CUE.protonToBasketball) {
     const shotStart = CUE.hook;
     const shotEnd = CUE.protonToBasketball;
-    const snapAt = shotStart + Math.round((shotEnd - shotStart) * 0.55);
+    const snapAt = shotStart + Math.round((shotEnd - shotStart) * 0.45);
     if (frame < snapAt) {
-      position = lerpV(new THREE.Vector3(0, 2.5, 16), new THREE.Vector3(0, 0.6, 4), s(frame, shotStart, snapAt, 0, 1));
-      lookAt = ORIGIN.clone();
-      fov = s(frame, shotStart, snapAt, 30, 40);
+      position = lerpV(new THREE.Vector3(2.8, 1.8, 15), new THREE.Vector3(1.0, 0.75, 3.2), s(frame, shotStart, snapAt, 0, 1));
+      lookAt = DOT.clone();
+      fov = s(frame, shotStart, snapAt, 30, 38);
     } else {
       position = lerpV(new THREE.Vector3(0.4, 0.65, 1.6), new THREE.Vector3(0.15, 0.58, 1.05), s(frame, snapAt, shotEnd, 0, 1));
       lookAt = DOT.clone();

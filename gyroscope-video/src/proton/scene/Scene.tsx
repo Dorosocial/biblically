@@ -24,7 +24,7 @@ export const Scene: React.FC<{frame: number}> = ({frame}) => {
       <Basketball state={s.basketball} />
       <Earth state={s.earth} />
       <Hair state={s.hair} />
-      <Proton state={s.proton} color={s.protonColor} />
+      <Proton state={s.proton} color={s.protonColor} frame={frame} />
       <TunnelZoom visible={s.tunnel.visible} opacity={s.tunnel.opacity} />
 
       {s.atomLattice && (

@@ -116,26 +116,32 @@ const blurPulse = (frame: number, center: number, halfWidth: number, peak: numbe
 export const getSceneState = (frame: number): SceneState => {
   const s = baseState();
 
-  // ---- Shot 1: hook — basketball floats in darkness, tiny proton dot appears ----
+  // ---- Shot 1: hook — the proton itself opens the video, alone in the dark;
+  // the basketball only fades in afterward as its size reference -----------
+  // The narrator's very first line is "How small is a proton?" — the proton
+  // has to be the first thing on screen for that question, not a basketball.
   if (frame < CUE.protonToBasketball) {
     const shotStart = CUE.hook;
     const shotEnd = CUE.protonToBasketball;
-    s.basketball = {
-      visible: true,
-      position: ORIGIN,
-      scale: 1,
-      opacity: fade(frame, shotStart, shotStart + 18, shotEnd - 5, shotEnd),
-    };
-    const dotIn = shotStart + Math.round((shotEnd - shotStart) * 0.45);
+    const ballIn = shotStart + Math.round((shotEnd - shotStart) * 0.45);
     s.proton = {
-      visible: frame >= dotIn,
+      visible: true,
       position: BESIDE_RIGHT,
       scale: 0.05,
-      opacity: fade(frame, dotIn, dotIn + 12, shotEnd - 5, shotEnd),
+      opacity: fade(frame, shotStart, shotStart + 14, shotEnd - 5, shotEnd),
     };
-    s.focusPoint = frame < dotIn ? ORIGIN : BESIDE_RIGHT;
-    s.focusIntensity = 22;
-    s.fillIntensity = 0.9;
+    s.basketball = {
+      visible: frame >= ballIn,
+      position: ORIGIN,
+      scale: 1,
+      opacity: fade(frame, ballIn, ballIn + 16, shotEnd - 5, shotEnd),
+    };
+    s.focusPoint = frame < ballIn ? BESIDE_RIGHT : ORIGIN;
+    // A bright, tight rim light on the lone proton against a near-black fill
+    // reads as "wide negative space around the proton" — then the fill lifts
+    // once the basketball arrives to give it a normal, comparable exposure.
+    s.focusIntensity = frame < ballIn ? 36 : 22;
+    s.fillIntensity = frame < ballIn ? 0.18 : 0.9;
   }
 
   // ---- Shot 2: proton expands to basketball size (crossfade) --------------
@@ -222,14 +228,16 @@ export const getSceneState = (frame: number): SceneState => {
   }
 
   // ---- Shot 7: hard cut to a human hair, microscopically close ----------
+  // Brightly lit on purpose — "you see it" is the whole point of this line,
+  // so the hair needs to actually read clearly, not sit in near-darkness.
   else if (frame < CUE.hairTracking) {
     const shotStart = CUE.hairCut;
     const shotEnd = CUE.hairTracking;
     s.proton = {visible: true, position: BESIDE_RIGHT, scale: 0.05, opacity: fade(frame, shotStart, shotStart + 1, shotStart, shotStart + 2)};
     s.hair = {visible: true, position: [0, 0, 0], scale: 1, opacity: fade(frame, shotStart + 2, shotStart + 10, shotEnd - 4, shotEnd)};
     s.focusPoint = ORIGIN;
-    s.focusIntensity = 20;
-    s.fillIntensity = 0.4;
+    s.focusIntensity = 30;
+    s.fillIntensity = 0.85;
     // SFX PLACEHOLDER: hard cut — sharp cut sting into the hair close-up
   }
 
@@ -239,8 +247,8 @@ export const getSceneState = (frame: number): SceneState => {
     const shotEnd = CUE.tunnelZoom;
     s.hair = {visible: true, position: [0, 0, 0], scale: 1, opacity: fade(frame, shotStart, shotStart + 1, shotEnd - 8, shotEnd)};
     s.focusPoint = [0, 0, 1];
-    s.focusIntensity = 24;
-    s.fillIntensity = 0.5;
+    s.focusIntensity = 32;
+    s.fillIntensity = 0.8;
   }
 
   // ---- Shot 9 (CRITICAL): continuous tunnel-zoom dive --------------------
