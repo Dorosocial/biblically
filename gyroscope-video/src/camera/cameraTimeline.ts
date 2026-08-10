@@ -94,16 +94,17 @@ export const getCameraState = (frame: number): CameraState => {
   // ---- Shot 7: immediatelyStronger — push to fast wheel, pull to reveal --
   else if (frame < CUE.nowStop) {
     const wide = new THREE.Vector3(0, 0.9, 7.3);
-    const close = new THREE.Vector3(1.8, 0.5, 3.4);
+    const fastWheelTarget = new THREE.Vector3(0, -1.35, 0);
+    const close = new THREE.Vector3(0.3, -1.0, 3.4);
     const mid = CUE.immediatelyStronger + Math.round((CUE.nowStop - CUE.immediatelyStronger) * 0.55);
     if (frame < mid) {
       const t = s(frame, CUE.immediatelyStronger, mid, 0, 1);
       position = lerpV(wide, close, t);
-      lookAt = lerpV(ORIGIN, new THREE.Vector3(1.8, 0, 0), t);
+      lookAt = lerpV(ORIGIN, fastWheelTarget, t);
     } else {
       const t = s(frame, mid, CUE.nowStop, 0, 1);
       position = lerpV(close, wide, t);
-      lookAt = lerpV(new THREE.Vector3(1.8, 0, 0), ORIGIN, t);
+      lookAt = lerpV(fastWheelTarget, ORIGIN, t);
     }
     fov = 40;
   }
@@ -165,7 +166,7 @@ export const getCameraState = (frame: number): CameraState => {
     lookAt = ORIGIN.clone();
     fov = 34;
   }
-  // ---- Shot 15: secretAngular — macro push toward the L arrow ------------
+  // ---- Shot 15: secretAngular — macro push toward the axle/hub -----------
   else if (frame < CUE.pointingAlongAxle) {
     const dir = heroOrientation(frame);
     const axleDir = new THREE.Vector3(Math.sin(THREE.MathUtils.degToRad(dir.theta)) * Math.cos(THREE.MathUtils.degToRad(dir.phi)), Math.cos(THREE.MathUtils.degToRad(dir.theta)), Math.sin(THREE.MathUtils.degToRad(dir.theta)) * Math.sin(THREE.MathUtils.degToRad(dir.phi)));
@@ -196,7 +197,7 @@ export const getCameraState = (frame: number): CameraState => {
     lookAt = ORIGIN.clone();
     fov = 36;
   }
-  // ---- Shot 19: createsTorque — pull back to show all 3 arrows -----------
+  // ---- Shot 19: createsTorque — pull back to show the whole wheel --------
   else if (frame < CUE.turningSidewaysAgain) {
     const t = s(frame, CUE.createsTorque, CUE.turningSidewaysAgain, 0, 1);
     position = lerpV(orbit(ORIGIN, 5.0, 250, 18), orbit(ORIGIN, 7.4, 260, 20), t);

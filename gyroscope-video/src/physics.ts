@@ -14,8 +14,6 @@ import {CUE, DURATION_IN_FRAMES, FPS} from './timing';
 export const WHEEL_RADIUS = 1.6;
 export const COMPARISON_WHEEL_RADIUS = 1.05;
 
-const Y_AXIS = new THREE.Vector3(0, 1, 0);
-
 // ---------------------------------------------------------------------------
 // small math helpers
 // ---------------------------------------------------------------------------
@@ -220,10 +218,19 @@ const fastOrientation = (frame: number): Orientation => {
   };
 };
 
-/** x position of the single surviving ("slow") wheel once the fast one leaves, during shots 8-9. */
-const slowPosX = (frame: number): number => {
-  if (frame < CUE.nowStop) return -1.8;
-  return kf(frame, CUE.nowStop, CUE.nowStop + 20, -1.8, 0);
+/**
+ * Vertical (top/bottom) stacking for the split-comparison shot — this reads
+ * as a portrait-friendly "split screen" for the 9:16 frame, where a
+ * side-by-side layout would either crop or shrink both wheels down to
+ * nothing. The "slow" wheel sits on top and is the one that survives
+ * (recentering) once the "fast" one leaves for the stop/tilt-normally demo.
+ */
+const COMPARISON_OFFSET_Y = 1.35;
+
+/** y position of the single surviving ("slow") wheel once the fast one leaves, during shots 8-9. */
+const slowPosY = (frame: number): number => {
+  if (frame < CUE.nowStop) return COMPARISON_OFFSET_Y;
+  return kf(frame, CUE.nowStop, CUE.nowStop + 20, COMPARISON_OFFSET_Y, 0);
 };
 
 export const comparisonState = (
@@ -236,14 +243,14 @@ export const comparisonState = (
   return {
     slow: {
       visible: inWindow,
-      position: new THREE.Vector3(slowPosX(frame), 0, 0),
+      position: new THREE.Vector3(0, slowPosY(frame), 0),
       dir: dirFromThetaPhi(slowO.theta, slowO.phi),
       spinAngle: slowSpinAngle(frame),
       radius: COMPARISON_WHEEL_RADIUS,
     },
     fast: {
       visible: fastVisible,
-      position: new THREE.Vector3(1.8, 0, 0),
+      position: new THREE.Vector3(0, -COMPARISON_OFFSET_Y, 0),
       dir: dirFromThetaPhi(fastO.theta, fastO.phi),
       spinAngle: fastSpinAngle(frame),
       radius: COMPARISON_WHEEL_RADIUS,
@@ -279,221 +286,11 @@ export const fallGhosts = (frame: number): GhostWheelSpec[] => {
   return [];
 };
 
-/** Shot 12: ghost of the original (pre-flip) axle direction. */
-export const originalAxleGhost = (frame: number): GhostWheelSpec | null => {
-  if (frame >= CUE.flipAxis && frame < CUE.pushesBack + 15) {
-    const opacity = kf(frame, CUE.flipAxis, CUE.flipAxis + 10, 0, 0.35);
-    return {key: 'original-axle', dir: dirFromThetaPhi(90, 0), opacity};
-  }
-  return null;
-};
-
-/** Shots 17-18: frozen snapshot of the angular-momentum direction right before the change begins. */
-export const preChangeGhost = (frame: number): GhostWheelSpec | null => {
-  if (frame >= CUE.changeDirection && frame < CUE.createsTorque) {
-    const snapshotDir = heroDir(CUE.changeDirection);
-    const opacity = kf(frame, CUE.changeDirection, CUE.changeDirection + 10, 0, 0.4);
-    return {key: 'pre-change', dir: snapshotDir, opacity};
-  }
-  return null;
-};
-
 // ---------------------------------------------------------------------------
-// arrows
+// spin indicator (curved arc arrow hugging the rim) — the ONE arrow the
+// video uses. Everything else (push/momentum/torque arrows, ghost vectors,
+// trail lines) was deliberately cut in favor of just the wheel + this one
+// glowing indicator, to keep the frame clean.
 // ---------------------------------------------------------------------------
 
-export interface ArrowSpec {
-  key: string;
-  origin: THREE.Vector3;
-  dir: THREE.Vector3;
-  length: number;
-  radius: number;
-  color: string;
-  opacity: number;
-  emissive?: string;
-  emissiveIntensity?: number;
-}
-
-const fade = (frame: number, inStart: number, inEnd: number, outStart: number, outEnd: number, peak = 1) => {
-  if (frame < inStart || frame > outEnd) return 0;
-  if (frame < inEnd) return kf(frame, inStart, inEnd, 0, peak, true);
-  if (frame > outStart) return kf(frame, outStart, outEnd, peak, 0, true);
-  return peak;
-};
-
-export const getArrows = (frame: number): ArrowSpec[] => {
-  const arrows: ArrowSpec[] = [];
-  const origin = new THREE.Vector3(0, 0, 0);
-
-  // Push-force arrow: appears cue3, pushes the axle down, lingers through
-  // the freeze/ghost beat, gone once the sideways sweep is under way.
-  // SFX PLACEHOLDER: push — soft push/thud right as this arrow fades in
-  const pushOpacity = fade(frame, CUE.tryTilt, CUE.tryTilt + 10, CUE.turnsSideways - 15, CUE.turnsSideways, 0.55);
-  if (pushOpacity > 0) {
-    const dir = heroDir(frame);
-    const edge = dir.clone().multiplyScalar(WHEEL_RADIUS * 0.85);
-    arrows.push({
-      key: 'push-force',
-      origin: edge.add(new THREE.Vector3(0, 1.1, 0)),
-      dir: new THREE.Vector3(0, -1, 0),
-      length: 1.0,
-      radius: 0.045,
-      color: '#e8f6ff',
-      opacity: pushOpacity,
-    });
-  }
-
-  // Angular-momentum arrow along the live axle — introduced at "Hold the
-  // spinning wheel", stays present (with varying emphasis) from then on.
-  // SFX PLACEHOLDER: momentum emphasis — low glowing hum starts here, swells when `dominant`
-  if (frame >= CUE.holdWheel) {
-    const dir = heroDir(frame);
-    const dominant = frame >= CUE.secretAngular && frame < CUE.pointingAlongAxle + 10;
-    const introOpacity = fade(frame, CUE.holdWheel, CUE.holdWheel + 12, DURATION_IN_FRAMES - 1, DURATION_IN_FRAMES, 1);
-    arrows.push({
-      key: 'angular-momentum',
-      origin: dir.clone().multiplyScalar(-WHEEL_RADIUS * 0.55),
-      dir,
-      length: WHEEL_RADIUS * (dominant ? 2.5 : 2.0),
-      radius: dominant ? 0.07 : 0.05,
-      color: '#5ec8ff',
-      emissive: '#5ec8ff',
-      emissiveIntensity: dominant ? 2.2 : 1.2,
-      opacity: introOpacity,
-    });
-  }
-
-  // Ghost (frozen) + live vector during the "change direction" beats.
-  const ghost = preChangeGhost(frame);
-  if (ghost) {
-    arrows.push({
-      key: 'momentum-ghost',
-      origin: ghost.dir.clone().multiplyScalar(-WHEEL_RADIUS * 0.55),
-      dir: ghost.dir,
-      length: WHEEL_RADIUS * 2.2,
-      radius: 0.05,
-      color: '#5ec8ff',
-      opacity: ghost.opacity,
-    });
-  }
-
-  // Original-axle ghost arrow during the flip.
-  const axleGhost = originalAxleGhost(frame);
-  if (axleGhost) {
-    arrows.push({
-      key: 'original-axle-ghost',
-      origin: axleGhost.dir.clone().multiplyScalar(-WHEEL_RADIUS * 0.55),
-      dir: axleGhost.dir,
-      length: WHEEL_RADIUS * 1.9,
-      radius: 0.045,
-      color: '#9fb2c8',
-      opacity: axleGhost.opacity,
-    });
-  }
-
-  // Torque arrow: perpendicular to the axle & to vertical (the direction
-  // that pushes the axle's azimuth around) — appears once the reaction
-  // "snaps" in, and again explicitly during the explanation section.
-  const torqueVisible =
-    (frame >= REACTION_FRAME && frame < CUE.whatsGoingOn + 30) ||
-    frame >= CUE.createsTorque;
-  if (torqueVisible) {
-    const dir = heroDir(frame);
-    const torqueDir = new THREE.Vector3().crossVectors(Y_AXIS, dir);
-    if (torqueDir.lengthSq() < 1e-6) torqueDir.set(1, 0, 0);
-    torqueDir.normalize();
-    const opacity = fade(
-      frame,
-      REACTION_FRAME,
-      REACTION_FRAME + 10,
-      DURATION_IN_FRAMES - 1,
-      DURATION_IN_FRAMES,
-      0.9,
-    );
-    arrows.push({
-      key: 'torque',
-      origin: new THREE.Vector3(0, 0, 0),
-      dir: torqueDir,
-      length: WHEEL_RADIUS * 1.6,
-      radius: 0.06,
-      color: '#ff5da2',
-      emissive: '#ff5da2',
-      emissiveIntensity: 1.6,
-      opacity,
-    });
-  }
-
-  return arrows;
-};
-
-/** Small curved connector arc showing the momentum vector "sweeping" from its old to its new direction (shot 18). */
-export const momentumSweepArc = (frame: number): THREE.Vector3[] | null => {
-  if (frame < CUE.changingMomentum || frame >= CUE.createsTorque) return null;
-  const fromDir = heroDir(CUE.changeDirection);
-  const t = THREE.MathUtils.clamp((frame - CUE.changingMomentum) / (CUE.createsTorque - CUE.changingMomentum), 0, 1);
-  const points: THREE.Vector3[] = [];
-  const steps = 24;
-  const sweepT = smoothstep(t);
-  const currentDir = heroDir(frame);
-  for (let i = 0; i <= steps; i++) {
-    const s = (i / steps) * sweepT;
-    points.push(fromDir.clone().lerp(currentDir, s).normalize().multiplyScalar(WHEEL_RADIUS * 1.7));
-  }
-  return points;
-};
-
-// ---------------------------------------------------------------------------
-// spin indicator (curved arc arrow hugging the rim)
-// ---------------------------------------------------------------------------
-
-export const spinArcVisible = (frame: number): boolean =>
-  (frame >= CUE.watchSpinning && frame < CUE.whatIfFaster) || frame >= CUE.whatsGoingOn;
-
-// ---------------------------------------------------------------------------
-// trails — deterministic re-sampling of history, never accumulated over time
-// ---------------------------------------------------------------------------
-
-/** A faint point on the rim, traced backward in time, for the ambient "it's spinning" trail. */
-export const rimTrailPoints = (frame: number, sampleCount = 26, step = 1): THREE.Vector3[] => {
-  const pts: THREE.Vector3[] = [];
-  const dir = heroDir(frame);
-  const tangentBasis = new THREE.Vector3(0, 1, 0);
-  if (Math.abs(dir.dot(tangentBasis)) > 0.98) tangentBasis.set(1, 0, 0);
-  const u = new THREE.Vector3().crossVectors(dir, tangentBasis).normalize();
-  const v = new THREE.Vector3().crossVectors(dir, u).normalize();
-  for (let i = sampleCount; i >= 0; i--) {
-    const f = Math.max(0, frame - i * step);
-    const angle = heroSpinAngle(f);
-    const p = u.clone().multiplyScalar(Math.cos(angle) * WHEEL_RADIUS).add(v.clone().multiplyScalar(Math.sin(angle) * WHEEL_RADIUS));
-    pts.push(p);
-  }
-  return pts;
-};
-
-/** The axle-tip's swept path since precession began — draws the visible "cone". */
-export const precessionConeTrail = (frame: number, maxSamples = 140): THREE.Vector3[] => {
-  const from = CUE.pushesBack;
-  if (frame <= from) return [];
-  const span = frame - from;
-  const step = Math.max(1, Math.floor(span / maxSamples));
-  const pts: THREE.Vector3[] = [];
-  for (let f = from; f <= frame; f += step) {
-    pts.push(heroDir(f).clone().multiplyScalar(WHEEL_RADIUS * 1.55));
-  }
-  pts.push(heroDir(frame).clone().multiplyScalar(WHEEL_RADIUS * 1.55));
-  return pts;
-};
-
-/** Bright curved trajectory trail behind the KEY SHOT's actual sideways sweep. */
-export const sidewaysSweepTrail = (frame: number, maxSamples = 60): THREE.Vector3[] => {
-  const from = CUE.turnsSideways;
-  if (frame <= from) return [];
-  const span = Math.min(frame, CUE.whatIfFaster) - from;
-  const step = Math.max(1, Math.floor(span / maxSamples));
-  const pts: THREE.Vector3[] = [];
-  const end = Math.min(frame, CUE.whatIfFaster);
-  for (let f = from; f <= end; f += step) {
-    pts.push(heroDir(f).clone().multiplyScalar(WHEEL_RADIUS * 1.3));
-  }
-  return pts;
-};
+export const spinArcVisible = (frame: number): boolean => frame >= CUE.watchSpinning;

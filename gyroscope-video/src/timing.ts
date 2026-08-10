@@ -21,8 +21,8 @@ export const AUDIO_DURATION_SECONDS = 54.5175;
 // Round up so the audio is never truncated by a shorter video timeline.
 export const DURATION_IN_FRAMES = Math.ceil(AUDIO_DURATION_SECONDS * FPS);
 
-export const WIDTH = 1920;
-export const HEIGHT = 1080;
+export const WIDTH = 1080;
+export const HEIGHT = 1920;
 
 /** seconds -> frame number at the project fps, rounded to the nearest frame. */
 export const sec = (s: number): number => Math.round(s * FPS);
