@@ -25,14 +25,16 @@ export const Atom: React.FC<{
     <group position={state.position}>
       {cloudOpacity > 0.005 && (
         <mesh scale={r}>
-          <sphereGeometry args={[1, 48, 32]} />
-          <meshPhysicalMaterial
+          <sphereGeometry args={[1, 32, 24]} />
+          {/* Plain transparent+emissive, not meshPhysicalMaterial's
+              `transmission` — transmission forces an extra render-to-texture
+              pass per frame that is drastically slower on this sandbox's
+              software (non-GPU) WebGL, to the point of timing out renders. */}
+          <meshStandardMaterial
             color="#6fb8ff"
             transparent
             opacity={cloudOpacity}
-            roughness={0.2}
-            transmission={0.4}
-            thickness={1}
+            roughness={0.5}
             emissive="#3d8fff"
             emissiveIntensity={0.35}
             depthWrite={false}
