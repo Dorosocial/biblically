@@ -1,0 +1,28 @@
+{
+  "name": "gyroscope-video",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Remotion + React Three Fiber composition: 'Gyroscopic Precession Bicycle Wheel'.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts GyroscopicPrecession out/gyroscopic-precession.mp4",
+    "still": "remotion still src/index.ts GyroscopicPrecession out/still.png"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.114.0",
+    "@react-three/fiber": "^8.17.10",
+    "@remotion/cli": "4.0.286",
+    "@remotion/media-utils": "4.0.286",
+    "@remotion/three": "4.0.286",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.286",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.11",
+    "@types/react-dom": "18.3.1",
+    "@types/three": "^0.169.0",
+    "typescript": "5.6.3"
+  }
+}
