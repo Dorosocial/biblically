@@ -47,6 +47,23 @@ export const ORIGIN: [number, number, number] = [0, 0, 0];
 export const BESIDE_RIGHT: [number, number, number] = [1.55, 0.55, 0];
 const BESIDE_RIGHT_LOW: [number, number, number] = [1.75, -0.4, 0];
 
+/**
+ * Shot 2's proton position (BESIDE_RIGHT -> ORIGIN as it grows), exported
+ * so the camera can track it directly. Originally the camera in this shot
+ * just looked at a fixed ORIGIN while the object was still off at
+ * BESIDE_RIGHT — with this composition's narrow portrait FOV, that left
+ * the small early-growth proton genuinely outside the horizontal frustum
+ * for a couple of seconds (confirmed by projecting its NDC coordinates:
+ * x values of 5-10, versus the visible range of -1..1). Tracking the same
+ * trajectory for `lookAt` keeps the growing object centered throughout.
+ */
+export const protonGrowthPosition = (frame: number): [number, number, number] => {
+  const shotStart = CUE.protonToBasketball;
+  const shotEnd = CUE.basketballToEarth;
+  const growEnd = shotStart + Math.round((shotEnd - shotStart) * 0.85);
+  return lerpVec(BESIDE_RIGHT, ORIGIN, kf(frame, shotStart, growEnd, 0, 1));
+};
+
 export type SilhouetteKind = 'molecule' | 'hand' | 'person' | 'city' | 'world';
 
 export interface SceneState {
@@ -131,7 +148,7 @@ export const getSceneState = (frame: number): SceneState => {
     const growEnd = shotStart + Math.round((shotEnd - shotStart) * 0.85);
     s.proton = {
       visible: true,
-      position: lerpVec(BESIDE_RIGHT, ORIGIN, kf(frame, shotStart, growEnd, 0, 1)),
+      position: protonGrowthPosition(frame),
       scale: kf(frame, shotStart, growEnd, 0.05, 1.35),
       opacity: fade(frame, shotStart, shotStart + 10, shotEnd - 4, shotEnd),
     };

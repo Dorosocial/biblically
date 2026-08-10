@@ -9,7 +9,7 @@
  */
 import * as THREE from 'three';
 import {CUE, DURATION_IN_FRAMES} from '../timing';
-import {kf} from '../physics';
+import {kf, protonGrowthPosition} from '../physics';
 
 export interface CameraState {
   position: THREE.Vector3;
@@ -59,13 +59,18 @@ export const getCameraState = (frame: number): CameraState => {
   }
 
   // ---- Shot 2: aggressive dolly-in with shake as proton scale-changes ----
+  // lookAt tracks the proton's actual growth trajectory (BESIDE_RIGHT ->
+  // ORIGIN) instead of a fixed ORIGIN — with this composition's narrow
+  // portrait FOV, a fixed-center camera left the small early-growth proton
+  // genuinely outside the horizontal frustum for the first couple of
+  // seconds of this shot (see physics.ts's protonGrowthPosition comment).
   else if (frame < CUE.basketballToEarth) {
     const shotStart = CUE.protonToBasketball;
     const shotEnd = CUE.basketballToEarth;
     const base = lerpV(new THREE.Vector3(0.15, 0.58, 1.05), new THREE.Vector3(0, 0.4, 4.6), s(frame, shotStart, shotEnd, 0, 1));
     const shakeAmt = frame < shotStart + 20 ? (1 - (frame - shotStart) / 20) * 0.05 : 0;
     position = base.add(shake(frame, shakeAmt));
-    lookAt = ORIGIN.clone();
+    lookAt = new THREE.Vector3(...protonGrowthPosition(frame));
     fov = s(frame, shotStart, shotEnd, 34, 42);
   }
 
