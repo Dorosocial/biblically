@@ -34,6 +34,23 @@ const fade = (frame: number, inStart: number, inEnd: number, outStart: number, o
   return peak;
 };
 
+/**
+ * For an object that's already on screen at `peak` opacity the instant this
+ * shot begins (it's continuing straight out of the previous shot, not
+ * appearing fresh) and just needs to fade out later. `fade()` is the wrong
+ * tool for that: called as `fade(frame, shotStart, shotStart + 1, ...)` —
+ * the idiom used all over this file to mean "already visible, hold, then
+ * fade out" — it evaluates to exactly 0 at `frame === shotStart` no matter
+ * what the fade-out bounds are, because that's the t=0 point of its own
+ * 1-frame fade-IN. On an object that's the only thing on screen at that
+ * instant (the hair shots below), that single frame reads as a hard flash
+ * to black landing right on the shot cut — which is exactly what happened
+ * on "...you see it. / This is where it gets real," the two beats this was
+ * built to fix. `holdOut` just holds at `peak` until `outStart`, then fades.
+ */
+const holdOut = (frame: number, outStart: number, outEnd: number, peak = 1): number =>
+  frame <= outStart ? peak : kf(frame, outStart, outEnd, peak, 0, true);
+
 const lerpVec = (a: [number, number, number], b: [number, number, number], t: number): [number, number, number] => [
   THREE.MathUtils.lerp(a[0], b[0], t),
   THREE.MathUtils.lerp(a[1], b[1], t),
@@ -169,7 +186,7 @@ export const getSceneState = (frame: number): SceneState => {
   else if (frame < CUE.reverseToProton) {
     const shotStart = CUE.basketballToEarth;
     const shotEnd = CUE.reverseToProton;
-    s.proton = {visible: true, position: ORIGIN, scale: 1.35, opacity: fade(frame, shotStart, shotStart + 1, shotStart, shotStart + 8)};
+    s.proton = {visible: true, position: ORIGIN, scale: 1.35, opacity: holdOut(frame, shotStart, shotStart + 8)};
     s.basketball = {
       visible: true,
       position: BESIDE_RIGHT_LOW,
@@ -197,7 +214,7 @@ export const getSceneState = (frame: number): SceneState => {
       visible: true,
       position: [-0.6, 0.3, -1],
       scale: kf(frame, shotStart, shotStart + 20, 6.2, 0),
-      opacity: fade(frame, shotStart, shotStart + 1, shotStart + 10, shotStart + 22),
+      opacity: holdOut(frame, shotStart + 10, shotStart + 22),
     };
     s.basketball = {visible: true, position: ORIGIN, scale: 1, opacity: fade(frame, shotStart, shotStart + 10, shotEnd - 6, shotEnd)};
     const dotIn = shotStart + 24;
@@ -211,7 +228,7 @@ export const getSceneState = (frame: number): SceneState => {
   else if (frame < CUE.numberTyping) {
     const shotStart = CUE.protonScaleLabel;
     const shotEnd = CUE.numberTyping;
-    s.basketball = {visible: true, position: ORIGIN, scale: 1, opacity: fade(frame, shotStart, shotStart + 1, shotStart + 4, shotStart + 20)};
+    s.basketball = {visible: true, position: ORIGIN, scale: 1, opacity: holdOut(frame, shotStart + 4, shotStart + 20)};
     s.proton = {visible: true, position: BESIDE_RIGHT, scale: 0.05, opacity: 1};
     s.focusPoint = BESIDE_RIGHT;
     s.focusIntensity = 34;
@@ -230,11 +247,15 @@ export const getSceneState = (frame: number): SceneState => {
   // ---- Shot 7: hard cut to a human hair, microscopically close ----------
   // Brightly lit on purpose — "you see it" is the whole point of this line,
   // so the hair needs to actually read clearly, not sit in near-darkness.
+  // Proton and hair crossfade over the SAME window (one linear ramp down,
+  // the other up) so there's no instant where both are near-zero at once —
+  // that gap is what produced a hard flash to black landing right on
+  // "...you see it," exactly where this shot needs to read most clearly.
   else if (frame < CUE.hairTracking) {
     const shotStart = CUE.hairCut;
-    const shotEnd = CUE.hairTracking;
-    s.proton = {visible: true, position: BESIDE_RIGHT, scale: 0.05, opacity: fade(frame, shotStart, shotStart + 1, shotStart, shotStart + 2)};
-    s.hair = {visible: true, position: [0, 0, 0], scale: 1, opacity: fade(frame, shotStart + 2, shotStart + 10, shotEnd - 4, shotEnd)};
+    const crossfadeEnd = shotStart + 12;
+    s.proton = {visible: true, position: BESIDE_RIGHT, scale: 0.05, opacity: kf(frame, shotStart, crossfadeEnd, 0.85, 0, true)};
+    s.hair = {visible: true, position: [0, 0, 0], scale: 1, opacity: kf(frame, shotStart, crossfadeEnd, 0, 1, true)};
     s.focusPoint = ORIGIN;
     s.focusIntensity = 30;
     s.fillIntensity = 0.85;
@@ -242,10 +263,12 @@ export const getSceneState = (frame: number): SceneState => {
   }
 
   // ---- Shot 8: hair fills the screen, macro tracking shot ----------------
+  // Same hair, same beat as shot 7 — just the camera moving — so it stays
+  // fully opaque straight through rather than fading out and back in across
+  // the cut, which is what caused a black flash right on "This is where it
+  // gets real."
   else if (frame < CUE.tunnelZoom) {
-    const shotStart = CUE.hairTracking;
-    const shotEnd = CUE.tunnelZoom;
-    s.hair = {visible: true, position: [0, 0, 0], scale: 1, opacity: fade(frame, shotStart, shotStart + 1, shotEnd - 8, shotEnd)};
+    s.hair = {visible: true, position: [0, 0, 0], scale: 1, opacity: 1};
     s.focusPoint = [0, 0, 1];
     s.focusIntensity = 32;
     s.fillIntensity = 0.8;
@@ -256,7 +279,9 @@ export const getSceneState = (frame: number): SceneState => {
     const shotStart = CUE.tunnelZoom;
     const shotEnd = CUE.atomsReveal;
     const span = shotEnd - shotStart;
-    s.hair = {visible: true, position: [0, 0, 0], scale: 1, opacity: fade(frame, shotStart, shotStart + 1, shotStart, shotStart + Math.round(span * 0.12))};
+    // Continues from shot 8's fully-opaque hair (not a fresh fade-in) —
+    // plain kf from 1, so no dip at the cut into this shot either.
+    s.hair = {visible: true, position: [0, 0, 0], scale: 1, opacity: kf(frame, shotStart, shotStart + Math.round(span * 0.12), 1, 0, true)};
     s.tunnel = {
       visible: true,
       opacity: fade(frame, shotStart, shotStart + Math.round(span * 0.1), shotStart + Math.round(span * 0.82), shotEnd),
@@ -275,7 +300,7 @@ export const getSceneState = (frame: number): SceneState => {
   else if (frame < CUE.singleAtomNucleus) {
     const shotStart = CUE.atomsReveal;
     const shotEnd = CUE.singleAtomNucleus;
-    s.tunnel = {visible: true, opacity: fade(frame, shotStart, shotStart + 1, shotStart, shotStart + 6)};
+    s.tunnel = {visible: true, opacity: holdOut(frame, shotStart, shotStart + 6)};
     s.atomLattice = {
       visible: true,
       position: ORIGIN,
@@ -298,7 +323,7 @@ export const getSceneState = (frame: number): SceneState => {
       visible: true,
       position: ORIGIN,
       scale: 1.1,
-      opacity: fade(frame, shotStart, shotStart + 1, shotStart, shotStart + 14),
+      opacity: holdOut(frame, shotStart, shotStart + 14),
       solidity: 0.15,
       gridSize: 4,
       spacing: 1.1,
@@ -325,7 +350,7 @@ export const getSceneState = (frame: number): SceneState => {
       visible: true,
       position: ORIGIN,
       scale: 3.2,
-      opacity: fade(frame, shotStart, shotStart + 1, shotStart, shotStart + 8),
+      opacity: holdOut(frame, shotStart, shotStart + 8),
       electronCloudOpacity: 0,
       nucleusScale: 0.05,
       nucleusHighlightIndex: null,
@@ -369,7 +394,7 @@ export const getSceneState = (frame: number): SceneState => {
   else if (frame < CUE.atomToLattice) {
     const shotStart = CUE.reverseToEmptySpace;
     const shotEnd = CUE.atomToLattice;
-    s.proton = {visible: true, position: ORIGIN, scale: 0.16, opacity: fade(frame, shotStart, shotStart + 1, shotStart, shotStart + 14)};
+    s.proton = {visible: true, position: ORIGIN, scale: 0.16, opacity: holdOut(frame, shotStart, shotStart + 14)};
     s.nucleusCluster = {
       visible: true,
       position: ORIGIN,
@@ -402,7 +427,7 @@ export const getSceneState = (frame: number): SceneState => {
       visible: true,
       position: ORIGIN,
       scale: 3.6,
-      opacity: fade(frame, shotStart, shotStart + 1, shotStart, shotStart + 14),
+      opacity: holdOut(frame, shotStart, shotStart + 14),
       electronCloudOpacity: 1,
       nucleusScale: 0.001,
       nucleusHighlightIndex: null,
@@ -429,7 +454,7 @@ export const getSceneState = (frame: number): SceneState => {
       visible: true,
       position: [0, 0, -1],
       scale: kf(frame, shotStart, shotEnd, 1.4, 2.2),
-      opacity: fade(frame, shotStart, shotStart + 1, shotEnd - 10, shotEnd),
+      opacity: holdOut(frame, shotEnd - 10, shotEnd),
       solidity: kf(frame, shotStart, shotStart + Math.round((shotEnd - shotStart) * 0.7), 1, 0.04),
       gridSize: 6,
       spacing: 1,
@@ -482,7 +507,7 @@ export const getSceneState = (frame: number): SceneState => {
     const stageEnd = stageStart + stageLen;
 
     if (stageIndex === 0) {
-      s.proton = {visible: true, position: ORIGIN, scale: kf(frame, stageStart, stageEnd, 1, 0.3), opacity: fade(frame, stageStart, stageStart + 2, stageEnd - 6, stageEnd)};
+      s.proton = {visible: true, position: ORIGIN, scale: kf(frame, stageStart, stageEnd, 1, 0.3), opacity: holdOut(frame, stageEnd - 6, stageEnd)};
     } else {
       const kind = stages[stageIndex - 1];
       s.silhouette = {
