@@ -71,10 +71,23 @@ def render_split_frame(scene, out_path, tmp_dir):
     left_path = f"{tmp_dir}/split_left.png"
     right_path = f"{tmp_dir}/split_right.png"
 
+    # OutwardArrow (build_arrows.py) shows the apparent centrifugal
+    # illusion, which only makes sense from inside the rotating frame -
+    # there's no real outward force to show from outside. It has its own
+    # 42-46s time window baked in already; force it hidden for the
+    # FixedCamera pass regardless, then restore whatever that time-window
+    # bake says for the RotatingCamera pass.
+    outward_arrow = bpy.data.objects.get("OutwardArrow")
+    baked_hide_state = outward_arrow.hide_render if outward_arrow else None
+
+    if outward_arrow:
+        outward_arrow.hide_render = True
     scene.camera = bpy.data.objects["FixedCamera"]
     scene.render.filepath = left_path[:-4]  # Blender appends .png itself
     bpy.ops.render.render(write_still=True)
 
+    if outward_arrow:
+        outward_arrow.hide_render = baked_hide_state
     scene.camera = bpy.data.objects["RotatingCamera"]
     scene.render.filepath = right_path[:-4]
     bpy.ops.render.render(write_still=True)

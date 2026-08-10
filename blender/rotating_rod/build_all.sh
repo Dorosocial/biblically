@@ -25,6 +25,9 @@ SCENE=rotating_rod/scene.blend
   --python rotating_rod/build_cameras.py -- --output "$SCENE"
 
 "$BLENDER" --background "$SCENE" \
+  --python rotating_rod/build_arrows.py -- --output "$SCENE"
+
+"$BLENDER" --background "$SCENE" \
   --python rotating_rod/build_render_settings.py -- --output "$SCENE" --samples 8
 
 echo "Done. $SCENE rebuilt."
