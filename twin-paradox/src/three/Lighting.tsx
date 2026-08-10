@@ -27,10 +27,10 @@ export const Lighting: React.FC<{
   ambientColor?: string;
 }> = ({
   focus,
-  keyIntensity = 5,
-  ambientIntensity = 0.85,
-  keyColor = '#d9e6ff',
-  ambientColor = '#5a6ea0',
+  keyIntensity = 7.5,
+  ambientIntensity = 1.5,
+  keyColor = '#e4ecff',
+  ambientColor = '#7c8fc4',
 }) => {
   return (
     <>
@@ -40,8 +40,11 @@ export const Lighting: React.FC<{
         intensity={keyIntensity}
         position={[40, 30, 20]}
       />
-      {/* soft cool rim from behind, keeps silhouettes readable on the dark backdrop */}
-      <directionalLight color="#6ea8ff" intensity={1.4} position={[-30, 10, -25]} />
+      {/* soft cool rim from behind, keeps silhouettes readable on the backdrop */}
+      <directionalLight color="#8fbaff" intensity={2.4} position={[-30, 10, -25]} />
+      {/* front fill, roughly camera-ward -- keeps the near/unlit side of
+          Earth and other big objects from crushing to near-black */}
+      <directionalLight color="#9fc6ff" intensity={1.8} position={[0, 6, 40]} />
       {focus ? (
         focus.kind === 'spot' ? (
           <spotLight
@@ -68,5 +71,8 @@ export const Lighting: React.FC<{
   );
 };
 
-export const BACKDROP_COLOR = '#0a1020';
-export const FOG = new THREE.FogExp2(0x0a1020, 0.0038);
+// A richer, lighter navy than pure black -- keeps the "plain backdrop"
+// requirement while giving the glow/metal/texture work something to pop
+// against instead of crushing to near-black on export.
+export const BACKDROP_COLOR = '#182036';
+export const FOG = new THREE.FogExp2(0x182036, 0.0032);

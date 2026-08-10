@@ -4,11 +4,12 @@ import {ThreeCanvas} from '@remotion/three';
 import {Scene} from './Scene';
 import {Overlay} from './Overlay';
 import {WIDTH, HEIGHT} from './timing';
+import {BACKDROP_COLOR} from './three/Lighting';
 
-// Plain dark-navy backdrop -- no grid pattern, no HDRI/environment file.
-// Chosen to make the cool clock/grid glow and the warm engine/Earth-city
+// Plain navy backdrop -- no grid pattern, no HDRI/environment file. Chosen
+// to make the cool clock/grid glow and the warm engine/Earth-city
 // highlights pop, while staying calm enough for the split-frame text beats.
-const BACKDROP = '#070b14';
+const BACKDROP = BACKDROP_COLOR;
 
 export const TwinParadoxComposition: React.FC = () => {
   const frame = useCurrentFrame();
