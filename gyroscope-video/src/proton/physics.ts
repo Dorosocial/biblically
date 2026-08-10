@@ -253,7 +253,13 @@ export const getSceneState = (frame: number): SceneState => {
   // "...you see it," exactly where this shot needs to read most clearly.
   else if (frame < CUE.hairTracking) {
     const shotStart = CUE.hairCut;
-    const crossfadeEnd = shotStart + 12;
+    // The proton is off-camera the instant this shot's tight hair framing
+    // cuts in (its BESIDE_RIGHT position falls well outside this shot's
+    // frustum), so there's nothing on screen to actually crossfade FROM —
+    // a slow 12-frame ramp just meant ~0.4s of near-black hair fading in
+    // from nothing, landing right on "...you see it." Cut that down to a
+    // couple of frames so it reads as a hard cut, not a fade to black.
+    const crossfadeEnd = shotStart + 3;
     s.proton = {visible: true, position: BESIDE_RIGHT, scale: 0.05, opacity: kf(frame, shotStart, crossfadeEnd, 0.85, 0, true)};
     s.hair = {visible: true, position: [0, 0, 0], scale: 1, opacity: kf(frame, shotStart, crossfadeEnd, 0, 1, true)};
     s.focusPoint = ORIGIN;
