@@ -23,7 +23,7 @@ export const TwinParadoxComposition: React.FC = () => {
           linear
           flat
           legacy
-          gl={{antialias: true, alpha: false}}
+          gl={{antialias: false, alpha: false, powerPreference: 'high-performance'}}
         >
           <color attach="background" args={[BACKDROP]} />
           <Scene frame={frame} />
