@@ -1,0 +1,80 @@
+1
+00:00:00,000 --> 00:00:02,540
+This tiny ball can hit harder than this giant one.
+
+2
+00:00:02,700 --> 00:00:04,100
+It sounds wrong, isn't it?
+
+3
+00:00:04,300 --> 00:00:05,440
+But watch this closely.
+
+4
+00:00:05,560 --> 00:00:08,060
+The big ball is heavier, and so it barely moves.
+
+5
+00:00:08,340 --> 00:00:09,200
+But this tiny ball?
+
+6
+00:00:09,360 --> 00:00:11,940
+It's moving ridiculously fast, and when they collide,
+
+7
+00:00:12,220 --> 00:00:15,680
+the tiny ball can have just as much momentum as the giant one.
+
+8
+00:00:15,820 --> 00:00:17,580
+It sounds crazier when you do this.
+
+9
+00:00:17,720 --> 00:00:20,320
+Double the tiny ball's speed, and its momentum doubles.
+
+10
+00:00:20,600 --> 00:00:21,600
+Try to double it again.
+
+11
+00:00:21,800 --> 00:00:25,940
+And now that little ball is carrying four times the momentum it had at the beginning.
+
+12
+00:00:26,100 --> 00:00:28,220
+So, what actually determines momentum?
+
+13
+00:00:28,220 --> 00:00:30,700
+It's two things, mass and speed.
+
+14
+00:00:30,880 --> 00:00:32,420
+But there's something even more important.
+
+15
+00:00:32,580 --> 00:00:37,440
+When these two objects collide, the momentum doesn't just vanish, it rather moves.
+
+16
+00:00:37,680 --> 00:00:40,320
+One slows down, while the other speeds up.
+
+17
+00:00:40,460 --> 00:00:42,380
+And the total momentum stays the same.
+
+18
+00:00:42,520 --> 00:00:48,180
+So, a tiny object moving fast enough can have more momentum than something hundreds of times heavier.
+
+19
+00:00:48,400 --> 00:00:52,400
+And that's why you should never judge an object's momentum by its size.
+
+20
+00:00:52,540 --> 00:00:55,500
+Because that tiny ball might be the dangerous one here.
+
