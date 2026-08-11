@@ -8,6 +8,7 @@ import {CameraRig} from '../components/CameraRig';
 import {MetallicSphere} from '../components/MetallicSphere';
 import {Floor} from '../components/Floor';
 import {Arrow3D} from '../components/Arrow3D';
+import {MotionTrail} from '../components/MotionTrail';
 import {Label} from '../components/Label';
 
 const BALL_RADIUS = 0.46;
@@ -20,6 +21,37 @@ const clampOpts = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' 
 
 // SFX PLACEHOLDER: sharp "clack" the instant the striker sphere hits the resting ball.
 
+/** Pure function of frame -> {strikerX, ballX}, so it can be sampled at past
+ * frames both for motion trails and for a lagged camera target (see below). */
+const positionsAtFrame = (
+	frame: number,
+	beats: {
+		forceStrike: {from: number; to: number};
+		strikeApproachEnd: number;
+		ballMoves: {to: number};
+	},
+): {strikerX: number; ballX: number} => {
+	const {forceStrike, strikeApproachEnd, ballMoves} = beats;
+	if (frame < forceStrike.from) {
+		return {strikerX: STRIKER_START_X, ballX: BALL_REST_X};
+	}
+	if (frame < strikeApproachEnd) {
+		const p = interpolate(frame, [forceStrike.from, strikeApproachEnd], [0, 1], {
+			...clampOpts,
+			easing: Easing.in(Easing.quad),
+		});
+		return {strikerX: interpolate(p, [0, 1], [STRIKER_START_X, IMPACT_X]), ballX: BALL_REST_X};
+	}
+	if (frame < ballMoves.to) {
+		const p = interpolate(frame, [strikeApproachEnd, ballMoves.to], [0, 1], {
+			...clampOpts,
+			easing: Easing.out(Easing.cubic),
+		});
+		return {strikerX: IMPACT_X, ballX: interpolate(p, [0, 1], [BALL_REST_X, BALL_FINAL_X])};
+	}
+	return {strikerX: IMPACT_X, ballX: BALL_FINAL_X};
+};
+
 export const NewtonFirstLawAct: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {smashCutAtRest, forceStrike, ballMoves, freezeDiagram} = NEWTON_BEATS;
@@ -27,33 +59,24 @@ export const NewtonFirstLawAct: React.FC = () => {
 	// Striker approaches during the first ~65% of forceStrike, impact locked at ~65%.
 	const strikeApproachEnd = forceStrike.from + Math.round((forceStrike.to - forceStrike.from) * 0.65);
 	const impactFrame = strikeApproachEnd;
+	const beatRefs = {forceStrike, strikeApproachEnd, ballMoves};
 
-	let strikerX = STRIKER_START_X;
-	let ballX = BALL_REST_X;
-	let showForceArrow = false;
+	const {strikerX, ballX} = positionsAtFrame(frame, beatRefs);
+	const showForceArrow = frame >= strikeApproachEnd && frame < impactFrame + 14;
 
-	if (frame < forceStrike.from) {
-		strikerX = STRIKER_START_X;
-		ballX = BALL_REST_X;
-	} else if (frame < strikeApproachEnd) {
-		const p = interpolate(frame, [forceStrike.from, strikeApproachEnd], [0, 1], {
-			...clampOpts,
-			easing: Easing.in(Easing.quad),
-		});
-		strikerX = interpolate(p, [0, 1], [STRIKER_START_X, IMPACT_X]);
-		ballX = BALL_REST_X;
-	} else if (frame < ballMoves.to) {
-		strikerX = IMPACT_X;
-		showForceArrow = frame < impactFrame + 14;
-		const p = interpolate(frame, [strikeApproachEnd, ballMoves.to], [0, 1], {
-			...clampOpts,
-			easing: Easing.out(Easing.cubic),
-		});
-		ballX = interpolate(p, [0, 1], [BALL_REST_X, BALL_FINAL_X]);
-	} else {
-		strikerX = IMPACT_X;
-		ballX = BALL_FINAL_X;
-	}
+	// Trails sampled a few frames back — makes the fast approach/launch read
+	// as motion even against the plain backdrop and floor (no grid/texture
+	// to otherwise show parallax).
+	const strikerTrail: [number, number, number][] = [10, 7, 4, 2].map((dt) => [
+		positionsAtFrame(frame - dt, beatRefs).strikerX,
+		BALL_RADIUS * 0.8,
+		0,
+	]);
+	const ballTrail: [number, number, number][] = [10, 7, 4, 2].map((dt) => [
+		positionsAtFrame(frame - dt, beatRefs).ballX,
+		BALL_RADIUS,
+		0,
+	]);
 
 	const isDiagram = frame >= freezeDiagram.from;
 
@@ -68,11 +91,15 @@ export const NewtonFirstLawAct: React.FC = () => {
 		camPos = [0, interpolate(p, [0, 1], [1.7, 1.45]), interpolate(p, [0, 1], [4.6, 3.6])];
 		camLookAt = [BALL_REST_X, BALL_RADIUS, 0];
 	} else if (frame < ballMoves.to) {
-		// Side-on high-speed camera following the collision / fast tracking on the moving ball.
-		const trackX = frame < strikeApproachEnd ? strikerX : ballX;
-		camPos = [trackX + 0.2, 1.1, 2.6];
-		camLookAt = [trackX + 0.6, BALL_RADIUS, 0];
-		fov = 44;
+		// Side-on high-speed camera following the collision / fast tracking on
+		// the moving ball. Camera target lags a few frames behind the true
+		// position (see positionsAtFrame) so the subject visibly slides across
+		// the frame instead of sitting glued to center the whole beat.
+		const lagged = positionsAtFrame(frame - 5, beatRefs);
+		const trackX = frame < strikeApproachEnd ? lagged.strikerX : lagged.ballX;
+		camPos = [trackX + 0.2, 1.1, 3.1];
+		camLookAt = [trackX + 0.7, BALL_RADIUS, 0];
+		fov = 48;
 	} else {
 		// Slow pull-back revealing the complete before/after diagram.
 		const p = interpolate(frame, [freezeDiagram.from, freezeDiagram.to], [0, 1], clampOpts);
@@ -95,6 +122,13 @@ export const NewtonFirstLawAct: React.FC = () => {
 				<Floor y={0} />
 				<MetallicSphere radius={BALL_RADIUS} position={[ballX, BALL_RADIUS, 0]} />
 				<MetallicSphere radius={BALL_RADIUS * 0.8} position={[strikerX, BALL_RADIUS * 0.8, 0]} color="#9aa0ab" />
+
+				{frame >= forceStrike.from && frame < strikeApproachEnd && (
+					<MotionTrail points={strikerTrail} color="#9aa0ab" baseRadius={0.09} />
+				)}
+				{frame >= strikeApproachEnd && frame < ballMoves.to + 8 && (
+					<MotionTrail points={ballTrail} color="#5fe3a3" baseRadius={0.1} />
+				)}
 
 				{showForceArrow && (
 					<Arrow3D

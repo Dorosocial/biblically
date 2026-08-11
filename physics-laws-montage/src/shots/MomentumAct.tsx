@@ -78,14 +78,33 @@ export const MomentumAct: React.FC = () => {
 	const {heavyAngle, lastAngle, compress} = momentumMotion(t);
 
 	// Velocity trail for the incoming heavy ball (sampled a few frames back).
+	// Shown from the first swing-in all the way through the replay, not just
+	// the replay, so the fast beats visibly read as motion too.
 	const trailPoints: [number, number, number][] = [0.12, 0.09, 0.06, 0.03].map((dt) => {
 		const sampledT = Math.max(0, t - dt);
 		const {heavyAngle: a} = momentumMotion(sampledT);
 		return pendulumPos(rowX(0), a, -0.18);
 	});
+	// Matching exit trail for the launched last ball.
+	const exitTrailPoints: [number, number, number][] = [0.12, 0.09, 0.06, 0.03].map((dt) => {
+		const sampledT = Math.max(0, t - dt);
+		const {lastAngle: a} = momentumMotion(sampledT);
+		return pendulumPos(rowX(ROW_COUNT - 1), a, 0);
+	});
 
 	const heavyPos = pendulumPos(rowX(0), heavyAngle, -0.18);
 	const lastPos = pendulumPos(rowX(ROW_COUNT - 1), lastAngle, 0);
+
+	// The camera intentionally tracks a slightly-stale sample of the motion —
+	// a pure 1:1 tracking shot keeps the subject dead-center every frame,
+	// which (against a plain backdrop with no grid/texture to read parallax
+	// off) makes fast motion look like it isn't moving at all. Lagging the
+	// camera's target a few frames behind the true position lets the ball
+	// visibly slide across the frame instead of sitting glued to center.
+	const CAM_LAG = 0.07;
+	const camT = Math.max(0, t - CAM_LAG);
+	const camHeavyPos = pendulumPos(rowX(0), momentumMotion(camT).heavyAngle, -0.18);
+	const camLastPos = pendulumPos(rowX(ROW_COUNT - 1), momentumMotion(camT).lastAngle, 0);
 
 	// ---- Camera ----
 	let camPos: [number, number, number] = [0, 2.4, 6];
@@ -96,10 +115,12 @@ export const MomentumAct: React.FC = () => {
 		camPos = [0.4, 2.6, 5.4];
 		camLookAt = [0, REST_Y, 0];
 	} else if (frame < incoming.to) {
-		// Low-angle tracking shot following the incoming ball.
-		fov = 38;
-		camPos = [heavyPos[0] - 0.9, 1.1, 1.9];
-		camLookAt = [heavyPos[0] + 0.6, REST_Y, 0];
+		// Low-angle tracking shot following the incoming ball — wide enough
+		// to keep the stationary row in frame as a reference for the closing
+		// distance, and lagged (see CAM_LAG) so the ball visibly advances.
+		fov = 46;
+		camPos = [camHeavyPos[0] - 1.5, 1.05, 2.6];
+		camLookAt = [camHeavyPos[0] + 0.9, REST_Y, 0];
 	} else if (frame < impactLaunch.to) {
 		const local = interpolate(frame, [impactLaunch.from, impactLaunch.to], [0, 1]);
 		if (local < 0.28) {
@@ -107,15 +128,15 @@ export const MomentumAct: React.FC = () => {
 			camPos = [0, 2.2, 3.4];
 			camLookAt = [0, REST_Y, 0];
 		} else {
-			// Rapidly follows the outgoing ball.
+			// Rapidly follows the outgoing ball (lagged — see CAM_LAG above).
 			const chaseT = interpolate(local, [0.28, 1], [0, 1], {extrapolateLeft: 'clamp'});
 			camPos = [
-				interpolate(chaseT, [0, 1], [0, lastPos[0] + 0.3], {easing: Easing.out(Easing.cubic)}),
+				interpolate(chaseT, [0, 1], [0, camLastPos[0] - 0.4], {easing: Easing.out(Easing.cubic)}),
 				interpolate(chaseT, [0, 1], [2.2, 1.5]),
-				interpolate(chaseT, [0, 1], [3.4, 2.0]),
+				interpolate(chaseT, [0, 1], [3.4, 2.4]),
 			];
-			camLookAt = lastPos;
-			fov = 40;
+			camLookAt = camLastPos;
+			fov = 44;
 		}
 	} else {
 		// Slow-motion orbit around the collision.
@@ -155,7 +176,12 @@ export const MomentumAct: React.FC = () => {
 				<WireSupport from={[rowX(0), PIVOT_Y, -0.18]} to={heavyPos} />
 				<MetallicSphere radius={0.36} position={heavyPos} />
 
-				{isReplay && <MotionTrail points={trailPoints} color="#4fd1ff" baseRadius={0.1} />}
+				{frame >= incoming.from && frame < impactLaunch.to + 20 && (
+					<MotionTrail points={trailPoints} color="#4fd1ff" baseRadius={0.1} />
+				)}
+				{lastAngle > 0.02 && (
+					<MotionTrail points={exitTrailPoints} color="#4fd1ff" baseRadius={0.1} />
+				)}
 
 				{showEnterArrow && (
 					<Arrow3D
