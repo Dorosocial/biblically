@@ -39,9 +39,17 @@ export const journeyHeading = (t: number): [number, number, number] => {
 };
 
 // "Studio" presentation slots — used whenever the shot calls for both
-// clocks shown face-on, side by side, isolated in darkness.
-export const CLOCK_LEFT: [number, number, number] = [-2.4, 0, 0];
-export const CLOCK_RIGHT: [number, number, number] = [2.4, 0, 0];
+// clocks shown face-on, isolated in darkness. Stacked vertically (not
+// side-by-side) because the composition is 9:16: a PerspectiveCamera's
+// `fov` is always the VERTICAL field of view, so vertical spread is the
+// dimension that survives portrait framing untouched, while horizontal
+// spread would clip against the much narrower horizontal FOV.
+export const CLOCK_TOP: [number, number, number] = [0, 1.6, 0];
+export const CLOCK_BOTTOM: [number, number, number] = [0, -1.6, 0];
+// Pair shots also render each ClockFace at this scale (see Scene.tsx) so
+// the full stacked pair -- not just its vertical centers -- clears both
+// the vertical AND the (much narrower, portrait) horizontal FOV.
+export const STUDIO_CLOCK_SCALE = 0.72;
 
 export const lerp3 = (
   a: [number, number, number],

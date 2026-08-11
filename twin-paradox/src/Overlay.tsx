@@ -70,26 +70,26 @@ const SplitLabel: React.FC<{
   label: string;
   years: number;
   color: string;
-  side: 'left' | 'right';
+  pos: 'top' | 'bottom';
   opacity: number;
-}> = ({label, years, color, side, opacity}) => (
+}> = ({label, years, color, pos, opacity}) => (
   <div
     style={{
       position: 'absolute',
-      top: '76%',
-      [side]: '8%',
-      transform: 'translateY(-50%)',
+      left: '50%',
+      [pos]: '10%',
+      transform: 'translateX(-50%)',
       opacity,
       ...glowText,
       color,
-      textAlign: side === 'left' ? 'left' : 'right',
+      textAlign: 'center',
       textShadow: `0 0 20px ${color}99, 0 0 50px ${color}55`,
     } as React.CSSProperties}
   >
-    <div style={{fontSize: 22, fontWeight: 600, letterSpacing: '0.28em', opacity: 0.85}}>
+    <div style={{fontSize: 24, fontWeight: 600, letterSpacing: '0.28em', opacity: 0.85}}>
       {label}
     </div>
-    <div style={{fontSize: 56, fontWeight: 800, marginTop: 6}}>
+    <div style={{fontSize: 60, fontWeight: 800, marginTop: 6}}>
       {years} {years === 1 ? 'YEAR' : 'YEARS'}
     </div>
   </div>
@@ -173,8 +173,8 @@ export const Overlay: React.FC<{frame: number}> = ({frame}) => {
       const co = clocksOn ? op : 0;
       return (
         <>
-          <Numeral years={0} color="#7fe0ff" x="46%" y="38%" opacity={co} scale={0.55} />
-          <Numeral years={0} color="#ffb27f" x="54%" y="38%" opacity={co} scale={0.55} />
+          <Numeral years={0} color="#7fe0ff" x="50%" y="35%" opacity={co} scale={0.5} />
+          <Numeral years={0} color="#ffb27f" x="50%" y="42%" opacity={co} scale={0.5} />
         </>
       );
     }
@@ -187,48 +187,50 @@ export const Overlay: React.FC<{frame: number}> = ({frame}) => {
       return <Numeral years={years} color="#ffb27f" x="50%" y="30%" opacity={op} scale={1.1} />;
     }
     case 4: {
-      // KEY MOMENT 1: locked-off split-frame contradiction.
+      // KEY MOMENT 1: locked-off split-frame contradiction. Horizontal
+      // divider (not vertical) since the pair is stacked top/bottom for
+      // portrait framing.
       return (
         <>
           <div
             style={{
               position: 'absolute',
-              left: '50%',
-              top: 0,
-              bottom: 0,
-              width: 1,
+              top: '50%',
+              left: 0,
+              right: 0,
+              height: 1,
               background:
-                'linear-gradient(to bottom, transparent, rgba(255,255,255,0.35), transparent)',
+                'linear-gradient(to right, transparent, rgba(255,255,255,0.35), transparent)',
               opacity: op,
             }}
           />
-          <SplitLabel label="TRAVELER" years={5} color="#7fe0ff" side="left" opacity={op} />
-          <SplitLabel label="EARTH" years={10} color="#ffb27f" side="right" opacity={op} />
+          <SplitLabel label="TRAVELER" years={5} color="#7fe0ff" pos="top" opacity={op} />
+          <SplitLabel label="EARTH" years={10} color="#ffb27f" pos="bottom" opacity={op} />
         </>
       );
     }
     case 5: {
       return (
         <>
-          <Numeral years={5} color="#7fe0ff" x="30%" y="45%" opacity={op} />
-          <Numeral years={10} color="#ffb27f" x="70%" y="45%" opacity={op} />
+          <Numeral years={5} color="#7fe0ff" x="50%" y="32%" opacity={op} />
+          <Numeral years={10} color="#ffb27f" x="50%" y="62%" opacity={op} />
         </>
       );
     }
     case 6: {
-      const leftTarget = t < 0.5;
+      const topTarget = t < 0.5;
       return (
         <>
-          <Numeral years={5} color="#7fe0ff" x="30%" y="45%" opacity={op * (leftTarget ? 1 : 0.4)} />
-          <Numeral years={10} color="#ffb27f" x="70%" y="45%" opacity={op * (leftTarget ? 0.4 : 1)} />
+          <Numeral years={5} color="#7fe0ff" x="50%" y="32%" opacity={op * (topTarget ? 1 : 0.4)} />
+          <Numeral years={10} color="#ffb27f" x="50%" y="62%" opacity={op * (topTarget ? 0.4 : 1)} />
         </>
       );
     }
     case 7: {
       return (
         <>
-          <Numeral years={5} color="#7fe0ff" x="30%" y="45%" opacity={op * 0.5} />
-          <Numeral years={10} color="#ffb27f" x="70%" y="45%" opacity={op * 0.5} />
+          <Numeral years={5} color="#7fe0ff" x="50%" y="18%" opacity={op * 0.5} />
+          <Numeral years={10} color="#ffb27f" x="50%" y="82%" opacity={op * 0.5} />
           <BigWord text="?" opacity={op} scale={0.9} />
         </>
       );
@@ -243,8 +245,8 @@ export const Overlay: React.FC<{frame: number}> = ({frame}) => {
     case 12: {
       return (
         <>
-          <Numeral years={5} color="#7fe0ff" x="25%" y="50%" opacity={op} scale={0.8} />
-          <Numeral years={10} color="#ffb27f" x="75%" y="50%" opacity={op} scale={0.8} />
+          <Numeral years={5} color="#7fe0ff" x="50%" y="30%" opacity={op} scale={0.8} />
+          <Numeral years={10} color="#ffb27f" x="50%" y="64%" opacity={op} scale={0.8} />
         </>
       );
     }
@@ -255,16 +257,16 @@ export const Overlay: React.FC<{frame: number}> = ({frame}) => {
     case 17: {
       return (
         <>
-          <SplitLabel label="TRAVELER" years={5} color="#7fe0ff" side="left" opacity={op} />
-          <SplitLabel label="EARTH" years={10} color="#ffb27f" side="right" opacity={op} />
+          <SplitLabel label="TRAVELER" years={5} color="#7fe0ff" pos="top" opacity={op} />
+          <SplitLabel label="EARTH" years={10} color="#ffb27f" pos="bottom" opacity={op} />
         </>
       );
     }
     case 20: {
       return (
         <>
-          <Numeral years={5} color="#7fe0ff" x="35%" y="45%" opacity={op} scale={0.8} />
-          <Numeral years={10} color="#ffb27f" x="65%" y="45%" opacity={op} scale={0.8} />
+          <Numeral years={5} color="#7fe0ff" x="50%" y="32%" opacity={op} scale={0.8} />
+          <Numeral years={10} color="#ffb27f" x="50%" y="60%" opacity={op} scale={0.8} />
         </>
       );
     }
@@ -275,8 +277,8 @@ export const Overlay: React.FC<{frame: number}> = ({frame}) => {
     case 27: {
       return (
         <>
-          <SplitLabel label="TRAVELER" years={5} color="#7fe0ff" side="left" opacity={op} />
-          <SplitLabel label="EARTH" years={10} color="#ffb27f" side="right" opacity={op} />
+          <SplitLabel label="TRAVELER" years={5} color="#7fe0ff" pos="top" opacity={op} />
+          <SplitLabel label="EARTH" years={10} color="#ffb27f" pos="bottom" opacity={op} />
         </>
       );
     }
@@ -322,8 +324,8 @@ export const Overlay: React.FC<{frame: number}> = ({frame}) => {
     case 33: {
       return (
         <>
-          <Numeral years={5} color="#7fe0ff" x="40%" y="72%" opacity={op} scale={0.7} />
-          <Numeral years={10} color="#ffb27f" x="60%" y="72%" opacity={op} scale={0.7} />
+          <Numeral years={5} color="#7fe0ff" x="50%" y="66%" opacity={op} scale={0.65} />
+          <Numeral years={10} color="#ffb27f" x="50%" y="80%" opacity={op} scale={0.65} />
         </>
       );
     }
@@ -333,8 +335,8 @@ export const Overlay: React.FC<{frame: number}> = ({frame}) => {
       const fo = flashesOn ? op : 0;
       return (
         <>
-          <Numeral years={0} color="#7fe0ff" x="46%" y="38%" opacity={fo} scale={0.55} />
-          <Numeral years={0} color="#ffb27f" x="54%" y="38%" opacity={fo} scale={0.55} />
+          <Numeral years={0} color="#7fe0ff" x="50%" y="35%" opacity={fo} scale={0.5} />
+          <Numeral years={0} color="#ffb27f" x="50%" y="42%" opacity={fo} scale={0.5} />
         </>
       );
     }

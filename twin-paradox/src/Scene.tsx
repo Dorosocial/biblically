@@ -12,8 +12,9 @@ import {SpacetimeGrid} from './three/SpacetimeGrid';
 import {Humanoid} from './three/Humanoid';
 import {BeatWithFrames, beatFrames, getBeatAtFrame} from './timing';
 import {
-  CLOCK_LEFT,
-  CLOCK_RIGHT,
+  CLOCK_TOP,
+  CLOCK_BOTTOM,
+  STUDIO_CLOCK_SCALE,
   EARTH_POS,
   SHIP_HOME,
   SHIP_TURNAROUND,
@@ -115,11 +116,12 @@ const getPose = (frame: number, beat: BeatWithFrames, t: number): CameraPose => 
       };
     }
     case 6: {
-      // Camera slides between the two clocks -- parallax.
+      // Camera slides between the two clocks -- parallax. Vertical slide
+      // (not lateral) since the pair is stacked for portrait framing.
       const e = easeInOut(t);
       return {
-        position: posLerp([-3, 0.3, 6.5], [3, 0.3, 6.5], e),
-        lookAt: posLerp(CLOCK_LEFT, CLOCK_RIGHT, e),
+        position: posLerp([0, 2.6, 6.5], [0, -2.6, 6.5], e),
+        lookAt: posLerp(CLOCK_TOP, CLOCK_BOTTOM, e),
         fov: 30,
       };
     }
@@ -141,12 +143,14 @@ const getPose = (frame: number, beat: BeatWithFrames, t: number): CameraPose => 
       return orbitPose([0, 0.4, 0], 8, 1.5, 200, 20, 34, t);
     }
     case 10: {
-      // Two clocks travel separate paths, diverging -- side tracking cam.
+      // Two clocks travel separate paths, diverging -- tracking cam.
+      // Vertical divergence (not lateral) so both stay inside the much
+      // narrower horizontal FOV of a 9:16 frame.
       const e = easeInOut(t);
       return {
-        position: posLerp([-6, 2, 10], [10, 2, 14], e),
-        lookAt: posLerp([-3, 0, 0], [8, 0, 0], e),
-        fov: 36,
+        position: posLerp([0, -1, 11], [2, 9, 15], e),
+        lookAt: posLerp([0, -1.5, 0], [1.5, 6, -1], e),
+        fov: 38,
       };
     }
     case 11: {
@@ -164,9 +168,9 @@ const getPose = (frame: number, beat: BeatWithFrames, t: number): CameraPose => 
     case 12: {
       // Alternating close-ups: traveler -> Earth -> traveler -> Earth.
       const seg = Math.min(3, Math.floor(t * 4));
-      const target = seg % 2 === 0 ? CLOCK_LEFT : CLOCK_RIGHT;
+      const target = seg % 2 === 0 ? CLOCK_TOP : CLOCK_BOTTOM;
       const camSide: [number, number, number] =
-        seg % 2 === 0 ? [-2.4, 0.2, 3] : [2.4, 0.2, 3];
+        seg % 2 === 0 ? [0, 2.6, 3] : [0, -2.6, 3];
       return {position: camSide, lookAt: target, fov: 26};
     }
     case 13: {
@@ -324,12 +328,21 @@ const getPose = (frame: number, beat: BeatWithFrames, t: number): CameraPose => 
       };
     }
     case 32: {
-      // One stays, one launches -- camera rises vertically.
+      // One stays, one launches -- camera rises with the pair, framed on
+      // their midpoint so both stay inside the narrow portrait FOV as they
+      // separate (mostly vertically, not laterally).
       const e = easeInOut(t);
+      const stationary: [number, number, number] = [SHIP_HOME[0] - 0.5, SHIP_HOME[1], SHIP_HOME[2]];
+      const traveler = lerp3(
+        [SHIP_HOME[0] + 0.5, SHIP_HOME[1], SHIP_HOME[2]],
+        [SHIP_HOME[0] + 2, SHIP_HOME[1] + 10, SHIP_HOME[2] - 5],
+        e
+      );
+      const mid = lerp3(stationary, traveler, 0.5);
       return {
-        position: posLerp([5, 5, 6], [5, 20, 6], e),
-        lookAt: posLerp([4, 4.3, 1], [10, 10, -2], e),
-        fov: 36,
+        position: [mid[0] + 1, mid[1] + 2, mid[2] + 9 + e * 5],
+        lookAt: mid,
+        fov: 38,
       };
     }
     case 33: {
@@ -425,8 +438,8 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
       // SFX PLACEHOLDER: hard-freeze thud as the split frame locks in.
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={0} glowColor="#7fe0ff" ringPulse={1} />
-          <ClockFace position={CLOCK_RIGHT} handAngle={0} glowColor="#ffb27f" ringPulse={1} />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#7fe0ff" ringPulse={1} />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#ffb27f" ringPulse={1} />
         </>
       );
     }
@@ -434,16 +447,16 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
       // SFX PLACEHOLDER: suspended-time drone swell under "So what's the problem?"
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={0} glowColor="#7fe0ff" />
-          <ClockFace position={CLOCK_RIGHT} handAngle={0} glowColor="#ffb27f" />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#7fe0ff" />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#ffb27f" />
         </>
       );
     }
     case 6: {
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={travelerHand * 0.3} glowColor="#7fe0ff" />
-          <ClockFace position={CLOCK_RIGHT} handAngle={earthHand * 3} glowColor="#ffb27f" />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={travelerHand * 0.3} glowColor="#7fe0ff" />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={earthHand * 3} glowColor="#ffb27f" />
         </>
       );
     }
@@ -451,8 +464,8 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
       // SFX PLACEHOLDER: silence / tiny tape-stop on the freeze before the "?"
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={0} glowColor="#7fe0ff" />
-          <ClockFace position={CLOCK_RIGHT} handAngle={0} glowColor="#ffb27f" />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#7fe0ff" />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#ffb27f" />
         </>
       );
     }
@@ -470,17 +483,17 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
       // SFX PLACEHOLDER: warm resolving chord on "both clocks are right".
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={travelerHand} glowColor="#7fe0ff" ringPulse={1} />
-          <ClockFace position={CLOCK_RIGHT} handAngle={earthHand} glowColor="#ffb27f" ringPulse={1} />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={travelerHand} glowColor="#7fe0ff" ringPulse={1} />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={earthHand} glowColor="#ffb27f" ringPulse={1} />
         </>
       );
     }
     case 10: {
-      const travelerPos = lerp3([2, 0, 0], [14, 2, -4], t);
+      const travelerPos = lerp3([0, 1, 0], [2, 10, -3], t);
       return (
         <>
-          <Earth position={[-6, -3, 0]} scale={0.35} />
-          <ClockFace position={[-6, 0, 0]} handAngle={earthHand * 0.6} glowColor="#ffb27f" scale={0.7} />
+          <Earth position={[0, -4.5, 0]} scale={0.35} />
+          <ClockFace position={[0, -2, 0]} handAngle={earthHand * 0.6} glowColor="#ffb27f" scale={0.7} />
           <ClockFace position={travelerPos} handAngle={travelerHand * 4} glowColor="#7fe0ff" scale={0.7} />
         </>
       );
@@ -496,16 +509,16 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
     case 12: {
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={travelerHand * 0.4} glowColor="#7fe0ff" />
-          <ClockFace position={CLOCK_RIGHT} handAngle={earthHand * 5} glowColor="#ffb27f" />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={travelerHand * 0.4} glowColor="#7fe0ff" />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={earthHand * 5} glowColor="#ffb27f" />
         </>
       );
     }
     case 13: {
       return (
         <>
-          <Humanoid position={[-0.8, 0, 0]} color="#0c0e14" />
-          <ClockFace position={[0.6, 1, -0.6]} scale={0.4} handAngle={travelerHand} glowColor="#7fe0ff" />
+          <Humanoid position={[-0.35, -0.6, 0]} color="#0c0e14" />
+          <ClockFace position={[0.25, 1.6, -0.6]} scale={0.4} handAngle={travelerHand} glowColor="#7fe0ff" />
         </>
       );
     }
@@ -526,8 +539,8 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
     case 17: {
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={0} glowColor="#7fe0ff" ringPulse={1} />
-          <ClockFace position={CLOCK_RIGHT} handAngle={0} glowColor="#ffb27f" ringPulse={1} />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#7fe0ff" ringPulse={1} />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#ffb27f" ringPulse={1} />
         </>
       );
     }
@@ -540,16 +553,16 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
     case 20: {
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={travelerHand * 0.3} glowColor="#7fe0ff" />
-          <ClockFace position={CLOCK_RIGHT} handAngle={earthHand * 2} glowColor="#ffb27f" />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={travelerHand * 0.3} glowColor="#7fe0ff" />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={earthHand * 2} glowColor="#ffb27f" />
         </>
       );
     }
     case 21: {
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={0} glowColor="#7fe0ff" />
-          <ClockFace position={CLOCK_RIGHT} handAngle={0} glowColor="#ffb27f" />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#7fe0ff" />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={0} glowColor="#ffb27f" />
         </>
       );
     }
@@ -607,8 +620,8 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
     case 27: {
       return (
         <>
-          <ClockFace position={CLOCK_LEFT} handAngle={travelerHand} glowColor="#7fe0ff" ringPulse={1} />
-          <ClockFace position={CLOCK_RIGHT} handAngle={earthHand} glowColor="#ffb27f" ringPulse={1} />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={travelerHand} glowColor="#7fe0ff" ringPulse={1} />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={earthHand} glowColor="#ffb27f" ringPulse={1} />
         </>
       );
     }
@@ -620,8 +633,8 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
         <>
           <GearMechanism position={[-1.6, -0.6, -1]} scale={0.35} time={frame * 0.06} />
           <GearMechanism position={[1.6, -0.6, -1]} scale={0.35} time={frame * 0.06} />
-          <ClockFace position={CLOCK_LEFT} handAngle={travelerHand} glowColor="#7fe0ff" />
-          <ClockFace position={CLOCK_RIGHT} handAngle={earthHand} glowColor="#ffb27f" />
+          <ClockFace position={CLOCK_TOP} scale={STUDIO_CLOCK_SCALE} handAngle={travelerHand} glowColor="#7fe0ff" />
+          <ClockFace position={CLOCK_BOTTOM} scale={STUDIO_CLOCK_SCALE} handAngle={earthHand} glowColor="#ffb27f" />
         </>
       );
     }
@@ -663,7 +676,7 @@ const SceneContent: React.FC<{frame: number; beat: BeatWithFrames; t: number}> =
     case 32: {
       const travelerPos = lerp3(
         [SHIP_HOME[0] + 0.5, SHIP_HOME[1], SHIP_HOME[2]],
-        [SHIP_HOME[0] + 8, SHIP_HOME[1] + 10, SHIP_HOME[2] - 4],
+        [SHIP_HOME[0] + 2, SHIP_HOME[1] + 10, SHIP_HOME[2] - 5],
         t
       );
       return (

@@ -7,8 +7,8 @@
 // ---------------------------------------------------------------------------
 
 export const FPS = 30;
-export const WIDTH = 1920;
-export const HEIGHT = 1080;
+export const WIDTH = 1080;
+export const HEIGHT = 1920;
 
 // Real narration ends at 84.610563s. Round the composition UP so the audio
 // is never truncated (ceil, not round/floor).
