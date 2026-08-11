@@ -1,0 +1,27 @@
+{
+  "name": "physics-laws-montage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "\"Physics Laws That Look Like Magic\" — 9:16 Remotion + React Three Fiber montage.",
+  "scripts": {
+    "start": "remotion studio src/index.ts",
+    "build": "remotion render src/index.ts PhysicsMontage out/physics-laws-montage.mp4",
+    "still": "remotion still src/index.ts PhysicsMontage out/still.png",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.114.0",
+    "@react-three/fiber": "^8.17.10",
+    "@remotion/cli": "4.0.286",
+    "@remotion/three": "4.0.286",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.286",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.1",
+    "@types/three": "^0.169.0",
+    "typescript": "5.5.4"
+  }
+}
