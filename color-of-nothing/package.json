@@ -1,0 +1,25 @@
+{
+  "name": "color-of-nothing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "\"What Is the Color of Absolutely Nothing?\" — atmospheric Remotion + React Three Fiber short (9:16).",
+  "scripts": {
+    "start": "remotion studio src/index.ts",
+    "build": "remotion render src/index.ts ColorOfNothing out/color-of-nothing.mp4",
+    "still": "remotion still src/index.ts ColorOfNothing"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.508",
+    "@remotion/three": "4.0.508",
+    "@remotion/media-utils": "4.0.508",
+    "react": "19.1.9",
+    "react-dom": "19.1.9",
+    "remotion": "4.0.508",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.9",
+    "@types/three": "0.185.0",
+    "typescript": "5.6.3"
+  }
+}
