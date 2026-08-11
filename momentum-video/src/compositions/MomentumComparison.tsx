@@ -23,12 +23,16 @@ import {WIDTH, HEIGHT} from '../constants';
 
 export const MomentumComparison: React.FC = () => {
 	return (
-		<AbsoluteFill style={{backgroundColor: '#05070d'}}>
+		<AbsoluteFill style={{backgroundColor: '#1b2338'}}>
 			<ThreeCanvas
 				width={WIDTH}
 				height={HEIGHT}
 				dpr={1}
-				gl={{antialias: false, powerPreference: 'high-performance'}}
+				gl={{
+					antialias: false,
+					powerPreference: 'high-performance',
+					toneMappingExposure: 1.5,
+				}}
 			>
 				<Scene />
 			</ThreeCanvas>

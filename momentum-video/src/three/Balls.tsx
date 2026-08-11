@@ -37,9 +37,9 @@ export const GiantBall: React.FC<{
 			<mesh rotation={[roll * 0.6, roll, 0]} scale={pulse * scaleMul}>
 				<sphereGeometry args={[GIANT_RADIUS, 32, 32]} />
 				<meshStandardMaterial
-					color="#20242e"
-					metalness={0.9}
-					roughness={0.32}
+					color="#454e63"
+					metalness={0.85}
+					roughness={0.35}
 					envMapIntensity={1.2}
 				/>
 			</mesh>
