@@ -46,9 +46,12 @@ const KEYFRAMES: Pose[] = [
   {t: BEATS.lights.window.start, pos: [0, 0, 1.2], look: [0, 0.6, -7.9], fov: 58},
   {t: BEATS.lights.window.end, pos: [0, 0, 1.2], look: [0, 0.3, -7.9], fov: 58},
 
-  // FINAL LIGHT GONE — camera stops. Quick reorientation then lock.
+  // FINAL LIGHT GONE — camera stops. Quick reorientation, a brief punctuation
+  // lock (<0.4s — see STATIC_WINDOWS), then a slow drift resumes so the rest
+  // of the beat isn't a dead hold.
   {t: BEATS.finalLightGone.start, pos: [0, 0, 1.2], look: [0, 0, -3], fov: 50},
-  {t: BEATS.finalLightGone.end, pos: [0, 0, 1.2], look: [0, 0, -3], fov: 50},
+  {t: BEATS.finalLightGone.start + 0.35, pos: [0, 0, 1.2], look: [0, 0, -3], fov: 50},
+  {t: BEATS.finalLightGone.end, pos: [0, 0.03, 1.16], look: [0.02, 0.02, -3], fov: 50},
 
   // PHOTON APPROACH — macro push toward the abstract eyes.
   {t: BEATS.photonApproach.start, pos: [0, 0, 3.2], look: [0, 0, 0], fov: 45},
@@ -121,15 +124,21 @@ const KEYFRAMES: Pose[] = [
   {t: BEATS.returnToSpace.start + EPS, pos: [0, 0, 7.0], look: [0, 0, 0], fov: 42},
   {t: BEATS.returnToSpace.end, pos: [0, 0, 6.2], look: [0, 0, 0], fov: 42},
 
-  // EYES GONE — camera stops completely.
-  {t: BEATS.eyesGoneStatic.end, pos: [0, 0, 6.2], look: [0, 0, 0], fov: 42},
+  // EYES GONE — camera stops completely for a brief punctuation beat, then
+  // resumes a slow drift (ambient embers keep the frame alive throughout).
+  {t: BEATS.eyesGoneStatic.start + 0.35, pos: [0, 0, 6.2], look: [0, 0, 0], fov: 42},
+  {t: BEATS.eyesGoneStatic.end, pos: [0, -0.02, 6.12], look: [-0.02, 0, 0], fov: 42},
 
   // PHOTON ALONE — slow-motion tracking shot following it.
   {t: BEATS.photonAlone.end, pos: [0.4, 0.1, 5.4], look: [0.3, 0.05, 4.5], fov: 36},
 
-  // PHOTON GONE — no movement, same black as the opening.
+  // PHOTON GONE — a brief punctuation lock ("no movement"), same black as the
+  // opening, then a slow drift resumes for the remainder of the beat — this
+  // used to be a dead ~1.9s hold, the single worst offender for "nothing
+  // happening"; the ambient ember field also keeps running throughout.
   {t: BEATS.photonGone.start, pos: [0, 0, 6.2], look: [0, 0, 0], fov: 40},
-  {t: BEATS.photonGone.end, pos: [0, 0, 6.2], look: [0, 0, 0], fov: 40},
+  {t: BEATS.photonGone.start + 0.4, pos: [0, 0, 6.2], look: [0, 0, 0], fov: 40},
+  {t: BEATS.photonGone.end, pos: [0, 0.03, 6.08], look: [0.02, -0.02, 0], fov: 40},
 
   // LOOP TAIL — mirrors the very first frame.
   {t: BEATS.loopTail.end, pos: [0, 0, 6.2], look: [0, 0, 0], fov: 40},

@@ -9,8 +9,17 @@ import {BrainShape} from './BrainShape';
 import {RoomEnvironment} from './RoomEnvironment';
 import {ColorOrbs, RainbowGradientPlane} from './ColorField';
 import {KeyTransitionSequence} from './KeyTransitionSequence';
-import {CYCLE_PALETTE, FLOOD_PALETTE, RAINBOW_STOPS} from './lib/palette';
-import {beatProgress, linearProgress, clamp01, stepPalette, hashRandom, lerpColor} from './lib/utils';
+import {AmbientEmbers} from './AmbientEmbers';
+import {CYCLE_PALETTE, FLOOD_PALETTE, RAINBOW_STOPS, MOOD_BG} from './lib/palette';
+import {
+  beatProgress,
+  linearProgress,
+  clamp01,
+  stepPalette,
+  hashRandom,
+  lerpColor,
+  gentleSine,
+} from './lib/utils';
 
 interface SceneProps {
   seconds: number;
@@ -37,16 +46,30 @@ const viewerEyesOpacity = (seconds: number): number => {
   return 0;
 };
 
+/** Smoothly blend between adjacent palette stops at a continuous progress `t`
+ *  (instead of a hard-cut step) — still reads as "cycling through distinct
+ *  colors" since each stop is held near-fully, but the transition itself
+ *  visibly moves/swirls rather than popping. */
+const smoothCyclePalette = (palette: readonly string[], t: number): string => {
+  const scaled = clamp01(t) * (palette.length - 1);
+  const idx = Math.min(palette.length - 2, Math.floor(scaled));
+  const localT = scaled - idx;
+  // ease so each color still gets a clear "hold" near the stop, with a
+  // visibly moving blend in between — not an instant cut.
+  const eased = localT < 0.5 ? 0 : (localT - 0.5) * 2;
+  return lerpColor(palette[idx], palette[idx + 1], eased).getStyle();
+};
+
 const computeBackground = (seconds: number): string => {
   const {blackMoment, colorCycle1, colorBurst2, drain, flythrough} = BEATS;
 
   if (seconds >= blackMoment.start && seconds <= blackMoment.end) {
-    return '#161616';
+    return '#1a1830';
   }
 
   if (seconds >= colorCycle1.start && seconds <= colorCycle1.end) {
     const t = linearProgress(seconds, colorCycle1.start, colorCycle1.end);
-    return stepPalette(CYCLE_PALETTE, t);
+    return smoothCyclePalette(CYCLE_PALETTE, t);
   }
 
   if (seconds >= colorBurst2.start && seconds <= colorBurst2.end) {
@@ -65,10 +88,10 @@ const computeBackground = (seconds: number): string => {
   if (seconds >= flythrough.start && seconds <= flythrough.end) {
     const t = linearProgress(seconds, flythrough.start, flythrough.end);
     const hue = stepPalette(FLOOD_PALETTE, (t * 3) % 1);
-    return lerpColor('#000000', hue, 0.3).getStyle();
+    return lerpColor(MOOD_BG, hue, 0.3).getStyle();
   }
 
-  return '#000000';
+  return MOOD_BG;
 };
 
 export const Scene: React.FC<SceneProps> = ({seconds}) => {
@@ -162,6 +185,13 @@ export const Scene: React.FC<SceneProps> = ({seconds}) => {
 
   const eyesOpacity = viewerEyesOpacity(seconds);
 
+  // Rule: the screen must never sit empty/static for more than ~0.5s. During
+  // the biggest, busiest color moments the ambient layer would just be
+  // visual noise on top of everything else already moving, so it's dialed
+  // down (never off) there and left at full strength everywhere else —
+  // which is most of the runtime, including every "quiet"/dark stretch.
+  const ambientIntensity = inColorBurst ? 0.4 : 1;
+
   return (
     <>
       <color attach="background" args={[bg]} />
@@ -170,9 +200,19 @@ export const Scene: React.FC<SceneProps> = ({seconds}) => {
 
       <CameraRig seconds={seconds} />
 
+      {/* ALWAYS-ON baseline: sparse glowing embers drifting and breathing
+          through the entire runtime — this is what keeps "dark" moody
+          (deep blue/purple, glowing edges) rather than a dead empty frame. */}
+      <AmbientEmbers seconds={seconds} intensity={ambientIntensity} />
+
+      {/* OPENING: a light particle already streaking across frame in the
+          first ~1.2s, so frame 1 is never a static hold. */}
+      {seconds <= 1.3 && <OpeningStreak seconds={seconds} />}
+
       {/* THE RECURRING EYES — appear at exactly four moments, plus the final loop hint.
-          Deliberately near-invisible: the viewer may not consciously register them. */}
-      <EyeMark opacity={eyesOpacity} seconds={seconds} radius={0.32} rimStrength={0.09} />
+          Subtle, but with a genuinely visible breathing glow (retention rule:
+          the eyes can't just be a barely-there line that reads as nothing). */}
+      <EyeMark opacity={eyesOpacity} seconds={seconds} radius={0.32} rimStrength={0.18} />
 
       {/* ROOM: dark POV room with lamp / screen / window. */}
       {showRoom && (
@@ -181,6 +221,7 @@ export const Scene: React.FC<SceneProps> = ({seconds}) => {
           lampGlow={lampGlow}
           screenGlow={screenGlow}
           windowGlow={windowGlow}
+          seconds={seconds}
         />
       )}
 
@@ -240,16 +281,20 @@ export const Scene: React.FC<SceneProps> = ({seconds}) => {
         </>
       )}
 
-      {/* COLOR MOMENT 1: empty space cycling through black/gray/full saturated spectrum. */}
+      {/* COLOR MOMENT 1: empty space cycling through black/gray/full saturated
+          spectrum — the whole cluster slowly swirls/rotates so the colors
+          visibly move, not just a static scatter under a shifting backdrop. */}
       {seconds >= BEATS.colorCycle1.start && seconds <= BEATS.colorCycle1.end && (
-        <ColorOrbs
-          seconds={seconds}
-          count={26}
-          palette={CYCLE_PALETTE.filter((c) => c !== '#000000' && c !== '#050505')}
-          opacity={0.85}
-          spread={2.6}
-          seedOffset={11}
-        />
+        <group rotation={[0, (seconds - BEATS.colorCycle1.start) * 0.6, (seconds - BEATS.colorCycle1.start) * 0.2]}>
+          <ColorOrbs
+            seconds={seconds}
+            count={26}
+            palette={CYCLE_PALETTE.filter((c) => c !== '#000000' && c !== '#050505')}
+            opacity={0.85}
+            spread={2.6}
+            seedOffset={11}
+          />
+        </group>
       )}
 
       {/* "Here's the catch" — scene collapses into a single beam of light entering the eye.
@@ -306,16 +351,18 @@ export const Scene: React.FC<SceneProps> = ({seconds}) => {
         </>
       )}
       {showColorBurst2 && (
-        <ColorOrbs
-          seconds={seconds}
-          count={90}
-          palette={FLOOD_PALETTE}
-          opacity={clamp01(colorBurst2T) * 0.95}
-          spread={3.2}
-          seedOffset={41}
-          baseSize={0.09}
-          drift={0.35}
-        />
+        <group rotation={[0, (seconds - BEATS.colorBurst2.start) * 0.9, 0]}>
+          <ColorOrbs
+            seconds={seconds}
+            count={90}
+            palette={FLOOD_PALETTE}
+            opacity={clamp01(colorBurst2T) * 0.95}
+            spread={3.2}
+            seedOffset={41}
+            baseSize={0.09}
+            drift={0.5}
+          />
+        </group>
       )}
 
       {/* Photons vanish, color drains back to black. */}
@@ -434,6 +481,41 @@ export const Scene: React.FC<SceneProps> = ({seconds}) => {
         </group>
       )}
     </>
+  );
+};
+
+/**
+ * A bright particle already streaking across frame during the opening's
+ * first ~1.2s, with a short fading trail behind it — this is what makes
+ * frame 1 read as "something is already happening" instead of a static
+ * black hold while the eyes fade in.
+ */
+const OpeningStreak: React.FC<{seconds: number}> = ({seconds}) => {
+  const t = clamp01(seconds / 1.3);
+  const headX = -2.4 + t * 4.6;
+  const headY = 1.3 - t * 1.9;
+  const headZ = 2.5 - t * 1.6;
+  const fadeOut = 1 - clamp01((t - 0.75) / 0.25);
+
+  return (
+    <group>
+      <ParticleField
+        count={9}
+        seconds={seconds}
+        size={0.05}
+        opacity={0.85 * fadeOut}
+        color="#c9d6ff"
+        getPosition={(i) => {
+          const trail = i / 9;
+          const trailT = clamp01(t - trail * 0.12);
+          const x = -2.4 + trailT * 4.6;
+          const y = 1.3 - trailT * 1.9;
+          const z = 2.5 - trailT * 1.6;
+          return [x, y, z];
+        }}
+      />
+      <pointLight color="#c9d6ff" position={[headX, headY, headZ]} intensity={0.5 * fadeOut} distance={3} />
+    </group>
   );
 };
 

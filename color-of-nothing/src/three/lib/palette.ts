@@ -46,5 +46,22 @@ export const RAINBOW_STOPS: readonly string[] = [
 ];
 
 export const NEAR_BLACK = '#050505';
-export const EYE_RIM_DIM = '#8a95a3';
-export const EYE_RIM_BRIGHT = '#dfe6ee';
+export const EYE_RIM_DIM = '#7a8fd9';
+export const EYE_RIM_BRIGHT = '#c9d6ff';
+
+/**
+ * The "dark" baseline is a moody deep blue/purple, not an empty black frame —
+ * this is what the RoomEnvironment rim-outlines, the ambient ember field, and
+ * the default background all draw from when nothing more eventful is on screen.
+ */
+export const MOOD_BG = '#04050d';
+export const MOOD_RIM = '#5f6fd0';
+
+/** Cool, dim, varied glow tones for the always-on ambient ember field. */
+export const EMBER_PALETTE: readonly string[] = [
+  '#5f6fd0', // deep periwinkle
+  '#7a4fd9', // violet
+  '#3fa9d9', // cyan-blue
+  '#4f6fff', // indigo
+  '#9a5fd9', // orchid
+];

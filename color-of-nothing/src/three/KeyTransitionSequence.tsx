@@ -1,7 +1,8 @@
 import React from 'react';
 import {BEATS} from '../timing';
 import {EyeMark} from './EyeMark';
-import {linearProgress, clamp01} from './lib/utils';
+import {ParticleField} from './ParticleField';
+import {linearProgress, clamp01, hashRandom} from './lib/utils';
 
 interface KeyTransitionSequenceProps {
   seconds: number;
@@ -66,6 +67,37 @@ export const KeyTransitionSequence: React.FC<KeyTransitionSequenceProps> = ({sec
           <ringGeometry args={[0.5, 0.505, 64]} />
           <meshBasicMaterial color="#5a6472" transparent opacity={clamp01(observerOpacity) * 0.4} />
         </mesh>
+      )}
+
+      {/* EVERYTHING GONE: not a dead cut to black — a handful of the last
+          embers still drifting outward and dying out, so even "nothing left"
+          keeps a trace of motion on screen. */}
+      {seconds >= BEATS.keyTransition.everythingGone.start && seconds <= BEATS.keyTransition.everythingGone.end && (
+        <ParticleField
+          count={14}
+          seconds={seconds}
+          size={0.028}
+          opacity={
+            0.55 *
+            (1 -
+              linearProgress(
+                seconds,
+                BEATS.keyTransition.everythingGone.start,
+                BEATS.keyTransition.everythingGone.end,
+              ))
+          }
+          color="#5f6fd0"
+          getPosition={(i) => {
+            const t = linearProgress(
+              seconds,
+              BEATS.keyTransition.everythingGone.start,
+              BEATS.keyTransition.everythingGone.end,
+            );
+            const angle = hashRandom(i * 4.1) * Math.PI * 2;
+            const r = 0.3 + t * (0.6 + hashRandom(i * 6.3) * 0.8);
+            return [Math.cos(angle) * r, Math.sin(angle) * r * 0.7, (hashRandom(i * 8.7) - 0.5) * 0.5];
+          }}
+        />
       )}
     </group>
   );

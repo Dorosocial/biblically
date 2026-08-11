@@ -2,6 +2,7 @@ import React, {useMemo} from 'react';
 import * as THREE from 'three';
 import {gentleSine} from './lib/utils';
 import {EYE_RIM_DIM, EYE_RIM_BRIGHT} from './lib/palette';
+import {getDotTexture} from './lib/dotTexture';
 
 interface SingleEyeProps {
   position: [number, number, number];
@@ -13,7 +14,8 @@ interface SingleEyeProps {
   pulsePhase: number;
 }
 
-/** One dark lens: a near-invisible flat disc with a hair-thin reflective rim. */
+/** One dark lens: a near-invisible flat disc with a hair-thin reflective rim
+ *  that visibly breathes — a soft glow halo pulsing under it. */
 const SingleEye: React.FC<SingleEyeProps> = ({
   position,
   radius,
@@ -23,11 +25,25 @@ const SingleEye: React.FC<SingleEyeProps> = ({
   seconds,
   pulsePhase,
 }) => {
-  const pulse = 1 + gentleSine(seconds, 5.4, 0.12, pulsePhase);
-  const tubeRadius = radius * 0.018;
+  // A genuine breathing cycle: faster and more pronounced than a barely-there
+  // shimmer, so the "alive, pulsing glow" reads even when nothing else moves.
+  const breath = 0.5 + gentleSine(seconds, 3.4, 0.5, pulsePhase);
+  const pulse = 1 + breath * 0.16;
+  const tubeRadius = radius * 0.02;
 
   return (
     <group position={position}>
+      {/* soft glow halo behind the rim — this is what sells "glowing", not just a thin line */}
+      <sprite scale={[radius * 3.2, radius * 3.2, 1]}>
+        <spriteMaterial
+          map={getDotTexture()}
+          color={rimColor}
+          transparent
+          opacity={rimOpacity * (0.35 + breath * 0.5)}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </sprite>
       {/* the lens itself: almost pure black, barely distinguishable from the void */}
       <mesh>
         <circleGeometry args={[radius * 0.96, 48]} />

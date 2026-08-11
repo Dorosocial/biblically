@@ -124,7 +124,9 @@ export const BEATS = {
  * finally hint at reappearing for the loop.
  */
 export const VIEWER_EYES_WINDOWS = [
-  {start: BEATS.opening.start, end: BEATS.blackMoment.end, fadeIn: 0.6, fadeOut: 0.3},
+  // Near-instant onset: the eyes (with their breathing glow) must already be
+  // visible by frame 1 — no static black hold at the very start of the video.
+  {start: BEATS.opening.start, end: BEATS.blackMoment.end, fadeIn: 0.1, fadeOut: 0.3},
   {start: BEATS.hardCutToRoom.start, end: BEATS.roomReveal.end, fadeIn: 0.2, fadeOut: 0.4},
   {start: BEATS.finalLightGone.start, end: BEATS.finalLightGone.end, fadeIn: 0.25, fadeOut: 0.2},
   {start: BEATS.blackText.start, end: BEATS.blackText.end, fadeIn: 0.3, fadeOut: 0.3},
@@ -132,13 +134,22 @@ export const VIEWER_EYES_WINDOWS = [
   {start: BEATS.loopTail.start, end: BEATS.loopTail.end, fadeIn: 0.15, fadeOut: 0},
 ] as const;
 
-/** Total stillness windows: camera fully locked, zero movement. */
+/**
+ * Camera-lock punctuation windows: brief moments (never more than ~0.4s)
+ * where the camera itself holds perfectly still for dramatic emphasis on a
+ * beat explicitly marked "static" / "camera stops" in the brief. Kept short
+ * on purpose — even during these, the ambient ember field and the eyes'
+ * breathing glow keep moving, so the frame is never truly inert. Beats that
+ * used to be held static for their *entire* span (finalLightGone,
+ * eyesGoneStatic, photonGone) now only lock for their first beat here; the
+ * camera resumes a slow drift for the remainder (see CameraRig.tsx).
+ */
 export const STATIC_WINDOWS = [
-  BEATS.blackMoment,
-  BEATS.finalLightGone,
-  {start: BEATS.emptySpace.freezeFrom, end: BEATS.emptySpace.end},
-  BEATS.eyesGoneStatic,
-  BEATS.photonGone,
+  BEATS.blackMoment, // 0.52s — already brief
+  {start: BEATS.finalLightGone.start, end: BEATS.finalLightGone.start + 0.35},
+  {start: BEATS.emptySpace.freezeFrom, end: BEATS.emptySpace.end}, // 0.35s
+  {start: BEATS.eyesGoneStatic.start, end: BEATS.eyesGoneStatic.start + 0.35},
+  {start: BEATS.photonGone.start, end: BEATS.photonGone.start + 0.4},
 ] as const;
 
 export const isInStaticWindow = (seconds: number): boolean =>
