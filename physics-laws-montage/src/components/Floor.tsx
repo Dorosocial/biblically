@@ -6,7 +6,7 @@ export const Floor: React.FC<{
 	readonly y?: number;
 	readonly size?: number;
 	readonly color?: string;
-}> = ({y = 0, size = 40, color = '#12151d'}) => {
+}> = ({y = 0, size = 40, color = '#1e2436'}) => {
 	return (
 		<mesh position={[0, y, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
 			<planeGeometry args={[size, size]} />

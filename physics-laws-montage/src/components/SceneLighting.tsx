@@ -17,13 +17,16 @@ export const SceneLighting: React.FC<{
 }> = ({
 	focalPosition,
 	focalColor = '#ffffff',
-	focalIntensity = 1.6,
+	focalIntensity = 2.6,
 	keyColor = '#fff4e0',
 }) => {
 	return (
 		<>
 			{/* Ambient fill — keeps the dark backdrop from swallowing shadow sides. */}
-			<ambientLight intensity={0.45} color="#8fa4c9" />
+			<ambientLight intensity={0.85} color="#aab8d6" />
+			{/* Hemisphere fill — soft sky/ground gradient so nothing goes pure black,
+			    without flattening the directional shadow sides. */}
+			<hemisphereLight color="#cfe0ff" groundColor="#1a1f2e" intensity={0.6} />
 
 			{/* Directional key light — the main dramatic rake across the scene.
 			    Directional lights don't fall off with distance, so they stay
@@ -31,13 +34,13 @@ export const SceneLighting: React.FC<{
 			    extreme close-up. */}
 			<directionalLight
 				position={[6, 10, 6]}
-				intensity={3.2}
+				intensity={4.6}
 				color={keyColor}
 			/>
 			{/* Cool rim light from behind to separate silhouettes from the backdrop. */}
 			<directionalLight
 				position={[-5, 4, -8]}
-				intensity={1.6}
+				intensity={2.6}
 				color="#5ac8ff"
 			/>
 

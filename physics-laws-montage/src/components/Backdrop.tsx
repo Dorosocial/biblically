@@ -7,7 +7,7 @@ import * as THREE from 'three';
  * metal, glowing vectors, energy bars, white labels) reads with maximum
  * contrast against it from any camera angle.
  */
-export const BACKDROP_COLOR = '#0a0e16';
+export const BACKDROP_COLOR = '#151b2e';
 
 export const Backdrop: React.FC<{readonly center?: [number, number, number]}> = ({
 	center = [0, 2, 0],

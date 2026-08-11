@@ -54,8 +54,8 @@ export const BicycleWheel: React.FC<{
 
 	const metalProps = {
 		color,
-		metalness: 1,
-		roughness: 0.38,
+		metalness: 0.8,
+		roughness: 0.42,
 	};
 
 	return (

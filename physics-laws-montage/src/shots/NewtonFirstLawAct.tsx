@@ -89,7 +89,7 @@ export const NewtonFirstLawAct: React.FC = () => {
 		<>
 			<ThreeCanvas width={WIDTH} height={HEIGHT}>
 				<Backdrop />
-				<SceneLighting focalPosition={[ballX, BALL_RADIUS, 0]} focalColor="#5fe3a3" focalIntensity={1.8} />
+				<SceneLighting focalPosition={[ballX, BALL_RADIUS, 0]} focalColor="#5fe3a3" focalIntensity={2.8} />
 				<CameraRig position={camPos} lookAt={camLookAt} fov={fov} />
 
 				<Floor y={0} />

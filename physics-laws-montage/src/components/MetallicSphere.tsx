@@ -22,8 +22,8 @@ export const MetallicSphere: React.FC<{
 			<sphereGeometry args={[radius, 48, 48]} />
 			<meshStandardMaterial
 				color={color}
-				metalness={1}
-				roughness={0.22}
+				metalness={0.82}
+				roughness={0.32}
 				emissive={emissive}
 				emissiveIntensity={emissiveIntensity}
 			/>

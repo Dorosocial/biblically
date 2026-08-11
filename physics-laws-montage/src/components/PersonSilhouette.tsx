@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const SILHOUETTE_COLOR = '#14161d';
+export const SILHOUETTE_COLOR = '#22262d';
 
 /**
  * Stylized humanoid silhouette — capsule body + sphere head, solid dark
@@ -15,7 +15,7 @@ export const PersonSilhouette: React.FC<{
 	readonly facing?: number; // radians around Y
 }> = ({position = [0, 0, 0], lean = 0, armRaise = 1.3, facing = 0}) => {
 	const material = (
-		<meshStandardMaterial color={SILHOUETTE_COLOR} roughness={0.85} metalness={0} />
+		<meshStandardMaterial color={SILHOUETTE_COLOR} roughness={0.6} metalness={0} />
 	);
 
 	return (

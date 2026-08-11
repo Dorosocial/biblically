@@ -133,7 +133,7 @@ export const MomentumAct: React.FC = () => {
 		<>
 			<ThreeCanvas width={WIDTH} height={HEIGHT}>
 				<Backdrop />
-				<SceneLighting focalPosition={[0, REST_Y, 0]} focalColor="#4fd1ff" focalIntensity={2} />
+				<SceneLighting focalPosition={[0, REST_Y, 0]} focalColor="#4fd1ff" focalIntensity={3.2} />
 				<CameraRig position={camPos} lookAt={camLookAt} fov={fov} />
 
 				{/* Row of 5 identical metallic spheres. */}

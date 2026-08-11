@@ -197,7 +197,7 @@ export const EnergyAct: React.FC = () => {
 				<SceneLighting
 					focalPosition={[BALL_X, ballY, BALL_Z]}
 					focalColor="#ffb347"
-					focalIntensity={1.8}
+					focalIntensity={2.8}
 				/>
 				<CameraRig position={camPos} lookAt={camLookAt} fov={fov} />
 

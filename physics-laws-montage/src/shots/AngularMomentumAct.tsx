@@ -110,7 +110,7 @@ export const AngularMomentumAct: React.FC = () => {
 		<>
 			<ThreeCanvas width={WIDTH} height={HEIGHT}>
 				<Backdrop center={[personPos[0], 2, 0]} />
-				<SceneLighting focalPosition={wheelPos} focalColor="#c07bff" focalIntensity={2.2} />
+				<SceneLighting focalPosition={wheelPos} focalColor="#c07bff" focalIntensity={3.4} />
 				<CameraRig position={camPos} lookAt={camLookAt} fov={fov} />
 
 				<PersonSilhouette position={personPos} lean={lean} armRaise={armRaise} facing={0.05} />

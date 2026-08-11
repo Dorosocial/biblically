@@ -129,7 +129,7 @@ export const OpeningAct: React.FC = () => {
 				<SceneLighting
 					focalPosition={inChaos1 ? CRADLE_CENTER : inChaos2 ? WHEEL_CENTER : BALL_CENTER}
 					focalColor={inChaos1 ? '#4fd1ff' : inChaos2 ? '#c07bff' : '#ffb347'}
-					focalIntensity={2.2}
+					focalIntensity={3.4}
 				/>
 				<CameraRig position={camPos} lookAt={camLookAt} fov={isFrozen ? 48 : 34} />
 
