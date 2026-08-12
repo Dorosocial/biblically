@@ -53,8 +53,10 @@ const CAM_POINTS: {t: number; pos: [number, number, number]; look: [number, numb
 	{t: 32.02, pos: [0.4, 1.0, -1.0], look: [0, 0, -2.5], fov: 42},
 	{t: 32.04, pos: [0.7, 0.9, 0.3], look: [0, 0.2, -1.8], fov: 46},
 	{t: 34.53, pos: [0.6, 0.7, -1.2], look: [0, 0.1, -2.8], fov: 36},
-	{t: 34.55, pos: [0.4, 0.4, -2.2], look: [0, 0, -3.5], fov: 28},
-	{t: 37.39, pos: [-0.2, 0.15, -3.6], look: [0, 0, -4], fov: 20},
+	// trails just behind the particle's own path (z: -1 -> -3.6) so it never
+	// looks past/behind the thing it's supposed to be tracking.
+	{t: 34.55, pos: [0.5, 0.3, 0.0], look: [0.25, 0, -1.0], fov: 36},
+	{t: 37.39, pos: [0.1, 0.15, -3.0], look: [0.3, 0, -3.6], fov: 22},
 	{t: 37.41, pos: [0, 0.4, -1], look: [0, 0, -3], fov: 38},
 	// clears back over the top of the barrier (barrier top edge is y=1.3) so
 	// this long crossing never clips through the barrier panels.
@@ -68,18 +70,25 @@ const CAM_POINTS: {t: number; pos: [number, number, number]; look: [number, numb
 	{t: 49.1, pos: [0.55, 0.35, 0.7], look: [0.5, 0.1, 0.3], fov: 18},
 	{t: 49.12, pos: [0.3, 0.3, -1.5], look: [0, 0, -4], fov: 30},
 	{t: 51.42, pos: [0, 0.2, -3.4], look: [0, 0, -4], fov: 30},
-	{t: 51.44, pos: [0.45, 0.2, -3.2], look: [0.5, 0, -4], fov: 26},
-	{t: 53.9, pos: [0.5, 0.15, -3.7], look: [0.5, 0, -4], fov: 18},
-	{t: 53.92, pos: [0, 0.5, 4], look: [0, 0, 3], fov: 36},
-	{t: 59.47, pos: [0, 0.8, 8], look: [0, 0, 3], fov: 46},
+	// look targets match the particle's actual landing spot (0.5,0,-3.6), and
+	// the close end point keeps enough distance to avoid overshooting past it.
+	{t: 51.44, pos: [0.45, 0.25, -3.0], look: [0.5, 0, -3.6], fov: 30},
+	{t: 53.9, pos: [0.5, 0.25, -2.9], look: [0.5, 0, -3.6], fov: 26},
+	// wide enough (and far enough back) to keep both the ball (x~-1.6..-2.2)
+	// and the ghost duplicate (x=1.6) inside frame at once — verified with
+	// scripts/checkframe.mjs against the portrait (9:16) frustum.
+	{t: 53.92, pos: [0, 0.7, 10], look: [0, 0, 3], fov: 64},
+	{t: 59.47, pos: [0, 1.0, 13], look: [0, 0, 3], fov: 66},
 	{t: 59.49, pos: [2.4, 0.6, 3], look: [0, 0, 3], fov: 40},
 	{t: 61.05, pos: [-2.4, 0.8, 3], look: [0, 0, 3], fov: 40},
 	{t: 61.07, pos: [0, 0.6, 6], look: [0, 0, 3], fov: 42},
 	{t: 62.22, pos: [0, 0.4, 2], look: [0, 0, 3], fov: 36},
 	{t: 62.24, pos: [0.2, 0.9, 7], look: [0, 0, 2], fov: 48},
 	{t: 65.82, pos: [-0.2, 1.0, 6.6], look: [0, 0, 2], fov: 48},
-	{t: 65.84, pos: [-1.0, 0.6, 5], look: [-1.5, 0, 3], fov: 42},
-	{t: 69.55, pos: [1.0, 0.6, 5], look: [1.5, 0, 3], fov: 42},
+	// wide + far back enough that both the classical ball (x=-2.2) and the
+	// quantum wave (x=2.2) stay in frame through the whole pan.
+	{t: 65.84, pos: [-1.0, 0.7, 9], look: [-1.5, 0, 3], fov: 68},
+	{t: 69.55, pos: [1.0, 0.7, 9], look: [1.5, 0, 3], fov: 68},
 	{t: 69.57, pos: [0, 0.5, 9], look: [0, 0, 3], fov: 50},
 	{t: 71.22, pos: [0, 0.02, 3.3], look: [0, 0, 3], fov: 8},
 	{t: 71.24, pos: [0, 0.3, 5], look: [0, 0, 3], fov: 30},
@@ -114,7 +123,10 @@ const particleOpacityT = track([
 
 const particlePosXT = track([
 	[0, 0], [18.09, 0], [51.6, 0.5], [53.9, 0.5], [54.3, -1.6], [69.57, 0],
-	[72.2, 0.4], [72.5, 0.4], [72.80325, 0],
+	// held exactly at 0 through the becauseAtThatScale dive (whose extremely
+	// tight fov leaves no margin for drift) — only starts moving to its final
+	// detection-point x once the montage itself begins.
+	[71.22, 0], [72.2, 0.4], [72.5, 0.4], [72.80325, 0],
 ]);
 
 const particlePosZT = track([

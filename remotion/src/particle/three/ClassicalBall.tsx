@@ -12,7 +12,15 @@ export const ClassicalBall: React.FC<BallProps> = ({position, opacity}) => {
 	return (
 		<mesh position={position}>
 			<sphereGeometry args={[0.3, 28, 28]} />
-			<meshStandardMaterial color={theme.classicalBall} transparent opacity={opacity} roughness={0.55} metalness={0.2} />
+			<meshStandardMaterial
+				color={theme.classicalBall}
+				emissive={theme.classicalBallDim}
+				emissiveIntensity={0.4}
+				transparent
+				opacity={opacity}
+				roughness={0.5}
+				metalness={0.15}
+			/>
 		</mesh>
 	);
 };

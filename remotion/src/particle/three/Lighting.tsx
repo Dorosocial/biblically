@@ -16,10 +16,11 @@ export const Lighting: React.FC = () => {
 
 	return (
 		<>
-			<ambientLight intensity={0.35} color="#5f6fb8" />
-			<directionalLight position={[keyX, 5, 5]} intensity={1.1} color="#fff6e0" />
-			<directionalLight position={[-4, -2, rimZ]} intensity={0.3} color="#7ef9ff" />
-			<pointLight position={[0, 1.5, 2]} intensity={6} distance={12} color="#a78bfa" />
+			<ambientLight intensity={0.75} color="#8b95d6" />
+			<directionalLight position={[keyX, 5, 5]} intensity={2.0} color="#fff6e0" />
+			<directionalLight position={[-4, -2, rimZ]} intensity={0.6} color="#7ef9ff" />
+			<pointLight position={[0, 1.5, 2]} intensity={12} distance={16} color="#a78bfa" />
+			<pointLight position={[0, 2.5, 6]} intensity={8} distance={20} color="#c9d4ff" />
 		</>
 	);
 };

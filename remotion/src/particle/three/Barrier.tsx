@@ -13,7 +13,7 @@ export const Barrier: React.FC<Props> = ({opacity, position = [0, 0, 0]}) => {
 	if (opacity <= 0.001) return null;
 
 	const mat = (
-		<meshStandardMaterial color={theme.barrierColor} emissive={theme.barrierLit} emissiveIntensity={0.2} transparent opacity={opacity} roughness={0.5} />
+		<meshStandardMaterial color={theme.barrierColor} emissive={theme.barrierLit} emissiveIntensity={0.45} transparent opacity={opacity} roughness={0.45} />
 	);
 
 	return (

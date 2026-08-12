@@ -26,7 +26,7 @@ export const Detectors: React.FC<Props> = ({opacity, glow, activeSide, position 
 				return (
 					<mesh key={x} position={[x, -0.55, 0]}>
 						<boxGeometry args={[0.22, 0.18, 0.18]} />
-						<meshStandardMaterial color={c} emissive={theme.detectorOn} emissiveIntensity={litAmount * 1.6} transparent opacity={opacity} roughness={0.4} />
+						<meshStandardMaterial color={c} emissive={theme.detectorOn} emissiveIntensity={0.12 + litAmount * 1.6} transparent opacity={opacity} roughness={0.4} />
 					</mesh>
 				);
 			})}

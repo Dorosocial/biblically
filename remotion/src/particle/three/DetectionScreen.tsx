@@ -68,12 +68,12 @@ export const DetectionScreen: React.FC<Props> = ({opacity, interferenceAmount, c
 		<group position={position}>
 			<mesh>
 				<planeGeometry args={[2.6, 3.4]} />
-				<meshStandardMaterial map={texture} transparent opacity={opacity} emissiveMap={texture} emissive="#ffffff" emissiveIntensity={0.35} />
+				<meshStandardMaterial map={texture} transparent opacity={opacity} emissiveMap={texture} emissive="#ffffff" emissiveIntensity={0.6} />
 			</mesh>
 			{/* frame */}
 			<mesh position={[0, 0, -0.03]}>
 				<boxGeometry args={[2.8, 3.6, 0.06]} />
-				<meshStandardMaterial color={theme.screenColor} transparent opacity={opacity} roughness={0.7} />
+				<meshStandardMaterial color={theme.screenColor} emissive={theme.screenColor} emissiveIntensity={0.3} transparent opacity={opacity} roughness={0.6} />
 			</mesh>
 		</group>
 	);
