@@ -1,0 +1,26 @@
+{
+  "name": "second-vs-billion-years",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "remotion studio src/index.ts",
+    "build": "remotion render src/index.ts SecondVsBillionYears out/second-vs-billion-years.mp4",
+    "still": "remotion still src/index.ts SecondVsBillionYears"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^8.17.10",
+    "@remotion/cli": "4.0.508",
+    "@remotion/three": "4.0.508",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.508",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@types/three": "^0.180.0",
+    "typescript": "5.6.3"
+  }
+}
