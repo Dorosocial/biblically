@@ -176,15 +176,34 @@ const apparatusOpacityT = track([
 // slits, or as a wide "cloud" depending on which shot is active).
 // ---------------------------------------------------------------------------
 
+// Contained to only the shots that are actually "about" the wavefunction —
+// off (or nearly off) everywhere else so it never reads as a constant
+// background glow competing with the particle/ball/labels that are the
+// real focal element of a given shot.
 const waveOpacityT = track([
-	[0, 0], [10.71, 0], [11.52, 0], [12.5, 0.5], [16.69, 0.7], [18.07, 0.7],
-	[18.5, 0.3], [21.29, 0.3], [24.32, 0.3], [24.6, 0.9], [26.59, 0.9],
-	[28.7, 0.9], [32.02, 0.9], [33.0, 0.5], [34.53, 0.5], [34.7, 0.0],
-	[37.39, 0.0], [37.41, 0.0], [39.0, 0.9], [42.41, 0.9], [44.86, 0.9],
-	[48.3, 0.9], [48.5, 0.9], [49.0, 0.3], [49.1, 0.3], [51.42, 0.3],
-	[51.6, 0.0], [53.9, 0.0], [59.47, 0.0], [59.8, 0.8], [61.05, 0.8],
-	[62.22, 0.9], [65.82, 0.9], [69.55, 0.9], [69.8, 0.0], [71.22, 0.0],
-	[71.24, 0.0], [71.5, 0.9], [71.9, 0.9], [72.2, 0.0], [72.5, 0.0],
+	[0, 0], [10.71, 0],
+	[11.52, 0], [12.5, 0.55], [16.69, 0.7], // particleCanExistSuperposition: designated
+	[16.71, 0.7], [18.07, 0.6], // getsReallyStrange: designated
+	[18.09, 0.08], [21.29, 0.08], // imagineSendingParticle: minimal — keep focus on "ONE particle"
+	[21.31, 0.08], [24.32, 0.08], // chooseLeftOrRight: minimal — keep focus on the classical-ball demo
+	[24.34, 0.15], [24.6, 0.85], [26.59, 0.85], // dontMeasureWhichPath: designated
+	[26.61, 0.5], [28.7, 0.3], // resultsFormInterferencePattern: recedes so the SCREEN is the focal element
+	[28.72, 0.85], [32.02, 0.85], // almostWentThroughBothPaths: designated (the wave's journey)
+	[32.04, 0.6], [33.0, 0.35], [33.6, 0.75], [34.2, 0.35], [34.53, 0.5], // didItSplitIntoTwo: ambiguous flicker
+	[34.7, 0.0], [37.39, 0.0], // noSingleParticle: off — particle is the focal element
+	[37.41, 0.0], [39.0, 0.75], [42.41, 0.85], // strangestPartWaveFunction: designated
+	[42.43, 0.85], [44.86, 0.9], // spreadMultiplePossibilities: designated
+	[44.88, 0.5], [48.3, 0.22], // tryFindWhichPath: recedes — detectors are the new focal element
+	[48.32, 0.18], [49.0, 0.05], // measureIt: collapses — detector glow is the focal element
+	[49.1, 0.0], [51.42, 0.0], // interferenceDisappears: off — screen is the focal element
+	[51.44, 0.0], [53.9, 0.0], // oneDefiniteResult: off — particle is the focal element
+	[53.92, 0.0], [59.47, 0.0], // meaningNotLiterallyBall: off — ball/ghost are the focal element
+	[59.49, 0.75], [61.05, 0.8], // somethingStranger: designated (cloud forms)
+	[61.07, 0.8], [62.22, 0.85], // beforeMeasurement: designated
+	[62.24, 0.5], [65.82, 0.5], // describeMultipleOutcomes: moderate — screen shares focus here
+	[65.84, 0.75], [69.55, 0.75], // quantumWorldDifferent: designated (the "quantum" side)
+	[69.57, 0.0], [71.22, 0.0], // becauseAtThatScale: off — diving on the particle
+	[71.24, 0.0], [71.5, 0.85], [71.9, 0.85], [72.2, 0.0], [72.5, 0.0], // final montage
 	[72.80325, 0.0],
 ]);
 
@@ -205,16 +224,34 @@ const waveLobeBiasT = track([
 // Detection screen pattern
 // ---------------------------------------------------------------------------
 
+// Contained to its designated shots only (resultsFormInterferencePattern +
+// the brief final montage), plus the two moments explicitly ABOUT the
+// screen's result (interferenceDisappears / oneDefiniteResult) and the
+// "multiple possible outcomes" shot that explicitly shows it on the screen.
+// Everywhere else the screen sits dark/inactive so it never competes with
+// whatever the shot's actual focal element is.
 const screenInterferenceAmountT = track([
-	[0, 0], [26.59, 0], [28.7, 1], [48.3, 1], [49.1, 1], [53.9, 1], [54.3, 0],
-	[62.22, 0], [62.5, 1], [65.82, 1], [66.0, 0],
-	[71.22, 0], [71.35, 1], [72.0, 1], [72.2, 1], [72.5, 0.6], [72.80325, 0],
+	[0, 0], [26.59, 0], [28.7, 1], // resultsFormInterferencePattern: designated, ramps up
+	[28.72, 1], [30.5, 0.3], [32.02, 0.12], // almostWentThroughBothPaths: recedes fast so the wave is the focal element
+	[32.04, 0], [48.3, 0], // off through didItSplitIntoTwo / noSingleParticle / strangestPartWaveFunction / spreadMultiplePossibilities / tryFindWhichPath
+	[48.32, 0], [49.0, 0], // measureIt: still off — detector glow is the focal element
+	[49.1, 0.15], [51.22, 1], [51.42, 1], // interferenceDisappears: designated, animates alive
+	[51.44, 1], [53.9, 1], // oneDefiniteResult: stays as backdrop context
+	[53.92, 0], [62.22, 0], // off through meaningNotLiterallyBall / somethingStranger / beforeMeasurement
+	[62.24, 0], [62.5, 1], [65.82, 1], // describeMultipleOutcomes: designated
+	[66.0, 0], [71.22, 0], // off through quantumWorldDifferent / becauseAtThatScale
+	[71.24, 0], [71.35, 1], [72.0, 1], [72.2, 1], [72.5, 0.6], [72.80325, 0], // final montage: designated
 ]);
 
 const screenCollapseMixT = track([
-	[0, 0], [26.59, 0], [48.3, 0], [49.1, 0], [51.22, 1], [51.42, 1],
-	[62.22, 1], [62.4, 0], [65.82, 0], [66.0, 1],
-	[71.22, 1], [72.80325, 1],
+	[0, 0], [26.59, 0], [32.02, 0], // interference stripes
+	[32.04, 0], [49.0, 0],
+	[49.1, 0], [51.22, 1], [51.42, 1], // morphs to two-band
+	[51.44, 1], [53.9, 1],
+	[53.92, 1], [62.22, 1],
+	[62.24, 0], [65.82, 0], // describeMultipleOutcomes reads as multi-band "possibilities", not a collapsed result
+	[66.0, 0], [71.22, 1],
+	[71.24, 1], [72.80325, 1],
 ]);
 
 // ---------------------------------------------------------------------------

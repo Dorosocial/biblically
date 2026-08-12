@@ -7,7 +7,7 @@ interface Props {
 	intensity: number;
 }
 
-const COUNT = 360;
+const COUNT = 220;
 
 /** Always-on drifting dust field so the screen is never a true static frame. */
 export const AmbientField: React.FC<Props> = ({intensity}) => {

@@ -48,11 +48,11 @@ export const Barrier: React.FC<Props> = ({opacity, position = [0, 0, 0]}) => {
 				<React.Fragment key={x}>
 					<mesh position={[x - 0.15, 0, 0.02]}>
 						<boxGeometry args={[0.02, 0.62, 0.02]} />
-						<meshStandardMaterial color={theme.barrierLit} emissive={theme.barrierLit} emissiveIntensity={1.2} transparent opacity={opacity} />
+						<meshStandardMaterial color={theme.barrierLit} emissive={theme.barrierLit} emissiveIntensity={0.7} transparent opacity={opacity} />
 					</mesh>
 					<mesh position={[x + 0.15, 0, 0.02]}>
 						<boxGeometry args={[0.02, 0.62, 0.02]} />
-						<meshStandardMaterial color={theme.barrierLit} emissive={theme.barrierLit} emissiveIntensity={1.2} transparent opacity={opacity} />
+						<meshStandardMaterial color={theme.barrierLit} emissive={theme.barrierLit} emissiveIntensity={0.7} transparent opacity={opacity} />
 					</mesh>
 				</React.Fragment>
 			))}

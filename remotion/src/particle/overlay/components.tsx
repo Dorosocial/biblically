@@ -3,8 +3,11 @@ import {useCurrentFrame} from 'remotion';
 import {climbIn, glowPulse, slideIn} from '../../lib/animations';
 import {theme, fontStack} from '../theme';
 
+// Tighter than a typical "neon" glow — enough to read as glowing without the
+// blur radius blowing the text out into a hazy blob that fights the label
+// for legibility.
 const glowText = (color: string, strength: number) =>
-	`0 0 ${14 * strength}px ${color}, 0 0 ${34 * strength}px ${color}, 0 0 ${70 * strength}px ${color}66`;
+	`0 0 ${6 * strength}px ${color}, 0 0 ${14 * strength}px ${color}, 0 0 ${26 * strength}px ${color}55`;
 
 /** A short, punchy animated label — drifts/fades into place, never a static pop-in. */
 export const Label: React.FC<{
