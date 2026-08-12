@@ -18,7 +18,10 @@ export const QuantumDoubleSlit: React.FC = () => {
       {/* SOUND DESIGN — frame ~1454: measurement / collapse moment. Placeholder for a sharp, decisive "click"/snap sting. */}
       {/* SOUND DESIGN — frame ~2141: final rapid montage into freeze-frame. Placeholder for a fast rising sweep into a hard stop. */}
 
-      <ThreeCanvas width={WIDTH} height={HEIGHT} linear>
+      {/* toneMappingExposure boosts overall brightness on top of the light/
+          material tuning in QuantumScene — the previous render read too
+          dark on typical phone/laptop screens. */}
+      <ThreeCanvas width={WIDTH} height={HEIGHT} linear gl={{toneMappingExposure: 1.5}}>
         <QuantumScene />
       </ThreeCanvas>
 

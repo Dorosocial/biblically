@@ -15,7 +15,10 @@ import {Barrier} from './Barrier';
 import {DetectionScreen} from './DetectionScreen';
 import {Detector} from './Detector';
 
-export const BACKDROP_COLOR = '#070912';
+// A touch lighter than pure near-black so the whole frame reads on an
+// average phone/laptop screen — still a plain, deep, dark backdrop that
+// makes the glow materials pop, just not so dark it swallows detail.
+export const BACKDROP_COLOR = '#0d1424';
 
 export const QuantumScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -24,11 +27,11 @@ export const QuantumScene: React.FC = () => {
   return (
     <>
       <color attach="background" args={[BACKDROP_COLOR]} />
-      <fog attach="fog" args={[BACKDROP_COLOR, 6, 16]} />
-      <ambientLight intensity={0.6} color="#5a6ee0" />
-      <directionalLight position={[3, 5, 4]} intensity={2.0} color="#dfe8ff" />
-      <directionalLight position={[-4, -2, -3]} intensity={0.5} color="#8fd6ff" />
-      <directionalLight position={[-2, 4, 5]} intensity={0.8} color="#fff2df" />
+      <fog attach="fog" args={[BACKDROP_COLOR, 9, 22]} />
+      <ambientLight intensity={1.1} color="#6c7ee8" />
+      <directionalLight position={[3, 5, 4]} intensity={3.0} color="#eef2ff" />
+      <directionalLight position={[-4, -2, -3]} intensity={0.9} color="#8fd6ff" />
+      <directionalLight position={[-2, 4, 5]} intensity={1.4} color="#fff2df" />
 
       <CameraRig position={s.camera.position} lookAt={s.camera.lookAt} fov={s.camera.fov} />
       <AmbientField time={s.time} />

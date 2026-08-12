@@ -86,10 +86,10 @@ const waveFragment = /* glsl */ `
   varying float vDisp;
   void main() {
     float fresnel = pow(1.0 - clamp(dot(normalize(vNormalW), normalize(vViewDir)), 0.0, 1.0), 1.6);
-    float core = 0.28;
-    float shimmer = 0.15 * vDisp;
-    float alpha = clamp((core + fresnel * 0.75 + shimmer) * uOpacity, 0.0, 1.0);
-    vec3 col = uColor * (0.7 + fresnel * 0.8);
+    float core = 0.42;
+    float shimmer = 0.18 * vDisp;
+    float alpha = clamp((core + fresnel * 0.85 + shimmer) * uOpacity, 0.0, 1.0);
+    vec3 col = uColor * (0.95 + fresnel * 1.0);
     gl_FragColor = vec4(col, alpha);
   }
 `;
@@ -163,9 +163,9 @@ const screenFragment = /* glsl */ `
       uInterferenceAmt * interferencePattern(x) +
       uTwoBandAmt * twoBandPattern(x) +
       uMultiAmt * multiOutcomePattern(x, uTime);
-    float panel = 0.05 + uPanelGlow * 0.04;
-    float intensity = clamp(pattern, 0.0, 1.6);
-    vec3 col = uColor * intensity + vec3(0.05, 0.06, 0.09) * panel;
+    float panel = 0.11 + uPanelGlow * 0.08;
+    float intensity = clamp(pattern, 0.0, 1.8);
+    vec3 col = uColor * intensity + vec3(0.09, 0.11, 0.16) * panel;
     gl_FragColor = vec4(col, clamp(panel + intensity, 0.0, 1.0));
   }
 `;

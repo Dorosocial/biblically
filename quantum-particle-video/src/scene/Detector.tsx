@@ -16,7 +16,7 @@ export const Detector: React.FC<{
 			<meshStandardMaterial
 				color={color}
 				emissive={color}
-				emissiveIntensity={0.5 + active * 1.6}
+				emissiveIntensity={0.9 + active * 1.8}
 				roughness={0.35}
 				metalness={0.4}
 				transparent

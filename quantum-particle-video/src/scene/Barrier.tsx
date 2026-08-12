@@ -20,7 +20,7 @@ export const Barrier: React.FC<{
 	slitWidth = 0.32,
 	panelHeight = 1.7,
 	panelWidth = 2.5,
-	color = '#5b6480',
+	color = '#7c88ab',
 }) => {
 	if (opacity <= 0.01) return null;
 
@@ -35,8 +35,8 @@ export const Barrier: React.FC<{
 	const material = (
 		<meshStandardMaterial
 			color={color}
-			emissive="#242e52"
-			emissiveIntensity={0.8}
+			emissive="#3c4a82"
+			emissiveIntensity={1.3}
 			roughness={0.55}
 			metalness={0.3}
 			transparent

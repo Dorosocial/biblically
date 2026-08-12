@@ -13,7 +13,7 @@ export const Particle: React.FC<{
 	color?: string;
 }> = ({position, scale = 1, opacity = 1, color = '#7ee8ff'}) => {
 	const halo = useMemo(() => makeHaloMaterial(color, 1), [color]);
-	halo.uniforms.uIntensity.value = 0.9 * opacity;
+	halo.uniforms.uIntensity.value = 1.3 * opacity;
 
 	return (
 		<group position={position}>
