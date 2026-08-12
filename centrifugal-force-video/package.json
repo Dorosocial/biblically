@@ -1,0 +1,25 @@
+{
+  "name": "centrifugal-force-video",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render CentrifugalForce out/centrifugal-force.mp4",
+    "still": "remotion still",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@react-three/fiber": "9.7.0",
+    "@remotion/cli": "4.0.508",
+    "@remotion/three": "4.0.508",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "remotion": "4.0.508",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.8",
+    "@types/three": "0.185.0",
+    "typescript": "5.6.3"
+  }
+}
