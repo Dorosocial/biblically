@@ -9,6 +9,13 @@ import {
   WIDTH as PROTON_WIDTH,
   HEIGHT as PROTON_HEIGHT,
 } from './proton/timing';
+import {WhatIsRealityActuallyMadeOf} from './reality/WhatIsRealityActuallyMadeOf';
+import {
+  DURATION_IN_FRAMES as REALITY_DURATION_IN_FRAMES,
+  FPS as REALITY_FPS,
+  WIDTH as REALITY_WIDTH,
+  HEIGHT as REALITY_HEIGHT,
+} from './reality/timing';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -28,6 +35,14 @@ export const RemotionRoot: React.FC = () => {
         fps={PROTON_FPS}
         width={PROTON_WIDTH}
         height={PROTON_HEIGHT}
+      />
+      <Composition
+        id="WhatIsRealityActuallyMadeOf"
+        component={WhatIsRealityActuallyMadeOf}
+        durationInFrames={REALITY_DURATION_IN_FRAMES}
+        fps={REALITY_FPS}
+        width={REALITY_WIDTH}
+        height={REALITY_HEIGHT}
       />
     </>
   );
