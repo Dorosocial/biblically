@@ -74,9 +74,9 @@ export const getCameraState = (frame: number): CameraState => {
   else if (frame < CUE.macroTouch) {
     if (frame < CUE.cutDrop) {
       // D1 — press: fixed close angle on the glass/fingertip contact
-      position = new THREE.Vector3(0.22, 0.1, 0.9);
-      lookAt = new THREE.Vector3(0.1, 0.15, 0.05);
-      fov = 24;
+      position = new THREE.Vector3(0.3, -0.15, 1.1);
+      lookAt = new THREE.Vector3(0.05, -0.05, 0.15);
+      fov = 32;
     } else if (frame < CUE.cutCatch) {
       // D2 — drop: side tracking angle, whip-follows the fall
       const shotStart = CUE.cutDrop;
