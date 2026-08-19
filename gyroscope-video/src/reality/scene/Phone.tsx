@@ -22,14 +22,16 @@ export const Phone: React.FC<{state: Obj3DState; glintIntensity?: number}> = ({s
       <RoundedBox args={[BODY_W, BODY_H, BODY_D]} radius={0.07} smoothness={4}>
         <meshStandardMaterial color="#c7cdd6" metalness={0.9} roughness={0.28} transparent={op < 1} opacity={op} />
       </RoundedBox>
-      {/* glossy glass screen face */}
+      {/* glossy glass screen face — kept off pure-black: a mirror-black
+          material only reads as anything when a highlight lands exactly in
+          frame, which an extreme macro crop (shots E/F) can't guarantee */}
       <RoundedBox args={[BODY_W - 0.035, BODY_H - 0.035, 0.008]} radius={0.055} smoothness={4} position={[0, 0, BODY_D / 2 + 0.003]}>
         <meshPhysicalMaterial
-          color="#06070b"
+          color="#12141d"
           metalness={0}
-          roughness={0.06}
+          roughness={0.1}
           clearcoat={1}
-          clearcoatRoughness={0.05}
+          clearcoatRoughness={0.08}
           reflectivity={1}
           transparent={op < 1}
           opacity={op}

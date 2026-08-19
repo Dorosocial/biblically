@@ -96,12 +96,20 @@ export const getCameraState = (frame: number): CameraState => {
   }
 
   // ---- Shot E (14-18s): extreme macro push on a fingertip on glass ------
+  // Phone/hand settle at y≈-0.3 after the D3 catch (physics.ts) — offsets
+  // here mirror D1's verified-working framing (same relative camera/lookAt
+  // offset from the phone's center, just re-anchored to the new position),
+  // rather than the earlier version's raw coordinates, which put the
+  // camera close enough to fill the frame with nothing but a feature-less
+  // patch of the glass — legitimately black with no highlight in it, not
+  // a rendering bug, but unusable as a shot. Staying a little further back
+  // keeps the bright metal edge/fingertip in frame as an anchor.
   else if (frame < CUE.microscope) {
     const shotStart = CUE.macroTouch;
     const shotEnd = CUE.microscope;
-    position = lerpV(new THREE.Vector3(0.16, 0.14, 0.55), new THREE.Vector3(0.05, 0.05, 0.09), s(frame, shotStart, shotEnd, 0, 1));
-    lookAt = new THREE.Vector3(0.05, 0.05, 0.02);
-    fov = s(frame, shotStart, shotEnd, 22, 14);
+    position = lerpV(new THREE.Vector3(0.3, -0.55, 1.1), new THREE.Vector3(0.05, -0.4, 0.35), s(frame, shotStart, shotEnd, 0, 1));
+    lookAt = lerpV(new THREE.Vector3(0.05, -0.45, 0.15), new THREE.Vector3(0.03, -0.35, 0.1), s(frame, shotStart, shotEnd, 0, 1));
+    fov = s(frame, shotStart, shotEnd, 26, 18);
   }
 
   // ---- Shot F (18-22s, CRITICAL): microscope dive begins, unresolved ----
@@ -111,9 +119,9 @@ export const getCameraState = (frame: number): CameraState => {
     // Accelerating ease so the dive is still gathering speed at the very
     // last frame — deliberately NOT settling; this continues in a later part.
     const t = Math.pow(s(frame, shotStart, shotEnd, 0, 1, true), 1.6);
-    position = lerpV(new THREE.Vector3(0.05, 0.05, 0.09), new THREE.Vector3(0.012, 0.012, 0.06), t);
-    lookAt = new THREE.Vector3(0.01, 0.01, 0.02);
-    fov = THREE.MathUtils.lerp(14, 8, t);
+    position = lerpV(new THREE.Vector3(0.05, -0.4, 0.35), new THREE.Vector3(0.02, -0.35, 0.15), t);
+    lookAt = lerpV(new THREE.Vector3(0.03, -0.35, 0.1), new THREE.Vector3(0.01, -0.32, 0.05), t);
+    fov = THREE.MathUtils.lerp(18, 11, t);
   }
 
   return {position, lookAt, fov};

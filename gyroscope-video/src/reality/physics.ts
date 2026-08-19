@@ -10,7 +10,7 @@
  * not something transcribed from a recording — see timing.ts.
  */
 import * as THREE from 'three';
-import {CUE} from './timing';
+import {CUE, DURATION_IN_FRAMES} from './timing';
 import {Obj3DState, HIDDEN3D} from './types';
 
 const smoothstep = (t: number) => t * t * (3 - 2 * t);
@@ -191,23 +191,29 @@ export const getSceneState = (frame: number): SceneState => {
     s.hand = {visible: true, position: [0, -0.5, 0.28], rotation: [1.0, 0, 0], scale: 1, opacity: 1};
     s.handCurl = 0.7;
     s.handPress = 1;
-    s.focusPoint = [0.15, 0.15, 0.1];
-    s.focusIntensity = 30;
-    s.fillIntensity = 0.7;
+    s.focusPoint = [0.05, -0.4, 0.15];
+    s.focusIntensity = 36;
+    s.fillIntensity = 0.9;
   }
 
   // ---- Shot F (18-22s, CRITICAL): microscope frame, unresolved dive ------
   // Same static pose as shot E (the cut into the vignette is a graphic
   // overlay + camera-push event, not another object change) — everything
   // the continuous zoom needs is carried entirely by cameraTimeline.ts.
+  // Lighting starts exactly at E's ending values and only THEN eases down,
+  // rather than stepping to a dimmer constant on the very first frame —
+  // that step (0.9 -> 0.6 fill) landed on the same instant as the vignette
+  // cut and read as a flash to black right where the shot needs to open.
   else {
+    const shotStart = CUE.microscope;
+    const shotEnd = DURATION_IN_FRAMES;
     s.phone = {visible: true, position: [0, -0.3, 0], rotation: [0.1, 0.15, 0.05], scale: 1, opacity: 1};
     s.hand = {visible: true, position: [0, -0.5, 0.28], rotation: [1.0, 0, 0], scale: 1, opacity: 1};
     s.handCurl = 0.7;
     s.handPress = 1;
-    s.focusPoint = [0.1, 0.12, 0.08];
-    s.focusIntensity = 28;
-    s.fillIntensity = 0.6;
+    s.focusPoint = [0.03, -0.35, 0.1];
+    s.focusIntensity = kf(frame, shotStart, shotEnd, 36, 30, true);
+    s.fillIntensity = kf(frame, shotStart, shotEnd, 0.9, 0.55, true);
   }
 
   return s;
