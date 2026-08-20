@@ -109,9 +109,13 @@ const baseState = (): SceneState => ({
 const EARTH_ORBIT_RADIUS = 5;
 /** Same formula used across shots 10 & 11 (sunToBlackHole / earthContinuesOrbit)
  * so Earth's orbital angle is continuous across that cut — "continues orbiting
- * almost exactly as before" has to actually be continuous, not just claimed. */
+ * almost exactly as before" has to actually be continuous, not just claimed.
+ * Exported (angle + radius, not just position) so cameraTimeline.ts's shot 11
+ * can point its orbit at Earth's actual current azimuth instead of an
+ * independent sweep — see the comment there for the bug this fixed. */
+export const earthOrbitAngle = (frame: number): number => (frame - CUE.sunToBlackHole) * 0.012;
 const earthPos = (frame: number): [number, number, number] => {
-  const a = (frame - CUE.sunToBlackHole) * 0.012;
+  const a = earthOrbitAngle(frame);
   return [Math.cos(a) * EARTH_ORBIT_RADIUS, 0, Math.sin(a) * EARTH_ORBIT_RADIUS];
 };
 

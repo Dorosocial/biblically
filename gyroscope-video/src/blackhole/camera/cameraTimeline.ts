@@ -10,7 +10,7 @@
  */
 import * as THREE from 'three';
 import {CUE, DURATION_IN_FRAMES} from '../timing';
-import {kf} from '../physics';
+import {kf, earthOrbitAngle} from '../physics';
 
 export interface CameraState {
   position: THREE.Vector3;
@@ -129,9 +129,21 @@ export const getCameraState = (frame: number): CameraState => {
 
   // ---- Shot 11 (31-34s): slow orbital camera -----------------------------
   else if (frame < CUE.sideBySideGravity) {
-    const shotStart = CUE.earthContinuesOrbit;
-    const shotEnd = CUE.sideBySideGravity;
-    const az = s(frame, shotStart, shotEnd, -20, 20, true);
+    // BUG FOUND + FIXED: this used to sweep an independent azimuth (-20 to
+    // 20 deg) instead of tracking Earth's actual orbital angle. Earth moves
+    // at 0.012 rad/frame (physics.ts's earthOrbitAngle) starting from
+    // sunToBlackHole, so by this shot it's already ~80-145deg around —
+    // nowhere near that independent sweep. Verified directly by projecting
+    // Earth's real position through this exact camera every 5 frames of the
+    // shot: it was outside the [-1,1] NDC frustum on every single frame
+    // (worst case x=-2.25), i.e. "Earth continues orbiting" showed no
+    // Earth at all. Fixed by deriving the azimuth from Earth's own angle
+    // (zero offset happens to put Earth right on the camera->origin axis,
+    // dead-center horizontally — reverified the same way, worst-case
+    // |x|=0, |y|=0.70, safely inside frame) so the camera genuinely
+    // tracks Earth's continuing orbit instead of coincidentally maybe
+    // catching it.
+    const az = THREE.MathUtils.radToDeg(earthOrbitAngle(frame));
     position = orbit(ORIGIN, 11.6, az, 17);
     lookAt = ORIGIN.clone();
     fov = 34;
