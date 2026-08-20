@@ -16,6 +16,13 @@ import {
   WIDTH as REALITY_WIDTH,
   HEIGHT as REALITY_HEIGHT,
 } from './reality/timing';
+import {ScientistsAreTerrifiedOfThisBlackHole} from './blackhole/ScientistsAreTerrifiedOfThisBlackHole';
+import {
+  DURATION_IN_FRAMES as BLACKHOLE_DURATION_IN_FRAMES,
+  FPS as BLACKHOLE_FPS,
+  WIDTH as BLACKHOLE_WIDTH,
+  HEIGHT as BLACKHOLE_HEIGHT,
+} from './blackhole/timing';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -43,6 +50,14 @@ export const RemotionRoot: React.FC = () => {
         fps={REALITY_FPS}
         width={REALITY_WIDTH}
         height={REALITY_HEIGHT}
+      />
+      <Composition
+        id="ScientistsAreTerrifiedOfThisBlackHole"
+        component={ScientistsAreTerrifiedOfThisBlackHole}
+        durationInFrames={BLACKHOLE_DURATION_IN_FRAMES}
+        fps={BLACKHOLE_FPS}
+        width={BLACKHOLE_WIDTH}
+        height={BLACKHOLE_HEIGHT}
       />
     </>
   );
