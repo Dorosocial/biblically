@@ -1,0 +1,1116 @@
+1
+00:00:00,000 --> 00:00:01,100
+This is a weird one.
+
+2
+00:00:01,500 --> 00:00:05,100
+What if our entire universe is inside a black hole?
+
+3
+00:00:05,520 --> 00:00:06,460
+I mean that literally.
+
+4
+00:00:06,880 --> 00:00:08,420
+What if everything we can see,
+
+5
+00:00:08,640 --> 00:00:11,020
+from the galaxy to the star, planet,
+
+6
+00:00:11,300 --> 00:00:12,920
+even you sitting there watching this,
+
+7
+00:00:13,160 --> 00:00:15,800
+is actually on the inside of a black hole
+
+8
+00:00:15,800 --> 00:00:19,060
+that exists in some much larger universe?
+
+9
+00:00:19,540 --> 00:00:21,200
+Now, I know what you're probably thinking.
+
+10
+00:00:21,400 --> 00:00:22,500
+How's that even possible?
+
+11
+00:00:22,940 --> 00:00:24,940
+Because when we think about a black hole,
+
+12
+00:00:25,200 --> 00:00:28,620
+we usually picture this giant dark object
+
+13
+00:00:28,620 --> 00:00:32,380
+somewhere out in space, pulling everything toward it.
+
+14
+00:00:32,580 --> 00:00:34,440
+But that's not really what a black hole is.
+
+15
+00:00:34,560 --> 00:00:36,100
+And once you understand that,
+
+16
+00:00:36,200 --> 00:00:38,640
+this whole idea starts getting a lot more interesting.
+
+17
+00:00:39,020 --> 00:00:42,400
+You see, a black hole is basically a region of space
+
+18
+00:00:42,400 --> 00:00:45,720
+where gravity has become so extreme
+
+19
+00:00:45,720 --> 00:00:48,400
+that once you cross a certain boundary,
+
+20
+00:00:48,760 --> 00:00:50,620
+you just can't get back out.
+
+21
+00:00:50,660 --> 00:00:51,720
+And I mean anything.
+
+22
+00:00:52,120 --> 00:00:54,680
+You could have the fastest spaceship imaginable,
+
+23
+00:00:54,680 --> 00:00:56,000
+and it wouldn't even matter.
+
+24
+00:00:56,180 --> 00:00:58,440
+Nothing can escape this, not even light.
+
+25
+00:00:58,440 --> 00:01:02,420
+And that boundary is called the event horizon.
+
+26
+00:01:02,920 --> 00:01:04,560
+Now, here's something that's kind of surprising.
+
+27
+00:01:04,700 --> 00:01:06,680
+The event horizon isn't a wall.
+
+28
+00:01:06,900 --> 00:01:09,040
+You don't reach it and suddenly hit
+
+29
+00:01:09,040 --> 00:01:11,180
+some giant invisible barrier.
+
+30
+00:01:11,360 --> 00:01:14,420
+If you were falling into a really massive black hole,
+
+31
+00:01:14,680 --> 00:01:17,000
+you could actually cross this event horizon
+
+32
+00:01:17,000 --> 00:01:19,420
+without noticing some dramatic change
+
+33
+00:01:19,420 --> 00:01:20,740
+at that exact moment.
+
+34
+00:01:20,960 --> 00:01:22,980
+The problem is what happens after,
+
+35
+00:01:23,180 --> 00:01:26,460
+because according to Einstein's theory of general relativity,
+
+36
+00:01:26,460 --> 00:01:30,100
+once you're inside, all possible paths forward
+
+37
+00:01:30,100 --> 00:01:32,780
+eventually lead deeper into the black hole.
+
+38
+00:01:33,040 --> 00:01:34,560
+And if you keep following that path,
+
+39
+00:01:34,720 --> 00:01:36,340
+the equations eventually take you
+
+40
+00:01:36,340 --> 00:01:38,860
+to something called a singularity.
+
+41
+00:01:39,060 --> 00:01:40,300
+So what's a singularity?
+
+42
+00:01:40,480 --> 00:01:43,120
+It's basically where our current equations
+
+43
+00:01:43,120 --> 00:01:44,300
+stop making sense.
+
+44
+00:01:44,500 --> 00:01:46,260
+They start producing infinities.
+
+45
+00:01:46,460 --> 00:01:49,160
+And whenever physicists get an infinity like that,
+
+46
+00:01:49,240 --> 00:01:51,400
+they don't usually celebrate and say,
+
+47
+00:01:51,680 --> 00:01:53,600
+well, that's obviously what nature does.
+
+48
+00:01:53,760 --> 00:01:55,280
+No, they tend to think,
+
+49
+00:01:55,280 --> 00:01:57,100
+okay, something is missing.
+
+50
+00:01:57,500 --> 00:01:59,740
+And that's where things get really interesting,
+
+51
+00:02:00,100 --> 00:02:03,140
+because we have two incredibly successful theories.
+
+52
+00:02:03,680 --> 00:02:07,660
+General relativity tells us how gravity and space-time behave,
+
+53
+00:02:07,920 --> 00:02:12,160
+and quantum mechanics tells us how the very small behaves.
+
+54
+00:02:12,380 --> 00:02:13,780
+But inside a black hole,
+
+55
+00:02:14,080 --> 00:02:15,780
+eventually you get into a situation
+
+56
+00:02:15,780 --> 00:02:18,340
+where you need both theories at the same time,
+
+57
+00:02:18,420 --> 00:02:20,520
+and we still don't have a complete theory
+
+58
+00:02:20,520 --> 00:02:21,600
+that combines them.
+
+59
+00:02:21,600 --> 00:02:25,160
+So honestly, we don't know what the deepest part
+
+60
+00:02:25,160 --> 00:02:27,480
+of a black hole actually looks like.
+
+61
+00:02:27,780 --> 00:02:28,940
+So the question then is,
+
+62
+00:02:29,160 --> 00:02:31,680
+what if that singularity isn't really the end?
+
+63
+00:02:31,980 --> 00:02:33,320
+What if something happens there
+
+64
+00:02:33,320 --> 00:02:36,260
+that our current physics simply doesn't know
+
+65
+00:02:36,260 --> 00:02:37,740
+how to describe yet,
+
+66
+00:02:37,820 --> 00:02:39,640
+or doesn't even know it exists?
+
+67
+00:02:39,880 --> 00:02:42,300
+Maybe quantum gravity prevents everything
+
+68
+00:02:42,300 --> 00:02:45,460
+from collapsing into an actual infinite point,
+
+69
+00:02:45,460 --> 00:02:49,620
+or maybe the collapse reaches some incredibly extreme state
+
+70
+00:02:49,620 --> 00:02:52,400
+and then transitions into something else.
+
+71
+00:02:52,720 --> 00:02:55,240
+Because what if it starts expanding again
+
+72
+00:02:55,240 --> 00:02:56,760
+and even ends up creating
+
+73
+00:02:56,760 --> 00:02:59,180
+a completely new region of space-time,
+
+74
+00:02:59,480 --> 00:03:01,100
+something like a new universe?
+
+75
+00:03:01,540 --> 00:03:03,300
+Now just think about that for a second.
+
+76
+00:03:03,560 --> 00:03:06,900
+Let's say you're living in some giant parent universe.
+
+77
+00:03:07,100 --> 00:03:10,300
+A massive star collapses and it forms a black hole.
+
+78
+00:03:10,540 --> 00:03:12,500
+From your perspective, you look at it and say,
+
+79
+00:03:12,760 --> 00:03:13,560
+there's a black hole.
+
+80
+00:03:13,820 --> 00:03:15,240
+But inside that black hole,
+
+81
+00:03:15,420 --> 00:03:19,140
+suppose a new expanding region of space-time forms.
+
+82
+00:03:19,140 --> 00:03:21,400
+The people living inside that region
+
+83
+00:03:21,400 --> 00:03:24,200
+wouldn't necessarily see a black hole.
+
+84
+00:03:24,520 --> 00:03:26,880
+They'd see galaxies, stars, and planets.
+
+85
+00:03:27,080 --> 00:03:29,420
+These people would see an expanding universe,
+
+86
+00:03:29,500 --> 00:03:33,380
+and eventually they'd probably ask the same question we ask,
+
+87
+00:03:33,680 --> 00:03:35,460
+where did all of this come from?
+
+88
+00:03:35,960 --> 00:03:39,140
+And their answer could be what they call the Big Bang.
+
+89
+00:03:39,600 --> 00:03:42,580
+That's the basic idea I'm trying to draw your attention to.
+
+90
+00:03:42,860 --> 00:03:44,680
+Now, before you get too excited,
+
+91
+00:03:44,880 --> 00:03:47,300
+there's something I really want to make clear.
+
+92
+00:03:47,300 --> 00:03:49,160
+Scientists have not discovered
+
+93
+00:03:49,160 --> 00:03:51,800
+that our universe is inside a black hole.
+
+94
+00:03:52,300 --> 00:03:54,800
+Actually, there's no evidence right now that proves that.
+
+95
+00:03:54,860 --> 00:03:57,140
+It's just a speculative idea.
+
+96
+00:03:57,400 --> 00:03:58,380
+But it's also interesting
+
+97
+00:03:58,380 --> 00:04:01,700
+because it connects to a real problem in physics.
+
+98
+00:04:02,120 --> 00:04:03,660
+We don't actually know what happens
+
+99
+00:04:03,660 --> 00:04:06,060
+at the deepest point inside a black hole,
+
+100
+00:04:06,060 --> 00:04:08,620
+and that's a pretty big hole in our understanding.
+
+101
+00:04:08,880 --> 00:04:10,380
+Now let's talk about the Big Bang
+
+102
+00:04:10,380 --> 00:04:13,900
+because there's another thing people often get wrong here.
+
+103
+00:04:14,020 --> 00:04:15,360
+When you hear Big Bang,
+
+104
+00:04:15,360 --> 00:04:18,420
+you might imagine the universe as this tiny ball
+
+105
+00:04:18,420 --> 00:04:21,060
+that exploded outward into empty space.
+
+106
+00:04:21,180 --> 00:04:23,260
+That's not really what happened.
+
+107
+00:04:23,560 --> 00:04:26,740
+There wasn't an empty room called space sitting there
+
+108
+00:04:26,740 --> 00:04:29,280
+while the universe exploded inside it.
+
+109
+00:04:29,460 --> 00:04:31,120
+Space itself was expanding.
+
+110
+00:04:31,340 --> 00:04:33,980
+You see, the early universe was incredibly hot
+
+111
+00:04:33,980 --> 00:04:35,320
+and incredibly dense,
+
+112
+00:04:35,320 --> 00:04:38,420
+and as space expanded, the universe cooled down.
+
+113
+00:04:38,480 --> 00:04:42,460
+So if a black hole really could somehow produce a new universe,
+
+114
+00:04:42,460 --> 00:04:45,380
+we're not talking about a black hole going boom.
+
+115
+00:04:45,660 --> 00:04:47,760
+No, it's something much stranger.
+
+116
+00:04:47,980 --> 00:04:49,400
+The inside of that black hole
+
+117
+00:04:49,400 --> 00:04:52,700
+would somehow become a new expanding space time.
+
+118
+00:04:52,940 --> 00:04:53,460
+Do you get it?
+
+119
+00:04:53,540 --> 00:04:55,640
+And if you lived inside that space time,
+
+120
+00:04:55,900 --> 00:04:59,520
+you'd experience that expansion as the history of your universe,
+
+121
+00:04:59,560 --> 00:05:02,240
+which then raises a pretty uncomfortable question.
+
+122
+00:05:02,420 --> 00:05:04,060
+If we're inside a black hole,
+
+123
+00:05:04,280 --> 00:05:05,780
+where is the event horizon?
+
+124
+00:05:06,220 --> 00:05:07,180
+Where's the edge?
+
+125
+00:05:07,540 --> 00:05:10,800
+And why don't we see some giant black sphere
+
+126
+00:05:10,800 --> 00:05:12,220
+surrounding the universe?
+
+127
+00:05:12,820 --> 00:05:15,140
+Well, this is where our everyday intuition
+
+128
+00:05:15,140 --> 00:05:16,240
+doesn't really help.
+
+129
+00:05:16,640 --> 00:05:20,120
+Remember, an event horizon isn't a physical wall.
+
+130
+00:05:20,820 --> 00:05:23,000
+It's a boundary in space time
+
+131
+00:05:23,000 --> 00:05:24,820
+that basically tells you
+
+132
+00:05:24,820 --> 00:05:28,640
+which events can still communicate with the outside
+
+133
+00:05:28,640 --> 00:05:30,260
+and which ones can't.
+
+134
+00:05:30,260 --> 00:05:33,180
+So you wouldn't necessarily look through a telescope
+
+135
+00:05:33,180 --> 00:05:36,500
+and see a big black circle around the universe.
+
+136
+00:05:36,500 --> 00:05:41,160
+There might not be anything visually obvious to see.
+
+137
+00:05:41,760 --> 00:05:47,460
+The boundary here is part of the geometry of space time itself,
+
+138
+00:05:47,900 --> 00:05:50,960
+and that means something really strange could be true.
+
+139
+00:05:51,500 --> 00:05:54,880
+We could, in principle, be inside such a region
+
+140
+00:05:54,880 --> 00:05:57,000
+without being able to look around
+
+141
+00:05:57,000 --> 00:05:59,360
+and recognize it as a black hole.
+
+142
+00:05:59,720 --> 00:06:01,280
+Now, here's an analogy.
+
+143
+00:06:01,660 --> 00:06:02,720
+Let's imagine a creature
+
+144
+00:06:02,720 --> 00:06:05,620
+that can only move across a flat sheet of paper.
+
+145
+00:06:05,620 --> 00:06:07,240
+It can go left and right,
+
+146
+00:06:07,540 --> 00:06:09,860
+and it can move forward and backward,
+
+147
+00:06:09,980 --> 00:06:12,620
+but it has no concept of up.
+
+148
+00:06:13,360 --> 00:06:16,300
+Now, imagine you, standing above the paper,
+
+149
+00:06:16,620 --> 00:06:19,040
+pick that creature up and move it somewhere else.
+
+150
+00:06:19,200 --> 00:06:20,400
+From the creature's perspective,
+
+151
+00:06:20,780 --> 00:06:23,840
+you just did something completely impossible.
+
+152
+00:06:24,440 --> 00:06:25,960
+Unbeknownst to the creature,
+
+153
+00:06:26,240 --> 00:06:29,220
+you didn't break any of the rules of its world.
+
+154
+00:06:29,400 --> 00:06:33,600
+You simply used a direction that it couldn't access.
+
+155
+00:06:34,160 --> 00:06:36,660
+That's roughly the kind of intuition we need
+
+156
+00:06:36,660 --> 00:06:38,920
+when thinking about higher dimensional
+
+157
+00:06:38,920 --> 00:06:41,800
+or larger space-time structures.
+
+158
+00:06:42,020 --> 00:06:46,740
+I'm not saying our universe is literally a sheet of paper.
+
+159
+00:06:46,880 --> 00:06:49,660
+It's just a way to understand why.
+
+160
+00:06:49,860 --> 00:06:52,200
+Something can look completely impossible
+
+161
+00:06:52,200 --> 00:06:56,300
+from one perspective and perfectly normal from another.
+
+162
+00:06:56,500 --> 00:06:58,740
+And now we get to the question
+
+163
+00:06:58,740 --> 00:07:01,860
+that really makes this idea uncomfortable.
+
+164
+00:07:01,860 --> 00:07:05,180
+What's outside our universe?
+
+165
+00:07:06,060 --> 00:07:09,040
+Normally, that question doesn't even make sense, right?
+
+166
+00:07:09,160 --> 00:07:11,580
+If the universe is everything that exists,
+
+167
+00:07:11,800 --> 00:07:12,920
+then what's outside it?
+
+168
+00:07:13,520 --> 00:07:13,880
+Nothing.
+
+169
+00:07:14,320 --> 00:07:19,280
+But suppose our universe is actually the inside of a black hole.
+
+170
+00:07:19,920 --> 00:07:24,520
+Then maybe there is a larger space-time outside of ours,
+
+171
+00:07:25,080 --> 00:07:26,960
+a kind of parent universe.
+
+172
+00:07:27,480 --> 00:07:31,220
+And now just imagine someone in that parent universe
+
+173
+00:07:31,220 --> 00:07:33,440
+looking at our black hole.
+
+174
+00:07:34,060 --> 00:07:35,680
+They might see an event horizon
+
+175
+00:07:35,680 --> 00:07:38,020
+and might even measure its mass.
+
+176
+00:07:38,440 --> 00:07:41,080
+They might watch matter orbiting around it
+
+177
+00:07:41,080 --> 00:07:41,940
+and they'd say,
+
+178
+00:07:42,300 --> 00:07:42,920
+that's a black hole.
+
+179
+00:07:43,400 --> 00:07:44,600
+Meanwhile, inside,
+
+180
+00:07:44,940 --> 00:07:46,360
+we're looking around and saying,
+
+181
+00:07:46,840 --> 00:07:48,300
+this is the universe.
+
+182
+00:07:48,920 --> 00:07:50,120
+It's the same structure,
+
+183
+00:07:50,600 --> 00:07:53,560
+just two completely different perspectives.
+
+184
+00:07:54,160 --> 00:07:57,800
+And that's the part I find really fascinating
+
+185
+00:07:57,800 --> 00:08:00,060
+because maybe the word universe
+
+186
+00:08:00,060 --> 00:08:04,900
+doesn't necessarily mean the absolute biggest thing that exists.
+
+187
+00:08:05,620 --> 00:08:08,300
+Maybe it just means the region of space-time
+
+188
+00:08:08,300 --> 00:08:09,800
+we're able to experience.
+
+189
+00:08:10,880 --> 00:08:14,720
+Now, could we ever prove that we're inside a black hole?
+
+190
+00:08:15,300 --> 00:08:16,900
+That's where things get difficult.
+
+191
+00:08:17,600 --> 00:08:18,320
+The thing is,
+
+192
+00:08:18,720 --> 00:08:22,940
+if the outside is genuinely beyond our causal horizon,
+
+193
+00:08:23,220 --> 00:08:27,200
+we can't just build a bigger telescope and look out.
+
+194
+00:08:27,200 --> 00:08:30,440
+It wouldn't matter how powerful the telescope was.
+
+195
+00:08:30,640 --> 00:08:33,820
+And this is because if information can't reach us from outside,
+
+196
+00:08:34,060 --> 00:08:37,340
+there's absolutely nothing for the telescope to see.
+
+197
+00:08:37,600 --> 00:08:40,520
+So we'd have to look for indirect evidence.
+
+198
+00:08:40,680 --> 00:08:45,240
+Maybe the way our universe expanded contains some clues,
+
+199
+00:08:45,320 --> 00:08:47,280
+or there could be particular patterns
+
+200
+00:08:47,280 --> 00:08:49,320
+in the cosmic microwave background.
+
+201
+00:08:49,580 --> 00:08:50,020
+Who knows?
+
+202
+00:08:50,160 --> 00:08:51,880
+Maybe the geometry of our universe
+
+203
+00:08:51,880 --> 00:08:54,300
+would have some unusual features
+
+204
+00:08:54,300 --> 00:08:57,160
+or a future theory of quantum gravity
+
+205
+00:08:57,160 --> 00:09:00,900
+would make a very specific prediction that we could test.
+
+206
+00:09:01,540 --> 00:09:03,900
+That's how we'd have to approach it scientifically.
+
+207
+00:09:04,580 --> 00:09:08,180
+We may get to a point where we'd need a prediction that says,
+
+208
+00:09:08,500 --> 00:09:10,220
+if we're inside a black hole,
+
+209
+00:09:10,600 --> 00:09:12,780
+we should observe this or that.
+
+210
+00:09:13,060 --> 00:09:14,120
+And if we don't see it,
+
+211
+00:09:14,260 --> 00:09:15,380
+the idea gets weaker.
+
+212
+00:09:15,600 --> 00:09:18,380
+That's the difference between an interesting thought experiment
+
+213
+00:09:18,380 --> 00:09:20,240
+and a scientific theory.
+
+214
+00:09:20,440 --> 00:09:21,460
+But right now,
+
+215
+00:09:21,980 --> 00:09:23,540
+we don't have the smoking gun
+
+216
+00:09:23,540 --> 00:09:27,760
+and black holes already give physicists another headache.
+
+217
+00:09:28,180 --> 00:09:28,860
+Information.
+
+218
+00:09:29,300 --> 00:09:31,720
+This is one of the deepest problems in modern physics.
+
+219
+00:09:32,120 --> 00:09:35,520
+I want you to think of throwing a book into a black hole.
+
+220
+00:09:35,840 --> 00:09:37,800
+This book contains information.
+
+221
+00:09:38,360 --> 00:09:44,580
+I mean, every word, letter, molecule, everything about its physical state.
+
+222
+00:09:44,880 --> 00:09:48,700
+Quantum mechanics tells us that information is incredibly important.
+
+223
+00:09:48,960 --> 00:09:51,620
+It shouldn't simply disappear from reality.
+
+224
+00:09:51,620 --> 00:09:55,060
+But according to the classical picture of a black hole,
+
+225
+00:09:55,320 --> 00:10:00,200
+that book falls past the event horizon and eventually reaches the singularity.
+
+226
+00:10:00,360 --> 00:10:02,400
+So what happens to all that information?
+
+227
+00:10:03,060 --> 00:10:05,800
+Then Stephen Hawking made the problem even worse.
+
+228
+00:10:05,980 --> 00:10:09,460
+He discovered that black holes should actually emit radiation.
+
+229
+00:10:09,600 --> 00:10:11,900
+It's called Hawking radiation.
+
+230
+00:10:12,120 --> 00:10:14,560
+So a black hole isn't completely black.
+
+231
+00:10:14,600 --> 00:10:19,440
+It can slowly lose energy and over an unbelievably long period of time,
+
+232
+00:10:19,440 --> 00:10:21,560
+it could eventually evaporate.
+
+233
+00:10:22,000 --> 00:10:22,140
+Okay.
+
+234
+00:10:23,000 --> 00:10:24,920
+So now imagine the black hole disappears.
+
+235
+00:10:25,280 --> 00:10:27,320
+What happened to the information in the book?
+
+236
+00:10:27,980 --> 00:10:28,640
+Where did it go?
+
+237
+00:10:29,120 --> 00:10:32,240
+Did it somehow come back out through the Hawking radiation?
+
+238
+00:10:32,440 --> 00:10:37,080
+Was it encoded in the radiation in some incredibly complicated way?
+
+239
+00:10:37,260 --> 00:10:40,000
+Or is there something about our understanding of space-time
+
+240
+00:10:40,000 --> 00:10:41,680
+that we're fundamentally missing?
+
+241
+00:10:42,160 --> 00:10:44,600
+Physicists have been wrestling with this for decades.
+
+242
+00:10:44,900 --> 00:10:46,960
+And this is why black holes are so important.
+
+243
+00:10:46,960 --> 00:10:50,140
+They're not just weird objects that eat stars.
+
+244
+00:10:50,320 --> 00:10:54,280
+They're basically nature's way of forcing our best theories to collide
+
+245
+00:10:54,280 --> 00:11:00,140
+from gravity to quantum mechanics, information, space, time, just name them.
+
+246
+00:11:00,560 --> 00:11:03,400
+And right now we don't have the complete answer,
+
+247
+00:11:03,500 --> 00:11:05,960
+which brings us back to our original question.
+
+248
+00:11:06,240 --> 00:11:09,300
+What if our universe is inside a black hole?
+
+249
+00:11:09,600 --> 00:11:10,820
+Maybe, maybe not.
+
+250
+00:11:10,960 --> 00:11:11,740
+We don't even know.
+
+251
+00:11:11,900 --> 00:11:15,580
+And I think that's actually more interesting than pretending we have an answer
+
+252
+00:11:15,580 --> 00:11:20,600
+because if it were true, the Big Bang might not have been the beginning of everything.
+
+253
+00:11:20,740 --> 00:11:23,200
+Or it might have been the beginning of our universe.
+
+254
+00:11:23,480 --> 00:11:26,620
+There could be something before it or something outside it.
+
+255
+00:11:26,640 --> 00:11:28,640
+Maybe even another universe.
+
+256
+00:11:28,900 --> 00:11:31,940
+And here's where you can take the idea one step further.
+
+257
+00:11:32,140 --> 00:11:35,220
+What if black holes don't just create one universe?
+
+258
+00:11:35,560 --> 00:11:36,920
+What if they can create many?
+
+259
+00:11:37,300 --> 00:11:38,960
+I mean, I'm just thinking out loud.
+
+260
+00:11:39,080 --> 00:11:40,420
+Just imagine a universe.
+
+261
+00:11:40,420 --> 00:11:45,500
+Stars form and some eventually die or collapse into black holes.
+
+262
+00:11:45,740 --> 00:11:48,040
+And if these speculative models were correct,
+
+263
+00:11:48,320 --> 00:11:51,780
+perhaps some of those black holes end up producing new universes.
+
+264
+00:11:52,180 --> 00:11:54,120
+And those universes form stars.
+
+265
+00:11:54,320 --> 00:11:57,180
+Those stars then form more black holes.
+
+266
+00:11:57,400 --> 00:12:00,840
+And those black holes potentially produce even more universes.
+
+267
+00:12:01,120 --> 00:12:04,320
+And you'd have this huge cosmic family tree
+
+268
+00:12:04,320 --> 00:12:08,500
+where a universe could have a parent and that parent could have a parent.
+
+269
+00:12:08,500 --> 00:12:10,760
+And maybe there was something before that.
+
+270
+00:12:11,020 --> 00:12:16,700
+Now, again, we have no evidence that this cosmic family tree actually exists.
+
+271
+00:12:16,980 --> 00:12:18,900
+This isn't established science.
+
+272
+00:12:19,240 --> 00:12:21,560
+But it raises a really beautiful question.
+
+273
+00:12:21,820 --> 00:12:24,860
+Maybe the universe isn't a single isolated thing.
+
+274
+00:12:25,160 --> 00:12:25,820
+Who knows?
+
+275
+00:12:26,100 --> 00:12:29,860
+Maybe reality is much bigger than the part we're able to experience.
+
+276
+00:12:30,040 --> 00:12:32,920
+And maybe what we call the beginning of the universe
+
+277
+00:12:32,920 --> 00:12:37,380
+is actually just the beginning of our particular corner of reality.
+
+278
+00:12:37,380 --> 00:12:39,720
+So are we inside a black hole?
+
+279
+00:12:40,000 --> 00:12:43,760
+Right now, there's no way for me to honestly tell you yes.
+
