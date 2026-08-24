@@ -23,6 +23,13 @@ import {
   WIDTH as BLACKHOLE_WIDTH,
   HEIGHT as BLACKHOLE_HEIGHT,
 } from './blackhole/timing';
+import {WhatIfOurUniverseIsInsideABlackHole} from './blackhole-universe/WhatIfOurUniverseIsInsideABlackHole';
+import {
+  DURATION_IN_FRAMES as BHU_DURATION_IN_FRAMES,
+  FPS as BHU_FPS,
+  WIDTH as BHU_WIDTH,
+  HEIGHT as BHU_HEIGHT,
+} from './blackhole-universe/timing';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -58,6 +65,14 @@ export const RemotionRoot: React.FC = () => {
         fps={BLACKHOLE_FPS}
         width={BLACKHOLE_WIDTH}
         height={BLACKHOLE_HEIGHT}
+      />
+      <Composition
+        id="WhatIfOurUniverseIsInsideABlackHole"
+        component={WhatIfOurUniverseIsInsideABlackHole}
+        durationInFrames={BHU_DURATION_IN_FRAMES}
+        fps={BHU_FPS}
+        width={BHU_WIDTH}
+        height={BHU_HEIGHT}
       />
     </>
   );
