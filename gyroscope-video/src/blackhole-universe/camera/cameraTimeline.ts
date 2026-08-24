@@ -81,9 +81,58 @@ export const getCameraState = (frame: number): CameraState => {
   }
 
   // ---- Beat 6 (32.4-39.0s): locked, held black ----------------------------
-  else {
+  else if (frame < CUE.blackHoleIntro) {
     position = new THREE.Vector3(3.5, 8, 54);
     fov = 40;
+  }
+
+  // ---- Beat 7 (39.02-42.4s): slow orbit around the classic black hole ----
+  else if (frame < CUE.fallingMatter) {
+    const t = s(frame, CUE.blackHoleIntro, CUE.fallingMatter, -10, 10, true);
+    position = orbit(ORIGIN, 5.5, t, 12);
+    fov = 32;
+  }
+
+  // ---- Beat 8 (42.4-45.72s): follow falling particles ---------------------
+  else if (frame < CUE.freezeToGrid) {
+    const t = s(frame, CUE.fallingMatter, CUE.freezeToGrid, 10, 26, true);
+    const radius = s(frame, CUE.fallingMatter, CUE.freezeToGrid, 5.5, 4.2, true);
+    position = orbit(ORIGIN, radius, t, 6);
+    fov = 32;
+  }
+
+  // ---- Beat 9 (45.72-50.66s): freeze, then zoom through into the grid ----
+  else if (frame < CUE.gridSteepens) {
+    const t = s(frame, CUE.freezeToGrid, CUE.gridSteepens, 0, 1, true);
+    position = lerpV(orbit(ORIGIN, 4.2, 26, 6), new THREE.Vector3(0.5, 5.5, 1.5), t);
+    fov = 34;
+  }
+
+  // ---- Beat 10 (50.66-56.18s): top-down descent toward the steepening well
+  else if (frame < CUE.horizonForms) {
+    const t = s(frame, CUE.gridSteepens, CUE.horizonForms, 0, 1, true);
+    position = lerpV(new THREE.Vector3(0.5, 5.5, 1.5), new THREE.Vector3(0.3, 2.2, 0.8), t);
+    fov = 36;
+  }
+
+  // ---- Beat 11 (56.18-58.44s): push toward the forming horizon -----------
+  else if (frame < CUE.lightBendsIn) {
+    const t = s(frame, CUE.horizonForms, CUE.lightBendsIn, 0, 1, true);
+    position = lerpV(new THREE.Vector3(0, 0.8, 4), new THREE.Vector3(0, 0.4, 2.4), t);
+    fov = 32;
+  }
+
+  // ---- Beat 12 (58.44-60.5s): follow the light as it bends in ------------
+  else if (frame < CUE.horizonLocked) {
+    const t = s(frame, CUE.lightBendsIn, CUE.horizonLocked, 0, 1, true);
+    position = lerpV(new THREE.Vector3(0, 0.4, 2.4), new THREE.Vector3(-1.4, 1.0, 2.0), t);
+    fov = 32;
+  }
+
+  // ---- Beat 13 (60.5-62.92s): locked, symmetrical shot on the horizon ----
+  else {
+    position = new THREE.Vector3(0, 0, 3.2);
+    fov = 30;
   }
 
   return {position, lookAt, fov};

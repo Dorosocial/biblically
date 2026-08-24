@@ -28,6 +28,17 @@
  * deliberate suspenseful pause before section 2's reveal. Flagging this
  * explicitly so a later blackdetect pass doesn't mistake a 6.4s intentional
  * black hold for a lighting bug.
+ *
+ * SECTION 2 (WHAT IS A BLACK HOLE, beats 7-13) — again matched by content
+ * against the real transcript (39.02s-1:39.06s), not evenly split: this
+ * stretch of narration is a run of short, punchy sentences ("And I mean
+ * anything." / "Nothing can escape this, not even light."), so beats here
+ * are naturally quicker (~2-5.5s) than section 1's — that's the source
+ * material's own rhythm, not a deviation from "documentary pacing."
+ * Beats 12-13 split one longer transcript segment ("And that boundary is
+ * called the event horizon.") in two: the light visibly bending/fading
+ * plays under the first half, and the horizon "locking" into its clean
+ * circular shot lands as the term itself is spoken.
  */
 export const FPS = 30;
 export const WIDTH = 1920;
@@ -43,7 +54,16 @@ export const CUE_SECONDS = {
   observableUniverseSphere: 19.5, // beat 4 — "Now, I know what you're probably thinking. How's that even possible?"
   universeAsBlackHoleRegion: 22.9, // beat 5 — "Because when we think about a black hole, we usually picture this giant dark object..."
   hardCutToBlack: 32.4, // beat 6 — "But that's not really what a black hole is... this whole idea starts getting a lot more interesting." (held black, not a flash — see note above)
-  section2Start: 39.0, // "You see, a black hole is basically a region of space..." — end of section 1
+
+  // ---- Section 2: WHAT IS A BLACK HOLE (beats 7-13) ----
+  blackHoleIntro: 39.02, // beat 7 — "You see, a black hole is basically a region of space"
+  fallingMatter: 42.4, // beat 8 — "where gravity has become so extreme"
+  freezeToGrid: 45.72, // beat 9 — "that once you cross a certain boundary, you just can't get back out."
+  gridSteepens: 50.66, // beat 10 — "And I mean anything. You could have the fastest spaceship imaginable, and it wouldn't even matter."
+  horizonForms: 56.18, // beat 11 — "Nothing can escape this, not even light."
+  lightBendsIn: 58.44, // beat 12 — "And that boundary is called..." (first half — the light visibly bending/fading)
+  horizonLocked: 60.5, // beat 13 — "...the event horizon." (second half — horizon locks into its clean circular shot)
+  section3Start: 62.92, // "Now, here's something that's kind of surprising." — end of section 2
 };
 
 /** Same cue points, converted to frame numbers at FPS. */
@@ -53,4 +73,4 @@ export const CUE = Object.fromEntries(
 
 /** Tracks the last built section's end while the video is being built
  * incrementally. Update as later sections are appended. */
-export const DURATION_IN_FRAMES = CUE.section2Start;
+export const DURATION_IN_FRAMES = CUE.section3Start;
