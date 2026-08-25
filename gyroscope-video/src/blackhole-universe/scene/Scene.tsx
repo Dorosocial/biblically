@@ -61,28 +61,25 @@ export const Scene: React.FC<{frame: number; s: SceneState}> = ({frame, s}) => {
         />
       )}
 
-      {(s.grid || s.grid2) && [s.grid, s.grid2].map((g, i) =>
-        g && g.visible ? (
-          // BUG FOUND + FIXED: the shared component's default color (#3d6fbf,
-          // a muted mid-blue at lineWidth 1) rendered as faint grey lines —
-          // confirmed via a direct still-frame check, and a direct violation
-          // of the visual spec's "distinct, high-contrast color (not faint
-          // gray lines)". Overriding with a bright cyan + thicker lineWidth
-          // here rather than changing the shared default, so the other video
-          // using this component isn't affected.
-          <SpacetimeGrid
-            key={i}
-            position={g.position}
-            rotation={g.rotation}
-            opacity={g.opacity}
-            warpStrength={g.warpStrength}
-            wellPosition={g.wellPosition}
-            wellRadius={g.wellRadius}
-            wellDepth={g.wellDepth}
-            color="#5be3ff"
-            lineWidth={2.5}
-          />
-        ) : null,
+      {s.grid && s.grid.visible && (
+        // BUG FOUND + FIXED: the shared component's default color (#3d6fbf,
+        // a muted mid-blue at lineWidth 1) rendered as faint grey lines —
+        // confirmed via a direct still-frame check, and a direct violation
+        // of the visual spec's "distinct, high-contrast color (not faint
+        // gray lines)". Overriding with a bright cyan + thicker lineWidth
+        // here rather than changing the shared default, so the other video
+        // using this component isn't affected.
+        <SpacetimeGrid
+          position={s.grid.position}
+          rotation={s.grid.rotation}
+          opacity={s.grid.opacity}
+          warpStrength={s.grid.warpStrength}
+          wellPosition={s.grid.wellPosition}
+          wellRadius={s.grid.wellRadius}
+          wellDepth={s.grid.wellDepth}
+          color="#5be3ff"
+          lineWidth={2.5}
+        />
       )}
 
       {s.infall && <InfallParticles progress={s.infall.progress} opacity={s.infall.opacity} />}
@@ -108,16 +105,6 @@ export const Scene: React.FC<{frame: number; s: SceneState}> = ({frame, s}) => {
           lookUp={s.silhouette.lookUp}
         />
       )}
-      {s.silhouetteB && s.silhouetteB.visible && (
-        <Silhouette
-          position={s.silhouetteB.position}
-          rotation={s.silhouetteB.rotation}
-          scale={s.silhouetteB.scale}
-          opacity={s.silhouetteB.opacity}
-          lookUp={s.silhouetteB.lookUp}
-        />
-      )}
-
       {s.paper && s.paper.visible && (
         <Paper2D position={s.paper.position} rotation={s.paper.rotation} size={s.paper.size} opacity={s.paper.opacity} />
       )}

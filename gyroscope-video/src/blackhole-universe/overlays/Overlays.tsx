@@ -6,11 +6,17 @@ import {SceneState} from '../physics';
  * On-screen text/diagram overlays — but NOT narration captions. Per the
  * brief: no caption bar, no subtitle text following the voiceover anywhere
  * in this video. Only specific beats that explicitly call for on-screen
- * diagram text render anything here: equations (beats 22/23/83), "∞"
- * symbols (beat 23), HYPOTHESIS -> PREDICTION -> TEST (beat 84), and the
- * "gets crossed out" diagram annotation (beat 51). Plain HTML/CSS, same
+ * diagram text render anything here: equations, "∞" symbols, IDEA ->
+ * PREDICTION -> TEST, the "gets crossed out" diagram annotation, plus (new
+ * for the 125-beat rebuild) brief lightning-flash punctuation, a subtle
+ * always-on film-grain texture (per the new "cinematic... subtle film
+ * grain" visual-style note), and the SPECULATIVE IDEA / NOT ESTABLISHED /
+ * HYPOTHESIS honesty labels the storyboard calls for. Plain HTML/CSS, same
  * pattern as reality/overlays/Overlays.tsx's microscope vignette — no 3D
- * text rendering (avoids depending on troika's network font fetch).
+ * text rendering (avoids depending on troika's network font fetch), and no
+ * extra render pass (grain is a static tiled texture, not a per-frame
+ * shader), consistent with this project's established performance
+ * constraints.
  */
 
 const glowText = (opacity: number, warp: number): React.CSSProperties => ({
@@ -63,7 +69,7 @@ const InfinitySymbols: React.FC<{opacity: number}> = ({opacity}) => {
 
 const HPTSequence: React.FC<{stage: number; opacity: number}> = ({stage, opacity}) => {
   if (opacity <= 0.001) return null;
-  const words = ['HYPOTHESIS', 'PREDICTION', 'TEST'];
+  const words = ['IDEA', 'PREDICTION', 'TEST'];
   return (
     <div
       style={{
@@ -120,15 +126,85 @@ const CrossOut: React.FC<{opacity: number}> = ({opacity}) => {
   );
 };
 
+/** A brief bright full-frame flash — lightning-style visual punctuation at
+ * the storyboard's called-out moments (black-hole reveal, singularity,
+ * universe transition, parent-universe reveal, cosmic family tree). Plain
+ * white overlay, no shader — cheap. */
+const Lightning: React.FC<{opacity: number}> = ({opacity}) => {
+  if (opacity <= 0.001) return null;
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'radial-gradient(circle, rgba(230,240,255,1) 0%, rgba(180,210,255,0.6) 55%, rgba(140,180,255,0) 100%)',
+        opacity: opacity * 0.85,
+        mixBlendMode: 'screen',
+      }}
+    />
+  );
+};
+
+/** The scientific-honesty labels ("SPECULATIVE IDEA", "NOT ESTABLISHED",
+ * "HYPOTHESIS") — small, unobtrusive, bottom-left, so the video stays
+ * visually terrifying/cinematic without implying this is established
+ * physics. */
+const SpeculativeLabel: React.FC<{text: string; opacity: number}> = ({text, opacity}) => {
+  if (opacity <= 0.001) return null;
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: 48,
+        bottom: 48,
+        padding: '8px 16px',
+        border: '1px solid rgba(255,200,120,0.6)',
+        borderRadius: 4,
+        color: '#ffd27a',
+        fontFamily: 'Arial, sans-serif',
+        fontWeight: 700,
+        fontSize: 18,
+        letterSpacing: 2,
+        opacity,
+        background: 'rgba(10,8,4,0.35)',
+      }}
+    >
+      {text}
+    </div>
+  );
+};
+
+// A static, tiled film-grain texture (SVG feTurbulence baked into a data
+// URI) — always present at very low opacity per the "cinematic... subtle
+// film grain" visual-style note. Static (not re-randomized per frame) so
+// it costs nothing extra to render; at this opacity a static grain pattern
+// still reads as texture, not an obviously-repeating tile.
+const GRAIN_DATA_URI =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>";
+
+const Grain: React.FC = () => (
+  <div
+    style={{
+      position: 'absolute',
+      inset: -20,
+      backgroundImage: `url("${GRAIN_DATA_URI}")`,
+      backgroundRepeat: 'repeat',
+      opacity: 0.05,
+      mixBlendMode: 'overlay',
+    }}
+  />
+);
+
 export const Overlays: React.FC<{frame: number; s: SceneState}> = ({s}) => {
-  const hasAny = s.equation || s.infinity || s.hpt || s.crossOut;
-  if (!hasAny) return null;
   return (
     <AbsoluteFill style={{pointerEvents: 'none', overflow: 'hidden'}}>
       {s.equation && <Equation text={s.equation.text} opacity={s.equation.opacity} warp={s.equation.warp} />}
       {s.infinity && <InfinitySymbols opacity={s.infinity.opacity} />}
       {s.hpt && <HPTSequence stage={s.hpt.stage} opacity={s.hpt.opacity} />}
       {s.crossOut && <CrossOut opacity={s.crossOut.opacity} />}
+      {s.speculative && <SpeculativeLabel text={s.speculative.text} opacity={s.speculative.opacity} />}
+      {s.lightning && <Lightning opacity={s.lightning.opacity} />}
+      <Grain />
     </AbsoluteFill>
   );
 };
