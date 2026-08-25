@@ -18,7 +18,7 @@ export const InfallParticles: React.FC<{
   count?: number;
   seed?: number;
   color?: string;
-}> = ({progress, opacity = 1, count = 10, seed = 77, color = '#ffcf8a'}) => {
+}> = ({progress, opacity = 1, count = 10, seed = 77, color = '#fff1cf'}) => {
   const seeds = useMemo(() => {
     const rand = mulberry32(seed);
     return Array.from({length: count}, () => ({
@@ -49,11 +49,24 @@ export const InfallParticles: React.FC<{
           const fade = 1 - trailI / TRAIL_STEPS;
           return (
             <mesh key={`${i}-${trailI}`} position={[x, y, z]}>
-              <sphereGeometry args={[0.05, 8, 6]} />
+              <sphereGeometry args={[0.06, 12, 8]} />
+              {/* BUG FOUND + FIXED: this material used to sit at ~0.3-0.7
+                  opacity by design ("fade in as it falls"), but additive
+                  blending against a pure-black background LITERALLY ADDS
+                  color*opacity to nothing — a bright warm color at
+                  mid-opacity doesn't look like a dim warm glow, it looks
+                  like a flat, desaturated grey-brown pebble (confirmed by
+                  direct still-frame inspection: the particles read as inert
+                  rocks, not "visibly lit trails"). Fixed by keeping the
+                  material itself near-full brightness/opacity at all times
+                  and using `fade` (the trail falloff) as the only opacity
+                  driver — the "fade in as it falls" idea is instead carried
+                  by TRAIL LENGTH (localT) implicitly, via how far into its
+                  spiral each particle already is. */}
               <meshBasicMaterial
                 color={color}
                 transparent
-                opacity={opacity * fade * (0.3 + 0.7 * localT)}
+                opacity={opacity * fade}
                 blending={THREE.AdditiveBlending}
                 depthWrite={false}
               />

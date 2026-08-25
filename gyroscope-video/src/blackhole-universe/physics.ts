@@ -369,8 +369,19 @@ export const getSceneState = (frame: number): SceneState => {
       diskOpacity: 0,
       haloOpacity: 0.9,
     };
-    const beamProgress = kf(frame, shotStart, shotEnd, 0, 1, true);
-    s.lightBeam = {opacity: kf(frame, shotEnd - 15, shotEnd, 1, 0, true), progress: beamProgress};
+    // BUG FOUND + FIXED: the beam's visible-on-screen portion is only its
+    // horizon-adjacent end (LightBeam.tsx draws from a distant, off-frame
+    // start point, so at low `progress` only the off-screen part exists) —
+    // so "fully drawn" and "starts fading" used to be the SAME 15-frame
+    // window at the end of this beat, meaning the beam was never both
+    // on-screen AND at full brightness at once (confirmed by direct
+    // still-frame checks: invisible at low progress, already faded by the
+    // time enough was drawn to reach the horizon). Fixed by finishing the
+    // draw at 65% through the beat, leaving a real window where it's fully
+    // drawn and bright before the fade-out starts in just the last 10 frames.
+    const drawEnd = shotStart + (shotEnd - shotStart) * 0.65;
+    const beamProgress = kf(frame, shotStart, drawEnd, 0, 1, true);
+    s.lightBeam = {opacity: kf(frame, shotEnd - 10, shotEnd, 1, 0, true), progress: beamProgress};
     s.starfieldOpacity = 0.6;
     s.fillIntensity = 0.25;
   }
