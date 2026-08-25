@@ -19,8 +19,9 @@ const RenderReadySignal: React.FC<{handle: number}> = ({handle}) => {
  * documentary explainer. Real 3-part narration, concatenated + transcribed
  * with Whisper into one continuous timeline (see timing.ts). NO on-screen
  * narration captions anywhere — only specific beats' own diagram text
- * (equations, "∞", etc., added as later sections are built) render in
- * Overlays. Being built section-by-section; currently: Section 1 only.
+ * (equations, "∞", HYPOTHESIS -> PREDICTION -> TEST) renders in Overlays.
+ * All 109 beats of the mandatory storyboard are implemented in physics.ts
+ * and camera/cameraTimeline.ts, looping seamlessly back to frame 0.
  */
 export const WhatIfOurUniverseIsInsideABlackHole: React.FC = () => {
   const frame = useCurrentFrame();
