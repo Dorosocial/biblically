@@ -338,7 +338,7 @@ export const getCameraState = (frame: number): CameraState => {
   // "Circular orbit"
   else if (frame < CUE.transitionsIntoSomething) {
     const t = s(frame, CUE.quantumGravityPrevents, CUE.transitionsIntoSomething, 0, 90, true);
-    position = orbit(ORIGIN, 3.2, t, 14);
+    position = orbit(ORIGIN, 4, t, 14);
     fov = 34;
   }
 
@@ -377,10 +377,17 @@ export const getCameraState = (frame: number): CameraState => {
   }
 
   // ---- Beat 36 (starCollapses→formsBlackHole): "Close orbital shot" -----
+  // BUG FOUND + FIXED: orbit radius 2.6 at fov 30 is the same class of
+  // framing error as beat 7's original black-hole bug — the Sun's visual
+  // radius (core 1 + glow shell to 1.8, times physics.ts's scale up to
+  // 1.4) is ~2.5, which at that distance/fov overflows the ENTIRE frame
+  // (confirmed via a direct still-frame check: pure tan/beige fill, no
+  // visible edge). Recomputed via requiredDistance ~= objectRadius /
+  // (margin * tan(fov/2)) for a genuinely "close" but fully-framed shot.
   else if (frame < CUE.formsBlackHole) {
     const t = s(frame, CUE.starCollapses, CUE.formsBlackHole, 0, 70, true);
-    position = orbit(ORIGIN, 2.6, t, 10);
-    fov = 30;
+    position = orbit(ORIGIN, 8.5, t, 10);
+    fov = 44;
   }
 
   // ---- Beat 37 (formsBlackHole→yourPerspective): "Rapid pull-back" ------
@@ -567,8 +574,14 @@ export const getCameraState = (frame: number): CameraState => {
   // =========================================================================
 
   // ---- Beat 60 (creatureOnPaper→leftAndRight): "Top-down" ----------------
+  // BUG FOUND + FIXED: same framing-overflow class as beats 7/11/36/86 —
+  // Paper2D's default size is 4 (half-extent 2), and at distance 4 the
+  // plane's edges fall entirely outside the frustum, so the shot showed
+  // only the plane's own low-opacity fill (a flat tint, no visible sheet
+  // or edge) plus the creature — confirmed via a direct still-frame
+  // check. Pulled back so the whole sheet is actually in frame.
   else if (frame < CUE.leftAndRight) {
-    position = new THREE.Vector3(0, 4, 0.01);
+    position = new THREE.Vector3(0, 9, 0.01);
     lookAt = ORIGIN.clone();
     fov = 36;
   }
@@ -579,15 +592,17 @@ export const getCameraState = (frame: number): CameraState => {
   else if (frame < CUE.noConceptOfUp) {
     const t = s(frame, CUE.leftAndRight, CUE.noConceptOfUp, 0, 1, true);
     const x = Math.sin(t * Math.PI * 2) * 1.2;
-    position = new THREE.Vector3(x, 3.2, 1.6);
+    position = new THREE.Vector3(x, 9, 1.2);
     lookAt = new THREE.Vector3(x, 0, 0);
     fov = 34;
   }
 
   // ---- Beat 62 (noConceptOfUp→pickItUp): "Vertical crane up" -------------
+  // Continues rising from beat 61's height — the paper visibly shrinking
+  // as the camera climbs sells "rises above paper" on its own.
   else if (frame < CUE.pickItUp) {
     const t = s(frame, CUE.noConceptOfUp, CUE.pickItUp, 0, 1, true);
-    position = new THREE.Vector3(0, THREE.MathUtils.lerp(3.2, 7, t), 1.6);
+    position = new THREE.Vector3(0, THREE.MathUtils.lerp(9, 14, t), 1.2);
     lookAt = ORIGIN.clone();
     fov = 34;
   }
@@ -597,7 +612,7 @@ export const getCameraState = (frame: number): CameraState => {
   else if (frame < CUE.creaturesPerspective) {
     const t = s(frame, CUE.pickItUp, CUE.creaturesPerspective, 0, 1, true);
     const liftY = t * 1.6;
-    position = new THREE.Vector3(2.4, liftY + 1.4, 2.4);
+    position = new THREE.Vector3(5, liftY + 3, 5);
     lookAt = new THREE.Vector3(0, liftY, 0);
     fov = 36;
   }
@@ -656,16 +671,28 @@ export const getCameraState = (frame: number): CameraState => {
 
   // ---- Beat 70 (largerSpacetimeOutside→parentUniverseAgain): "Massive ----
   // reveal"
+  // BUG FOUND + FIXED: physics.ts grows the "parent" black hole's scale
+  // 3->7 across this beat, but the camera distance (3->16) barely grew to
+  // match — confirmed via a direct still-frame check showing total
+  // overflow (no visible edge) for the entire beat, worst at the start.
+  // Recomputed distance(t) ~= objectRadius(t) / (margin * tan(fov/2)) so
+  // the reveal actually stays framed as the sphere grows.
   else if (frame < CUE.parentUniverseAgain) {
     const t = s(frame, CUE.largerSpacetimeOutside, CUE.parentUniverseAgain, 0, 1, true);
-    position = new THREE.Vector3(0, THREE.MathUtils.lerp(0, 3, t), THREE.MathUtils.lerp(3, 16, t));
+    position = new THREE.Vector3(0, THREE.MathUtils.lerp(2, 8, t), THREE.MathUtils.lerp(15, 34, t));
     fov = 46;
   }
 
   // ---- Beat 71 (parentUniverseAgain→theyDSeeBlackHole): "Wide orbit" -----
+  // BUG FOUND + FIXED: the parent-universe black hole is scale 7 here
+  // (physics.ts), so its lensing-arc radius (~9) at orbit distance 17/
+  // fov 46 filled essentially the entire frame — confirmed via a direct
+  // still-frame check (no visible starfield/"multiple cosmic structures"
+  // at all, just the sphere edge-to-edge). Pulled back to a genuinely
+  // wide framing.
   else if (frame < CUE.theyDSeeBlackHole) {
     const t = s(frame, CUE.parentUniverseAgain, CUE.theyDSeeBlackHole, 0, 130, true);
-    position = orbit(new THREE.Vector3(0, 1, 0), 17, t, 12);
+    position = orbit(new THREE.Vector3(0, 1, 0), 32, t, 12);
     lookAt = new THREE.Vector3(0, 1, 0);
     fov = 46;
   }
@@ -790,10 +817,17 @@ export const getCameraState = (frame: number): CameraState => {
 
   // ---- Beat 86 (bookContainsInfo→whatHappensToInfo): "Extreme macro ------
   // zoom"
+  // BUG FOUND + FIXED: same framing-overflow class as beats 7/11/36 — the
+  // book is only ~0.3 units across, and distance 0.25 (let alone the
+  // starting 1.4) is far closer than the frustum math allows before the
+  // book's own flat faces fill the ENTIRE frame with no visible edges
+  // (confirmed via a direct still-frame check: two plain color regions,
+  // no readable book/fragments at all). Recomputed so the book stays a
+  // legible, if tight, macro subject throughout.
   else if (frame < CUE.whatHappensToInfo) {
     const t = s(frame, CUE.bookContainsInfo, CUE.whatHappensToInfo, 0, 1, true);
-    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(1.4, 0.25, t));
-    fov = 26;
+    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(3.2, 1.3, t));
+    fov = 30;
   }
 
   // ---- Beat 87 (whatHappensToInfo→hawkingMadeWorse): "Hard cut" ----------
@@ -863,10 +897,17 @@ export const getCameraState = (frame: number): CameraState => {
   }
 
   // ---- Beat 96 (producingNewUniverses→universesFormStars): "Nested zoom" -
+  // BUG FOUND + FIXED: the end point (1.1,0.4,0.9) is only ~0.1 units from
+  // the tiny black hole's center (1.1,0.4,0.8) — well inside its own
+  // lensing-arc radius (~0.19) — so the camera ended up nearly INSIDE the
+  // object, overflowing the entire frame with a blown-out close-up
+  // (confirmed via a direct still-frame check). A "nested zoom" pushing
+  // this close needs a much wider FOV (like a real close dolly-zoom) to
+  // stay framed rather than clipping through the geometry.
   else if (frame < CUE.universesFormStars) {
     const t = s(frame, CUE.producingNewUniverses, CUE.universesFormStars, 0, 1, true);
-    position = lerpV(new THREE.Vector3(1.3, 0.5, 1.6), new THREE.Vector3(1.1, 0.4, 0.9), t);
-    fov = 32;
+    position = lerpV(new THREE.Vector3(1.3, 0.5, 1.6), new THREE.Vector3(1.23, 0.47, 1.33), t);
+    fov = THREE.MathUtils.lerp(32, 70, t);
   }
 
   // ---- Beat 97 (universesFormStars→starsFormMoreBlackHoles): "Accelerated
