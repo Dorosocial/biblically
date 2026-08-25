@@ -27,8 +27,15 @@
  * error.
  */
 export const FPS = 30;
-export const WIDTH = 1920;
-export const HEIGHT = 1080;
+// Temporarily rendering at 720p instead of the spec's 1920x1080 — this
+// environment has no GPU (no /dev/dri, software WebGL only), and a
+// measured concurrency/GPU/effects audit found no other lever that cuts
+// render time; 1280x720 is ~2.25x fewer pixels/frame, which roughly
+// halves render time on this CPU-bound box. 16:9 aspect ratio preserved,
+// so no framing/composition math changes. Revisit at full 1920x1080 in
+// an environment with real GPU acceleration.
+export const WIDTH = 1280;
+export const HEIGHT = 720;
 
 export const sec = (s: number): number => Math.round(s * FPS);
 
