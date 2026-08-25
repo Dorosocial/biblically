@@ -230,18 +230,32 @@ export const getCameraState = (frame: number): CameraState => {
 
   // ---- Beat 22 (fallingIntoMassive->crossWithoutNoticing): "Rear -------
   // tracking"
+  // BUG FOUND + FIXED: the old close-range positions (distance ~1-4 from
+  // a scale-5, radius-5 horizon) put the camera almost AT the horizon's
+  // own surface — a direct still-frame check showed an unreadable close-
+  // up (faceted spacecraft geometry filling the frame, no sense of an
+  // "enormous horizon" beyond it) instead of the intended composition.
+  // Backed off to a distance where the horizon genuinely reads as
+  // enormous-but-framed while the tiny spacecraft (physics.ts, now
+  // z=15->0) stays a small foreground silhouette a constant ~5 units
+  // ahead of the camera throughout — a real "rear tracking" shot.
   else if (frame < CUE.crossWithoutNoticing) {
     const t = s(frame, CUE.fallingIntoMassive, CUE.crossWithoutNoticing, 0, 1, true);
-    position = lerpV(new THREE.Vector3(0, 0.4, 4), new THREE.Vector3(0, 0.3, 1.5), t);
-    fov = 40;
+    position = lerpV(new THREE.Vector3(0, 1.5, 20), new THREE.Vector3(0, 1, 5), t);
+    lookAt = new THREE.Vector3(0, 0, -6);
+    fov = 50;
   }
 
   // ---- Beat 23 (crossWithoutNoticing->problemIsWhatHappensAfter): ------
-  // "First-person POV"
+  // "First-person POV" — continues from beat 22's end position, passing
+  // through the (by-now-scale-22) horizon; being "inside" it by the end
+  // is intentional (a pure-black sphere enveloping the camera reads as
+  // increasing darkness, matching "horizon sweeps over camera").
   else if (frame < CUE.problemIsWhatHappensAfter) {
     const t = s(frame, CUE.crossWithoutNoticing, CUE.problemIsWhatHappensAfter, 0, 1, true);
-    position = lerpV(new THREE.Vector3(0, 0.3, 1.5), new THREE.Vector3(0, 0, -2), t);
-    fov = 44;
+    position = lerpV(new THREE.Vector3(0, 1, 5), new THREE.Vector3(0, 0.4, -4), t);
+    lookAt = lerpV(new THREE.Vector3(0, 0, -6), new THREE.Vector3(0, 0, -10), t);
+    fov = 50;
   }
 
   // ---- Beat 24 (problemIsWhatHappensAfter->allPossiblePaths): "Slow ----
@@ -718,28 +732,40 @@ export const getCameraState = (frame: number): CameraState => {
   }
 
   // ---- Beat 81 (largerSpacetimeOutside->parentUniverseAgain): "Massive -
-  // reveal" — blackHole scale grows 3->7 here (physics.ts); distance
-  // recomputed from the object's actual radius, not guessed (see file
-  // header — this exact bug class was found and fixed once already).
+  // reveal" — blackHole scale grows 3->7 here (physics.ts) with
+  // diskOpacity > 0, so the DISK's radius (4.6*scale, up to 32.2 at
+  // scale 7) — not just the lensing-arc radius (~1.28*scale, ~9) — is
+  // what matters for framing here.
+  // BUG FOUND + FIXED: the original distance (up to ~35) was barely
+  // beyond the disk's own radius (32.2) at the beat's end, and beat 82's
+  // orbit (32, constant scale 7) sat almost exactly AT the disk radius —
+  // confirmed via a direct still-frame check showing a broken-looking
+  // near-edge-on flat band instead of a ring (the camera was effectively
+  // grazing the disk's own plane, not just failing to fit it in frame —
+  // a different, worse failure mode than the "disk runs off frame edges"
+  // convention established for beats 11/12's much-smaller disk). Pulled
+  // both beats out comfortably past the disk's max radius.
   else if (frame < CUE.parentUniverseAgain) {
     const t = s(frame, CUE.largerSpacetimeOutside, CUE.parentUniverseAgain, 0, 1, true);
-    position = new THREE.Vector3(0, THREE.MathUtils.lerp(2, 8, t), THREE.MathUtils.lerp(15, 34, t));
+    position = new THREE.Vector3(0, THREE.MathUtils.lerp(3, 14, t), THREE.MathUtils.lerp(20, 55, t));
     fov = 46;
   }
 
   // ---- Beat 82 (parentUniverseAgain->theyDSeeBlackHole): "Wide orbit" --
-  // blackHole scale is a constant 7 through this whole beat; orbit radius
-  // 32 keeps its ~9-unit lensing radius comfortably framed at fov 46.
   else if (frame < CUE.theyDSeeBlackHole) {
     const t = s(frame, CUE.parentUniverseAgain, CUE.theyDSeeBlackHole, 0, 130, true);
-    position = orbit(new THREE.Vector3(0, 1, 0), 32, t, 12);
+    position = orbit(new THREE.Vector3(0, 1, 0), 55, t, 12);
     lookAt = new THREE.Vector3(0, 1, 0);
     fov = 46;
   }
 
   // ---- Beat 83 (theyDSeeBlackHole->meanwhileInside): "Over-shoulder" ---
+  // BUG FOUND + FIXED: at z=2.4 the distance to the object (7.41) was
+  // only marginally past the disk's own radius (4.6*1.6=7.36) — the same
+  // near-edge-on risk as beats 81/82 above, just barely avoided rather
+  // than safely avoided. Pulled back slightly for real margin.
   else if (frame < CUE.meanwhileInside) {
-    position = new THREE.Vector3(0, 0.4, 2.4);
+    position = new THREE.Vector3(0, 0.4, 3.6);
     fov = 40;
   }
 
@@ -867,9 +893,14 @@ export const getCameraState = (frame: number): CameraState => {
   // =====================================================================
 
   // ---- Beat 98 (bookIntoBlackHole->bookContainsInfo): "Tracking shot" --
+  // BUG FOUND + FIXED: the black hole here sits at z=-3, scale 1.6, disk
+  // radius 4.6*1.6=7.36 — the original path (distance 6.1-6.4 throughout)
+  // stayed inside that radius for the ENTIRE beat, the same near-edge-on
+  // disk-artifact bug as beats 81/82/83 above. Pulled the whole path back
+  // to clear the disk radius with real margin at both ends.
   else if (frame < CUE.bookContainsInfo) {
     const t = s(frame, CUE.bookIntoBlackHole, CUE.bookContainsInfo, 0, 1, true);
-    position = lerpV(new THREE.Vector3(1.4, 0.6, 3.2), new THREE.Vector3(0.7, 0.3, 1.1), t);
+    position = lerpV(new THREE.Vector3(2.4, 1.3, 7.5), new THREE.Vector3(1.3, 0.7, 5.2), t);
     fov = 36;
   }
 
@@ -993,11 +1024,15 @@ export const getCameraState = (frame: number): CameraState => {
   }
 
   // ---- Beat 114 (cosmicFamilyTree->notSingleIsolated): "Slow orbital ---
-  // camera"
+  // camera" — "Entire cosmic tree fills frame." BUG FOUND + FIXED: orbit
+  // radius 22 left the tree a tiny cluster in the middle of the frame
+  // (confirmed via a direct still-frame check — nowhere near "fills
+  // frame"). Pulled in close enough that the branch structure actually
+  // dominates the shot.
   else if (frame < CUE.notSingleIsolated) {
     const t = s(frame, CUE.cosmicFamilyTree, CUE.notSingleIsolated, 0, 50, true);
-    position = orbit(new THREE.Vector3(0, -1, 0), 22, t, 10);
-    lookAt = new THREE.Vector3(0, -1, 0);
+    position = orbit(new THREE.Vector3(0, -2, -3), 6, t, 10);
+    lookAt = new THREE.Vector3(0, -2, -3);
     fov = 46;
   }
 
@@ -1039,9 +1074,15 @@ export const getCameraState = (frame: number): CameraState => {
 
   // ---- Beat 119 (beginningOfOurCorner->soDotDotDot): "Orbit around -----
   // branch"
+  // BUG FOUND + FIXED: CosmicTree's root sits at local y=-2.2 (scale 0.5
+  // here -> world y=-1.1), well below the default lookAt (world origin) —
+  // confirmed via a direct still-frame check showing the young tree
+  // pinned at the very bottom edge of frame. Orbiting around the tree's
+  // actual base instead centers it properly.
   else if (frame < CUE.soDotDotDot) {
     const t = s(frame, CUE.beginningOfOurCorner, CUE.soDotDotDot, 0, 70, true);
-    position = orbit(ORIGIN, 2.4, t, 14);
+    position = orbit(new THREE.Vector3(0, -0.6, 0), 2.4, t, 14);
+    lookAt = new THREE.Vector3(0, -0.6, 0);
     fov = 36;
   }
 
@@ -1068,15 +1109,20 @@ export const getCameraState = (frame: number): CameraState => {
   }
 
   // ---- Beat 123 (loopBlackHoleAppears->loopContracts): "Locked frame" --
+  // BUG FOUND + FIXED: at z=6/fov34 the disk (radius 4.6*0.35=1.61)
+  // filled ~88% of frame — confirmed via a direct still-frame check
+  // showing a screen-filling blurry turbulent mess rather than the
+  // "tiny black hole" the beat calls for. Pulled back for a genuinely
+  // small, clean read.
   else if (frame < CUE.loopContracts) {
-    position = new THREE.Vector3(0, 0, 6);
+    position = new THREE.Vector3(0, 0, 13);
     fov = 34;
   }
 
   // ---- Beat 124 (loopContracts->loopEnd): "Rapid zoom-out" -------------
   else if (frame < CUE.loopEnd) {
     const t = s(frame, CUE.loopContracts, CUE.loopEnd, 0, 1, true);
-    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(6, 9, t));
+    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(13, 18, t));
     fov = 36;
   }
 
@@ -1085,7 +1131,7 @@ export const getCameraState = (frame: number): CameraState => {
   // fov 28) so the wrap to frame 0 is invisible.
   else {
     const t = s(frame, CUE.loopEnd, CUE.loopVideoEnd, 0, 1, true);
-    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(9, 2.4, t));
+    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(18, 2.4, t));
     fov = THREE.MathUtils.lerp(36, 28, t);
   }
 

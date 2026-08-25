@@ -501,8 +501,23 @@ export const getSceneState = (frame: number): SceneState => {
   // tracking, stars warp around ship.
   else if (frame < CUE.crossWithoutNoticing) {
     const t = kf(frame, CUE.fallingIntoMassive, CUE.crossWithoutNoticing, 0, 1, true);
-    s.blackHole = {visible: true, position: [0, 0, -6], rotation: BH_TILT, scale: 5, opacity: 1, diskOpacity: 0.6, lensingOpacity: 1};
-    s.spacecraft = {visible: true, position: [0, 0, 2 - t * 1.5], rotation: [0, Math.PI, 0], scale: 1, opacity: 1};
+    // BUG FOUND + FIXED: at this beat's necessarily-close camera distance
+    // (selling "enormous horizon"), the disk's real radius (4.6*scale=23
+    // here) put the camera well inside the disk's own extent, producing a
+    // broken-looking near-edge-on flat gray band across the frame instead
+    // of a recognizable ring (confirmed via a direct still-frame check).
+    // Disabling the disk for this extreme-proximity shot (matching how
+    // beat 17's similarly-close "horizon swallows the frame" shot handles
+    // it) keeps just the horizon + lensing, which reads cleanly at any
+    // distance.
+    s.blackHole = {visible: true, position: [0, 0, -6], rotation: BH_TILT, scale: 5, opacity: 1, diskOpacity: 0, lensingOpacity: 1};
+    // BUG FOUND + FIXED: at scale 5 the horizon's near edge sits at
+    // z=-1 (center -6 + radius 5) — the spacecraft's old position
+    // (z=2->0.5) put it barely half a unit from that edge even at the
+    // BEAT'S START, reading as already-touching the horizon rather than
+    // "approaching" it. Repositioned to a genuinely distant starting
+    // point that closes to just outside the horizon by the beat's end.
+    s.spacecraft = {visible: true, position: [0, 0, THREE.MathUtils.lerp(15, 0, t)], rotation: [0, Math.PI, 0], scale: 1, opacity: 1};
     s.starfieldOpacity = 0.5;
     s.fillIntensity = 0.4;
   }
@@ -512,7 +527,7 @@ export const getSceneState = (frame: number): SceneState => {
   // warping.
   else if (frame < CUE.problemIsWhatHappensAfter) {
     const t = kf(frame, CUE.crossWithoutNoticing, CUE.problemIsWhatHappensAfter, 0, 1, true);
-    s.blackHole = {visible: true, position: [0, 0, -6], rotation: BH_TILT, scale: THREE.MathUtils.lerp(5, 22, t), opacity: 1, diskOpacity: THREE.MathUtils.lerp(0.6, 0, t), lensingOpacity: THREE.MathUtils.lerp(1, 0.3, t)};
+    s.blackHole = {visible: true, position: [0, 0, -6], rotation: BH_TILT, scale: THREE.MathUtils.lerp(5, 22, t), opacity: 1, diskOpacity: 0, lensingOpacity: THREE.MathUtils.lerp(1, 0.3, t)};
     s.starfieldOpacity = THREE.MathUtils.lerp(0.5, 0.1, t);
     s.fillIntensity = THREE.MathUtils.lerp(0.4, 0.25, t);
   }
@@ -740,8 +755,14 @@ export const getSceneState = (frame: number): SceneState => {
 
   // ---- Beat 45 (192.76-193.82s): "There's a black hole." Black hole ----
   // dominates frame. Slow push, accretion disk rotates.
+  // BUG FOUND + FIXED: the "slow push" camera (see cameraTimeline.ts)
+  // ends at z=3.6, inside this black hole's disk radius (4.6*1.3=5.98) —
+  // the same near-edge-on artifact bug found at beats 22/23/81/82/83/98.
+  // Suppressing the disk here (horizon + lensing carry "dominates frame"
+  // perfectly well on their own) sidesteps it without needing to also
+  // pull the "push closer" camera back out.
   else if (frame < CUE.butInside) {
-    s.blackHole = {visible: true, position: ORIGIN, rotation: BH_TILT, scale: 1.3, opacity: 1, diskOpacity: 0.85, lensingOpacity: 1};
+    s.blackHole = {visible: true, position: ORIGIN, rotation: BH_TILT, scale: 1.3, opacity: 1, diskOpacity: 0, lensingOpacity: 1};
     s.starfieldOpacity = 0.4;
     s.fillIntensity = 0.42;
   }
@@ -750,7 +771,7 @@ export const getSceneState = (frame: number): SceneState => {
   // into horizon. Continuous transition, screen becomes darkness.
   else if (frame < CUE.expandingRegionForms) {
     const t = kf(frame, CUE.butInside, CUE.expandingRegionForms, 0, 1, true);
-    s.blackHole = {visible: true, position: ORIGIN, rotation: BH_TILT, scale: 1.3, opacity: 1, diskOpacity: THREE.MathUtils.lerp(0.85, 0, t), lensingOpacity: THREE.MathUtils.lerp(1, 0.3, t)};
+    s.blackHole = {visible: true, position: ORIGIN, rotation: BH_TILT, scale: 1.3, opacity: 1, diskOpacity: 0, lensingOpacity: THREE.MathUtils.lerp(1, 0.3, t)};
     s.starfieldOpacity = THREE.MathUtils.lerp(0.4, 0.05, t);
     s.fillIntensity = THREE.MathUtils.lerp(0.42, 0.2, t);
   }
@@ -884,8 +905,12 @@ export const getSceneState = (frame: number): SceneState => {
 
   // ---- Beat 60 (282.46-285.66s): "A black hole going boom? No." --------
   // Black hole explosion appears. Snap zoom, giant red X.
+  // BUG FOUND + FIXED: the "snap zoom" camera holds at z=3 for most of
+  // this beat, inside the disk radius (4.6) — same artifact class as
+  // beats 45/46 above. Disk suppressed; the crossed-out X reads just as
+  // clearly over horizon + lensing.
   else if (frame < CUE.somethingStranger) {
-    s.blackHole = {visible: true, position: ORIGIN, rotation: BH_TILT, scale: 1, opacity: 1, diskOpacity: 0.7, lensingOpacity: 1};
+    s.blackHole = {visible: true, position: ORIGIN, rotation: BH_TILT, scale: 1, opacity: 1, diskOpacity: 0, lensingOpacity: 1};
     s.crossOut = {opacity: kf(frame, CUE.blackHoleGoingBoom + 6, CUE.blackHoleGoingBoom + 18, 0, 1, true)};
     s.starfieldOpacity = 0.35;
     s.fillIntensity = 0.42;
@@ -895,7 +920,7 @@ export const getSceneState = (frame: number): SceneState => {
   // morphs into expanding spacetime. Slow morph, cosmic shockwave.
   else if (frame < CUE.ifWereInsideABlackHole) {
     const t = kf(frame, CUE.somethingStranger, CUE.ifWereInsideABlackHole, 0, 1, true);
-    s.blackHole = {visible: true, position: ORIGIN, rotation: BH_TILT, scale: 1, opacity: 1 - t, diskOpacity: 0.7 * (1 - t), lensingOpacity: 1 - t};
+    s.blackHole = {visible: true, position: ORIGIN, rotation: BH_TILT, scale: 1, opacity: 1 - t, diskOpacity: 0, lensingOpacity: 1 - t};
     s.grid = {visible: true, position: [0, -0.4, 0], rotation: [-Math.PI / 2, 0, 0], opacity: t, warpStrength: 0.2, wellPosition: [0, 0], wellRadius: 3, wellDepth: 0.6};
     s.lightning = {opacity: flash(frame, CUE.somethingStranger + 3)};
     s.starfieldOpacity = 0.35;
@@ -1398,7 +1423,13 @@ export const getSceneState = (frame: number): SceneState => {
     const t = kf(frame, CUE.collapseIntoBlackHoles, CUE.collapseIntoBlackHoles + 10, 0, 1, true);
     s.universe = {visible: true, position: ORIGIN, scale: 2, opacity: 1, revealLevel: 1};
     s.sun = {visible: true, position: [1.1, 0.4, 0.8], scale: THREE.MathUtils.lerp(0.3, 0.08, t), opacity: 1 - t};
-    s.blackHole = {visible: true, position: [1.1, 0.4, 0.8], rotation: BH_TILT, scale: 0.15, opacity: t, diskOpacity: t * 0.5, lensingOpacity: t};
+    // diskOpacity 0 (not t*0.5): the camera dives extremely close in beat
+    // 110 (nested zoom into this tiny black hole) — at that proximity the
+    // disk's own radius (small as it is) still puts the camera near/
+    // inside its plane, producing the same broken edge-on artifact as the
+    // spacecraft-approach beat 22/23 fix above. Horizon + lensing carry
+    // the shot fine without it.
+    s.blackHole = {visible: true, position: [1.1, 0.4, 0.8], rotation: BH_TILT, scale: 0.15, opacity: t, diskOpacity: 0, lensingOpacity: t};
     s.starfieldOpacity = 0.4;
     s.fillIntensity = 0.46;
   }
@@ -1407,7 +1438,7 @@ export const getSceneState = (frame: number): SceneState => {
   // universes." Each black hole becomes tiny expanding universe. Nested
   // zoom, expansion shockwaves.
   else if (frame < CUE.universesFormStars) {
-    s.blackHole = {visible: true, position: [1.1, 0.4, 0.8], rotation: BH_TILT, scale: 0.15, opacity: 1, diskOpacity: 0.5, lensingOpacity: 1};
+    s.blackHole = {visible: true, position: [1.1, 0.4, 0.8], rotation: BH_TILT, scale: 0.15, opacity: 1, diskOpacity: 0, lensingOpacity: 1};
     const t = kf(frame, CUE.producingNewUniverses, CUE.universesFormStars, 0, 1, true);
     s.universeAsBlackHole = {visible: true, position: [1.1, 0.4, 0.8], scale: 0.15 * (1 + t), opacity: t};
     s.lightning = {opacity: flash(frame, CUE.producingNewUniverses + 3)};
