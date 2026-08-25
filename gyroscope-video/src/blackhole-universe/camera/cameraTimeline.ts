@@ -1,10 +1,10 @@
 /**
- * Camera language, Section 1: extremely slow push = quiet cold-open dread ·
- * rapid zoom-out = the enumerated scale-up ("galaxy, star, planet, you") ·
- * continuous pull-back = uninterrupted flight past Earth/Solar System/Milky
- * Way · wide orbit = first full reveal of the observable-universe sphere ·
- * massive zoom-out = the dramatic-irony "looks like a black hole" reveal ·
- * locked/static = the held black pause.
+ * Camera language — one literal camera direction per beat, taken verbatim
+ * from the mandatory storyboard (see timing.ts). The camera rule: whatever
+ * direction a beat specifies must be continuously executing for that
+ * beat's FULL duration, never idle, except where the beat explicitly says
+ * "locked"/"stationary." Comments below quote which beat + direction each
+ * branch implements, so it's checkable against the storyboard directly.
  *
  * Pure function of the absolute frame number, exactly like physics.ts.
  */
@@ -38,100 +38,149 @@ export const getCameraState = (frame: number): CameraState => {
   let lookAt = ORIGIN.clone();
   let fov = 30;
 
-  // ---- Beat 1 (0-5.5s): extremely slow push-in ---------------------------
-  if (frame < CUE.pointExpands) {
-    const t = s(frame, CUE.hook, CUE.pointExpands, 0, 1, true);
-    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(2.6, 2.2, t));
+  // ---- Beat 1: "Extremely slow push-in" ----------------------------------
+  if (frame < CUE.iMeanLiterally) {
+    const t = s(frame, CUE.hook, CUE.iMeanLiterally, 0, 1, true);
+    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(2.6, 2.35, t));
     fov = 28;
   }
 
-  // ---- Beat 2 (5.5-13.1s): rapid zoom-out ---------------------------------
-  else if (frame < CUE.flyPastCosmicWeb) {
-    const t = Math.pow(s(frame, CUE.pointExpands, CUE.flyPastCosmicWeb, 0, 1, true), 0.6);
-    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(2.2, 10, t));
-    fov = 32;
+  // ---- Beat 2: "Rapid zoom-out" ------------------------------------------
+  else if (frame < CUE.everythingWeCanSee) {
+    const t = Math.pow(s(frame, CUE.iMeanLiterally, CUE.everythingWeCanSee, 0, 1, true), 0.5);
+    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(2.35, 5, t));
+    fov = 30;
   }
 
-  // ---- Beat 3 (13.1-19.5s): continuous pull-back --------------------------
-  else if (frame < CUE.observableUniverseSphere) {
-    const t = s(frame, CUE.flyPastCosmicWeb, CUE.observableUniverseSphere, 0, 1, true);
-    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(10, 19, t));
+  // ---- Beat 3: "Extreme continuous pull-back" ----------------------------
+  else if (frame < CUE.insideBlackHole) {
+    const t = s(frame, CUE.everythingWeCanSee, CUE.insideBlackHole, 0, 1, true);
+    position = new THREE.Vector3(0, 0, THREE.MathUtils.lerp(5, 14, t));
     fov = 34;
   }
 
-  // ---- Beat 4 (19.5-22.9s): wide orbit around the reveal ------------------
-  else if (frame < CUE.universeAsBlackHoleRegion) {
-    const t = s(frame, CUE.observableUniverseSphere, CUE.universeAsBlackHoleRegion, -12, 12, true);
-    position = orbit(ORIGIN, 19, t, 6);
+  // ---- Beat 4: "Orbit around universe" -----------------------------------
+  else if (frame < CUE.largerUniverse) {
+    const t = s(frame, CUE.insideBlackHole, CUE.largerUniverse, -14, 14, true);
+    position = orbit(ORIGIN, 14, t, 8);
     fov = 34;
   }
 
-  // ---- Beat 5 (22.9-32.4s): massive zoom-out ------------------------------
-  // Endpoint distance tuned against physics.ts's scale endpoint (1.3), not
-  // picked independently — a first pass went out to distance ~96 (paired
-  // with scale 0.9), which shrank the "universe as black-hole-like region"
-  // below legibility well before the beat ended (confirmed via a direct
-  // still-frame check, not just arithmetic). ~55 keeps the halo's on-screen
-  // radius comfortably readable (~40px+) through the whole beat while still
-  // reading as a genuine "massive zoom-out" from the beat 4 orbit radius.
-  else if (frame < CUE.hardCutToBlack) {
-    const t = Math.pow(s(frame, CUE.universeAsBlackHoleRegion, CUE.hardCutToBlack, 0, 1, true), 0.8);
-    position = lerpV(orbit(ORIGIN, 19, 12, 6), new THREE.Vector3(3.5, 8, 54), t);
+  // ---- Beat 5: "Massive zoom-out" -----------------------------------------
+  // Endpoint distance (~55) tuned against physics.ts's scale endpoint (1.3)
+  // so the "tiny black-hole-like region" halo stays legibly readable
+  // (>=40px on screen) through the end of the beat rather than shrinking
+  // into an indistinguishable smudge — verified via direct still-frame
+  // checks the first time this shot was built.
+  else if (frame < CUE.howIsThatPossible) {
+    const t = Math.pow(s(frame, CUE.largerUniverse, CUE.howIsThatPossible, 0, 1, true), 0.8);
+    position = lerpV(orbit(ORIGIN, 14, 14, 8), new THREE.Vector3(3.5, 8, 54), t);
     fov = 40;
   }
 
-  // ---- Beat 6 (32.4-39.0s): locked, held black ----------------------------
-  else if (frame < CUE.blackHoleIntro) {
+  // ---- Beat 6: "Hard stop" ------------------------------------------------
+  // Explicitly a stop, not a continuous move — the one exception the
+  // camera rule itself carves out (screen is black regardless).
+  else if (frame < CUE.classicBlackHole) {
     position = new THREE.Vector3(3.5, 8, 54);
     fov = 40;
   }
 
-  // ---- Beat 7 (39.02-42.4s): slow orbit around the classic black hole ----
+  // ---- Beat 7: "Slow orbit" -----------------------------------------------
+  // BUG FOUND + FIXED (round 3): fitting the WHOLE disk (radius 4.6) with
+  // real margin (round 2's fix) made the horizon+lensing shrink to a small
+  // fraction of frame — the spec's signature "wraps over/under the sphere"
+  // lensing effect became indistinguishable from the plain photon ring at
+  // that scale (confirmed via a direct still-frame check). Real
+  // black-hole imagery (EHT M87, Interstellar) frames the SPHERE as the
+  // prominent subject and lets the disk extend past frame edges, rather
+  // than fitting the entire disk with margin — reframed around that:
+  // horizon radius ~18% of half-frame-height (clearly "massive," lensing
+  // arcs legible), disk allowed to run off-frame.
   else if (frame < CUE.fallingMatter) {
-    const t = s(frame, CUE.blackHoleIntro, CUE.fallingMatter, -10, 10, true);
-    position = orbit(ORIGIN, 5.5, t, 12);
+    const t = s(frame, CUE.classicBlackHole, CUE.fallingMatter, 20, 50, true);
+    position = orbit(ORIGIN, 12, t, 18);
+    fov = 50;
+  }
+
+  // ---- Beat 8: "Follow falling particles" --------------------------------
+  else if (frame < CUE.notReallyBlackHole) {
+    const t = s(frame, CUE.fallingMatter, CUE.notReallyBlackHole, 50, 75, true);
+    const radius = s(frame, CUE.fallingMatter, CUE.notReallyBlackHole, 12, 9, true);
+    position = orbit(ORIGIN, radius, t, 14);
+    fov = 48;
+  }
+
+  // ---- Beat 9: "Zoom through the black hole" -----------------------------
+  // A genuine pass-through, not just a push: continues from beat 8's orbit,
+  // plunges close to the horizon, then emerges above — setting up beat 10's
+  // top-down descent onto the (by-then-crossfaded) spacetime grid. The disk
+  // is crossfading out for this whole beat, so the close pass-through
+  // doesn't re-trigger the beat-7 framing bug (nothing solid to clip into
+  // by the time the camera is actually close).
+  else if (frame < CUE.regionOfSpace) {
+    const t = s(frame, CUE.notReallyBlackHole, CUE.regionOfSpace, 0, 1, true);
+    const eased = Math.pow(t, 1.4);
+    position = lerpV(orbit(ORIGIN, 9, 75, 14), new THREE.Vector3(0.4, 5, 1.1), eased);
+    fov = THREE.MathUtils.lerp(48, 36, eased);
+    // BUG FOUND + FIXED: lookAt was left at its ORIGIN default for every
+    // beat in this file — harmless while the subject (black hole) actually
+    // sits at the origin, but the grid it crossfades into is centered at
+    // world y=-1.2 (see physics.ts's grid position), not y=0. Tracking
+    // toward that here so beat 10 doesn't inherit a lookAt that's already
+    // aimed above the grid entirely.
+    lookAt = lerpV(ORIGIN, new THREE.Vector3(0, -1.2, 0), eased);
+  }
+
+  // ---- Beat 10: "Top-down descent" ----------------------------------------
+  // BUG FOUND + FIXED: with lookAt fixed at world origin, the well's actual
+  // deepest point drops further and further below the lookAt target as
+  // wellDepth increases (up to ~6.5 units deep by the end of this beat) —
+  // confirmed via a direct still-frame check showing the frame going
+  // almost completely empty by the beat's final third, well before the
+  // beat actually ends. Tracking lookAt down with the deepening well keeps
+  // the actual "descent" content in frame for the whole beat.
+  else if (frame < CUE.crossBoundary) {
+    const t = s(frame, CUE.regionOfSpace, CUE.crossBoundary, 0, 1, true);
+    position = lerpV(new THREE.Vector3(0.4, 5, 1.1), new THREE.Vector3(0.25, 1.7, 0.55), t);
+    lookAt = lerpV(new THREE.Vector3(0, -1.2, 0), new THREE.Vector3(0, -3.2, 0.15), t);
+    fov = 38;
+  }
+
+  // ---- Beat 11: "Straight push toward horizon" ----------------------------
+  // BUG FOUND + FIXED: same class of error as beat 7's original framing
+  // bug, just for the bare horizon instead of the disk — a horizon of
+  // radius 1 at distance 2.1-3.8 with fov 32 (half-angle ~16deg, so
+  // half-height at distance D is only D*tan(16deg) ≈ D*0.287) massively
+  // overflows the frame (radius 1 needs half-height > ~1, i.e. D > ~3.5
+  // just to fit at all, let alone with any margin) — confirmed via a
+  // direct still-frame check showing the horizon filling almost the ENTIRE
+  // frame with no visible photon ring as a clean circle, no starfield, no
+  // light beam in view. Recomputed so the horizon occupies a sensible
+  // ~30-45% of half-frame-height instead. Literally straight — a single
+  // line from start to end, no arc/orbit.
+  else if (frame < CUE.notEvenLight) {
+    const t = s(frame, CUE.crossBoundary, CUE.notEvenLight, 0, 1, true);
+    position = lerpV(new THREE.Vector3(0, 3, 12), new THREE.Vector3(0, 1.2, 8), t);
     fov = 32;
   }
 
-  // ---- Beat 8 (42.4-45.72s): follow falling particles ---------------------
-  else if (frame < CUE.freezeToGrid) {
-    const t = s(frame, CUE.fallingMatter, CUE.freezeToGrid, 10, 26, true);
-    const radius = s(frame, CUE.fallingMatter, CUE.freezeToGrid, 5.5, 4.2, true);
-    position = orbit(ORIGIN, radius, t, 6);
+  // ---- Beat 12: "Follow the light" ----------------------------------------
+  // Tracks laterally to keep the bending light beam's path in view, at the
+  // same corrected distance range as beat 11's end (see that beat's note).
+  else if (frame < CUE.eventHorizonNamed) {
+    const t = s(frame, CUE.notEvenLight, CUE.eventHorizonNamed, 0, 1, true);
+    position = lerpV(new THREE.Vector3(0, 1.2, 8), new THREE.Vector3(-3, 2.3, 7), t);
     fov = 32;
   }
 
-  // ---- Beat 9 (45.72-50.66s): freeze, then zoom through into the grid ----
-  else if (frame < CUE.gridSteepens) {
-    const t = s(frame, CUE.freezeToGrid, CUE.gridSteepens, 0, 1, true);
-    position = lerpV(orbit(ORIGIN, 4.2, 26, 6), new THREE.Vector3(0.5, 5.5, 1.5), t);
-    fov = 34;
-  }
-
-  // ---- Beat 10 (50.66-56.18s): top-down descent toward the steepening well
-  else if (frame < CUE.horizonForms) {
-    const t = s(frame, CUE.gridSteepens, CUE.horizonForms, 0, 1, true);
-    position = lerpV(new THREE.Vector3(0.5, 5.5, 1.5), new THREE.Vector3(0.3, 2.2, 0.8), t);
-    fov = 36;
-  }
-
-  // ---- Beat 11 (56.18-58.44s): push toward the forming horizon -----------
-  else if (frame < CUE.lightBendsIn) {
-    const t = s(frame, CUE.horizonForms, CUE.lightBendsIn, 0, 1, true);
-    position = lerpV(new THREE.Vector3(0, 0.8, 4), new THREE.Vector3(0, 0.4, 2.4), t);
-    fov = 32;
-  }
-
-  // ---- Beat 12 (58.44-60.5s): follow the light as it bends in ------------
-  else if (frame < CUE.horizonLocked) {
-    const t = s(frame, CUE.lightBendsIn, CUE.horizonLocked, 0, 1, true);
-    position = lerpV(new THREE.Vector3(0, 0.4, 2.4), new THREE.Vector3(-1.4, 1.0, 2.0), t);
-    fov = 32;
-  }
-
-  // ---- Beat 13 (60.5-62.92s): locked, symmetrical shot on the horizon ----
+  // ---- Beat 13: "Locked symmetrical shot" ---------------------------------
+  // Distance 7.5 at fov 30 (half-angle 15deg, half-height ≈ 2.0) puts the
+  // horizon at ~50% of half-frame-height — a prominent, fully-contained
+  // "clean glowing circle" per the beat's own description, not an
+  // overflowing close-up (the bug this whole beat range had before).
   else {
-    position = new THREE.Vector3(0, 0, 3.2);
+    position = new THREE.Vector3(0, 0, 7.5);
     fov = 30;
   }
 

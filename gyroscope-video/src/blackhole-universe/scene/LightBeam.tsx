@@ -28,9 +28,19 @@ export const LightBeam: React.FC<{
   opacity?: number;
   color?: string;
 }> = ({progress, opacity = 1, color = '#d8ecff'}) => {
+  // BUG FOUND + FIXED (round 2): this path was designed for beat 11-13's
+  // ORIGINAL camera distances (~2-2.4 units from origin) before those were
+  // found to be far too close (see cameraTimeline.ts's beat 11 note) and
+  // corrected to ~7-8 units. At that closer distance the start point
+  // (-8, 2.2, 3.5) sat off-frame, which the fade-direction fix above
+  // accounted for — but at the corrected ~7-8 unit distance the situation
+  // flipped: the whole curve, including its horizon end, fell outside the
+  // (now much wider) frustum on the side, so nothing was visible at all.
+  // Confirmed via a direct still-frame check post-camera-fix. Rescaled the
+  // whole path inward to sit comfortably within the corrected framing.
   const fullCurvePoints = useMemo(() => {
-    const start = new THREE.Vector3(-8, 2.2, 3.5);
-    const control = new THREE.Vector3(-2, 1.2, 1.2);
+    const start = new THREE.Vector3(2.6, 1.6, 1.0);
+    const control = new THREE.Vector3(0.8, 0.5, 0.35);
     const end = new THREE.Vector3(0.15, 0.05, 0.1); // just grazing the horizon, not dead-center
     const curve = new THREE.QuadraticBezierCurve3(start, control, end);
     return curve.getPoints(48);

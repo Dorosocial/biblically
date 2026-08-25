@@ -33,6 +33,7 @@ export const SpacetimeGrid: React.FC<{
   rotation?: [number, number, number];
   opacity?: number;
   color?: string;
+  lineWidth?: number;
 }> = ({
   size = 20,
   divisions = 22,
@@ -44,6 +45,7 @@ export const SpacetimeGrid: React.FC<{
   rotation = [0, 0, 0],
   opacity = 1,
   color = '#3d6fbf',
+  lineWidth = 1,
 }) => {
   const half = size / 2;
   const {rows, cols} = useMemo(() => {
@@ -76,10 +78,10 @@ export const SpacetimeGrid: React.FC<{
   return (
     <group position={position} rotation={rotation}>
       {rows.map((row, i) => (
-        <Line key={`r${i}`} points={row} color={color} transparent opacity={opacity * 0.75} lineWidth={1} />
+        <Line key={`r${i}`} points={row} color={color} transparent opacity={opacity * 0.75} lineWidth={lineWidth} />
       ))}
       {cols.map((col, i) => (
-        <Line key={`c${i}`} points={col} color={color} transparent opacity={opacity * 0.75} lineWidth={1} />
+        <Line key={`c${i}`} points={col} color={color} transparent opacity={opacity * 0.75} lineWidth={lineWidth} />
       ))}
     </group>
   );

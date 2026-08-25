@@ -3,9 +3,21 @@
  * Inside a Black Hole?" — same architecture as every other video in this
  * project: everything is a function of the absolute frame number only.
  *
- * Built section-by-section (see timing.ts) — only Section 1 (beats 1-6) is
- * implemented so far. getSceneState returns a HIDDEN/neutral state for any
- * frame past what's been built yet.
+ * REBUILT against the exact, mandatory 109-beat storyboard (see timing.ts
+ * for the per-beat quoted-line/cue mapping this follows). Built section by
+ * section — only beats 1-13 are implemented so far; getSceneState returns
+ * a hidden/neutral state for any frame past what's been built.
+ *
+ * CLARITY & COLOR RULE: this video must read as genuinely clear and
+ * well-lit, not a flat near-black palette — see scene/Lighting.tsx for the
+ * brighter baseline. The event horizon/photon-ring/disk/grid are all
+ * self-illuminating (MeshBasicMaterial, unaffected by scene lighting), so
+ * the real levers for "not too dark" are: (a) their own material colors
+ * being vivid and high-contrast (see shared/BlackHole.tsx and
+ * docs/black_hole_visual_reference.md), (b) enough starfield/ambient
+ * content on screen, and (c) fillIntensity driving Earth/spacecraft-style
+ * lit materials — bumped up across the board from the first draft's
+ * "moody near-black" defaults.
  */
 import * as THREE from 'three';
 import {CUE, DURATION_IN_FRAMES} from './timing';
@@ -36,10 +48,11 @@ export interface BHSilhouetteState {
   opacity: number;
 }
 
-/** Full black hole state (event horizon + disk + halo), for Section 2's
- * "classic black hole" establishing shots — distinct from the lighter-
- * weight BHSilhouetteState used for the "our universe looks like a black
- * hole from outside" motif in Section 1. */
+/** Full detailed black hole state (event horizon + photon ring + turbulent
+ * disk + lensing arcs) — drives shared/BlackHole.tsx, the new spec-accurate
+ * component. Distinct from BHSilhouetteState, the lighter-weight "our
+ * universe looks like a black hole from outside" motif used in the
+ * opening's beat 5. */
 export interface BHState {
   visible: boolean;
   position: [number, number, number];
@@ -47,7 +60,7 @@ export interface BHState {
   scale: number;
   opacity: number;
   diskOpacity: number;
-  haloOpacity: number;
+  lensingOpacity: number;
 }
 
 export interface GridState {
@@ -88,11 +101,11 @@ const HIDDEN_BH: BHSilhouetteState = {visible: false, position: ORIGIN, scale: 1
 const HIDDEN_FULL_BH: BHState = {
   visible: false,
   position: ORIGIN,
-  rotation: [0, 0, 0],
+  rotation: [-0.4, 0.32, 0.08],
   scale: 1,
   opacity: 0,
   diskOpacity: 0,
-  haloOpacity: 0,
+  lensingOpacity: 0,
 };
 const HIDDEN_GRID: GridState = {
   visible: false,
@@ -114,180 +127,157 @@ const baseState = (): SceneState => ({
   lightBeam: null,
   earth: HIDDEN3D,
   starfieldOpacity: 0,
-  fillIntensity: 0.15,
+  fillIntensity: 0.4,
 });
 
 export const getSceneState = (frame: number): SceneState => {
   const s = baseState();
 
-  // ---- Beat 1 (0-5.5s): absolute darkness, tiny point of light appears --
-  // "This is a weird one. What if our entire universe is inside a black
-  // hole?" — extremely slow push-in (camera-side). The point itself fades
-  // in over the first few frames so frame 0 isn't a hard pop from nothing,
-  // but stays a bare, glowing, unrevealed point throughout the beat.
-  if (frame < CUE.pointExpands) {
+  // ---- Beat 1 (0-5.52s): absolute darkness, tiny point of light appears -
+  // "What if our entire universe is inside a black hole?" This one beat is
+  // deliberately dark per its own visual description ("Absolute darkness")
+  // — the point itself still reads clearly via NestedUniverse's built-in
+  // glow (not flat black-on-black), satisfying the clarity rule without
+  // fighting the beat's own intent.
+  if (frame < CUE.iMeanLiterally) {
     const fadeIn = kf(frame, CUE.hook, CUE.hook + 12, 0, 1, true);
     s.universe = {visible: true, position: ORIGIN, scale: 0.35, opacity: fadeIn, revealLevel: 0};
-    s.fillIntensity = 0.1;
+    s.fillIntensity = 0.15;
   }
 
-  // ---- Beat 2 (5.5-13.1s): point expands into galaxies/stars/Earth ------
-  // "I mean that literally. What if everything we can see, from the galaxy
-  // to the star, planet, even you sitting there watching this" — the
-  // enumeration IS the zoom-out's stops, so Earth briefly appears right as
-  // "planet"/"you" land (~9.5-13.1s) alongside the expanding galaxy cluster.
-  else if (frame < CUE.flyPastCosmicWeb) {
-    const shotStart = CUE.pointExpands;
-    const shotEnd = CUE.flyPastCosmicWeb;
-    const reveal = kf(frame, shotStart, shotEnd, 0, 0.7);
-    const scale = kf(frame, shotStart, shotEnd, 0.35, 3.2);
+  // ---- Beat 2 (5.52-6.88s): point expands into galaxies, stars, Earth ---
+  // "I mean that literally." Short, fast beat — rapid zoom-out. Earth
+  // starts fading in right at the tail, handing off into beat 3's "flies
+  // past Earth" opening.
+  else if (frame < CUE.everythingWeCanSee) {
+    const shotStart = CUE.iMeanLiterally;
+    const shotEnd = CUE.everythingWeCanSee;
+    const reveal = kf(frame, shotStart, shotEnd, 0, 0.3);
+    const scale = kf(frame, shotStart, shotEnd, 0.35, 0.8);
     s.universe = {visible: true, position: ORIGIN, scale, opacity: 1, revealLevel: reveal};
-
-    const earthCue = shotStart + (shotEnd - shotStart) * 0.55; // "...planet..."
-    if (frame >= earthCue) {
-      const earthIn = kf(frame, earthCue, earthCue + 15, 0, 1, true);
-      const earthOut = kf(frame, shotEnd - 10, shotEnd, 1, 0, true);
-      s.earth = {
-        visible: true,
-        position: [1.6, -0.4, 1.2],
-        rotation: [0, frame * 0.01, 0],
-        scale: 0.28,
-        opacity: earthIn * earthOut,
-      };
+    const earthIn = kf(frame, shotEnd - 10, shotEnd, 0, 1, true);
+    if (earthIn > 0.001) {
+      s.earth = {visible: true, position: [1.1, -0.3, 0.9], rotation: [0, frame * 0.01, 0], scale: 0.22, opacity: earthIn};
     }
-    s.fillIntensity = kf(frame, shotStart, shotEnd, 0.1, 0.3);
+    s.fillIntensity = 0.45;
   }
 
-  // ---- Beat 3 (13.1-19.5s): fly past Earth -> Solar System -> Milky Way -
-  // -> cosmic web, continuous pull-back. "...is actually on the inside of
-  // a black hole that exists in some much larger universe?" Earth is
-  // already gone (left behind); the galaxy cluster keeps growing/revealing
-  // toward the full "cosmic web" read.
-  else if (frame < CUE.observableUniverseSphere) {
-    const shotStart = CUE.flyPastCosmicWeb;
-    const shotEnd = CUE.observableUniverseSphere;
-    const reveal = kf(frame, shotStart, shotEnd, 0.7, 1);
-    const scale = kf(frame, shotStart, shotEnd, 3.2, 6.5);
+  // ---- Beat 3 (6.88-13.16s): flies past Earth -> Solar System -> Milky --
+  // Way -> cosmic web. "Everything we can see..." Extreme continuous
+  // pull-back: Earth holds briefly then is left behind as the galaxy
+  // cluster keeps revealing/growing toward the cosmic-web read.
+  else if (frame < CUE.insideBlackHole) {
+    const shotStart = CUE.everythingWeCanSee;
+    const shotEnd = CUE.insideBlackHole;
+    const reveal = kf(frame, shotStart, shotEnd, 0.3, 0.85);
+    const scale = kf(frame, shotStart, shotEnd, 0.8, 3.5);
     s.universe = {visible: true, position: ORIGIN, scale, opacity: 1, revealLevel: reveal};
-    s.starfieldOpacity = kf(frame, shotStart, shotEnd, 0, 0.5);
-    s.fillIntensity = 0.3;
+    const earthOut = kf(frame, shotStart + 20, shotStart + 55, 1, 0, true);
+    if (earthOut > 0.001) {
+      s.earth = {visible: true, position: [1.1, -0.3, 0.9], rotation: [0, frame * 0.01, 0], scale: 0.22, opacity: earthOut};
+    }
+    s.starfieldOpacity = kf(frame, shotStart, shotEnd, 0.2, 0.55);
+    s.fillIntensity = 0.5;
   }
 
-  // ---- Beat 4 (19.5-22.9s): observable universe = glowing sphere, orbit -
-  // "Now, I know what you're probably thinking. How's that even possible?"
-  else if (frame < CUE.universeAsBlackHoleRegion) {
-    s.universe = {visible: true, position: ORIGIN, scale: 6.5, opacity: 1, revealLevel: 1};
-    s.starfieldOpacity = 0.5;
-    s.fillIntensity = 0.3;
+  // ---- Beat 4 (13.16-15.8s): observable universe = glowing sphere -------
+  // "...is actually on the inside of a black hole..." Orbit around
+  // universe — fully revealed, holding as a glowing sphere.
+  else if (frame < CUE.largerUniverse) {
+    s.universe = {visible: true, position: ORIGIN, scale: 5.5, opacity: 1, revealLevel: 1};
+    s.starfieldOpacity = 0.55;
+    s.fillIntensity = 0.5;
   }
 
-  // ---- Beat 5 (22.9-32.4s): pull back further — our universe now reads --
-  // as a small black-hole-like region in a larger cosmic environment.
-  // "Because when we think about a black hole, we usually picture this
-  // giant dark object somewhere out in space, pulling everything toward
-  // it." Deliberate dramatic irony: the classic-misconception line lands
-  // exactly as our own universe, from outside, starts looking like that
-  // cliché. Crossfade NestedUniverse (glowing) -> BlackHole silhouette
-  // (dark, thin halo) as the object shrinks and the starfield around it
-  // grows denser (bigger cosmic environment).
-  else if (frame < CUE.hardCutToBlack) {
-    const shotStart = CUE.universeAsBlackHoleRegion;
-    const shotEnd = CUE.hardCutToBlack;
+  // ---- Beat 5 (15.8-21.4s): massive zoom-out — our universe now reads ----
+  // as a tiny black-hole-like region in an enormous cosmic environment.
+  // "...that exists in some much larger universe?" Crossfade the glowing
+  // NestedUniverse into the ambiguous dark-silhouette read as the object
+  // shrinks and the surrounding starfield grows denser.
+  else if (frame < CUE.howIsThatPossible) {
+    const shotStart = CUE.largerUniverse;
+    const shotEnd = CUE.howIsThatPossible;
     const t = kf(frame, shotStart, shotEnd, 0, 1, true);
     const crossfade = kf(frame, shotStart, shotStart + (shotEnd - shotStart) * 0.5, 0, 1);
-    // Scale endpoint tuned against the actual camera distance in
-    // cameraTimeline.ts (not picked independently): the first pass shrank
-    // this to 0.9 while the camera retreated to distance ~96, which
-    // checked out fine at t=0.6 (frame 800, still clearly a readable
-    // haloed sphere) but by t=1 (frame 900+) had shrunk to a ~15px-radius
-    // smudge indistinguishable from a background star — confirmed via a
-    // direct still-frame check, not just angular-size arithmetic. Fixed by
-    // keeping BOTH the endpoint scale (0.9->1.3) and the camera's final
-    // distance (~96->~55, see cameraTimeline.ts) less extreme, so the
-    // halo's screen-space radius stays >= ~40px through the whole beat —
-    // "small... region" per the beat description, not "invisible."
-    const scale = THREE.MathUtils.lerp(6.5, 1.3, t);
-    s.universe = {
-      visible: true,
-      position: ORIGIN,
-      scale,
-      opacity: 1 - crossfade,
-      revealLevel: 1,
-    };
+    // Scale/distance endpoints tuned together against cameraTimeline.ts's
+    // final orbit distance (~55) so the silhouette stays clearly readable
+    // (>=40px on screen) through the end of the beat — see the original
+    // version of this fix for the still-frame verification that found the
+    // earlier, more extreme endpoint shrinking below legibility.
+    const scale = THREE.MathUtils.lerp(5.5, 1.3, t);
+    s.universe = {visible: true, position: ORIGIN, scale, opacity: 1 - crossfade, revealLevel: 1};
     s.universeAsBlackHole = {visible: true, position: ORIGIN, scale, opacity: crossfade};
-    s.starfieldOpacity = kf(frame, shotStart, shotEnd, 0.5, 1);
-    s.fillIntensity = kf(frame, shotStart, shotEnd, 0.3, 0.12);
+    s.starfieldOpacity = kf(frame, shotStart, shotEnd, 0.55, 1);
+    s.fillIntensity = kf(frame, shotStart, shotEnd, 0.5, 0.3);
   }
 
-  // ---- Beat 6 (32.4-39.0s): hard cut to black ----------------------------
-  // "But that's not really what a black hole is... this whole idea starts
-  // getting a lot more interesting." NOT a brief punctuation flash — held
-  // black for the rest of section 1, a deliberate suspenseful pause before
-  // section 2's reveal (see timing.ts's note). Everything snaps to
-  // invisible within a couple of frames (a real hard cut, not a fade).
-  else if (frame < CUE.blackHoleIntro) {
-    const cut = kf(frame, CUE.hardCutToBlack, CUE.hardCutToBlack + 2, 1, 0, true);
+  // ---- Beat 6 (21.4-22.94s): hard stop — screen cuts to black ------------
+  // "How's that even possible?" A genuine hard, brief cut (not a long
+  // held pause here — that's what the storyboard's own "Hard stop" means),
+  // resolving in time for beat 7's establishing shot to fade in.
+  else if (frame < CUE.classicBlackHole) {
+    const cut = kf(frame, CUE.howIsThatPossible, CUE.howIsThatPossible + 2, 1, 0, true);
     s.universeAsBlackHole = {visible: true, position: ORIGIN, scale: 1.3, opacity: cut};
-    s.starfieldOpacity = cut * 1;
-    s.fillIntensity = 0.02;
+    s.starfieldOpacity = cut;
+    s.fillIntensity = 0.05;
   }
 
-  // ---- Beat 7 (39.02-42.4s): classic black hole + accretion disk --------
-  // "You see, a black hole is basically a region of space" — the first
-  // proper close-up reveal of the reused BlackHole component (event
-  // horizon + disk + halo), establishing the object section 2 explains.
+  // ---- Beat 7 (22.94-28.62s): classic black hole + accretion disk -------
+  // "We usually picture this giant dark object..." First full reveal of
+  // the spec-accurate BlackHole component (sharp horizon, bright photon
+  // ring, turbulent white->yellow->orange->red disk, lensing arcs).
+  // Slow orbit (camera-side).
   else if (frame < CUE.fallingMatter) {
-    const shotStart = CUE.blackHoleIntro;
+    const shotStart = CUE.classicBlackHole;
     const fadeIn = kf(frame, shotStart, shotStart + 15, 0, 1, true);
     s.blackHole = {
       visible: true,
       position: ORIGIN,
-      rotation: [-1.35, 0, 0],
+      rotation: [-0.4, 0.32, 0.08],
       scale: 1,
       opacity: fadeIn,
       diskOpacity: fadeIn,
-      haloOpacity: fadeIn * 0.5,
+      lensingOpacity: fadeIn,
     };
-    s.starfieldOpacity = 0.4;
-    s.fillIntensity = 0.35;
+    s.starfieldOpacity = 0.5;
+    s.fillIntensity = 0.5;
   }
 
-  // ---- Beat 8 (42.4-45.72s): gas curves in, follow falling particles ----
-  // "where gravity has become so extreme" — the disk/halo stay visible
-  // while individual bright particles visibly spiral inward.
-  else if (frame < CUE.freezeToGrid) {
+  // ---- Beat 8 (28.62-32.58s): stars/gas curve around it ------------------
+  // "...pulling everything toward it." Disk holds steady while individual
+  // bright particles visibly spiral inward — follow falling particles.
+  else if (frame < CUE.notReallyBlackHole) {
     const shotStart = CUE.fallingMatter;
-    const shotEnd = CUE.freezeToGrid;
+    const shotEnd = CUE.notReallyBlackHole;
     s.blackHole = {
       visible: true,
       position: ORIGIN,
-      rotation: [-1.35, 0, 0],
+      rotation: [-0.4, 0.32, 0.08],
       scale: 1,
       opacity: 1,
       diskOpacity: 1,
-      haloOpacity: 0.5,
+      lensingOpacity: 1,
     };
     s.infall = {opacity: kf(frame, shotStart, shotStart + 10, 0, 1, true), progress: kf(frame, shotStart, shotEnd, 0, 1, true)};
-    s.starfieldOpacity = 0.4;
-    s.fillIntensity = 0.35;
+    s.starfieldOpacity = 0.5;
+    s.fillIntensity = 0.5;
   }
 
-  // ---- Beat 9 (45.72-50.66s): freeze, transform into spacetime geometry -
-  // "that once you cross a certain boundary, you just can't get back out."
-  // The black hole crossfades into the reused SpacetimeGrid — the "freeze"
-  // reads as the disk/infall holding still while the grid fades up under it.
-  else if (frame < CUE.gridSteepens) {
-    const shotStart = CUE.freezeToGrid;
-    const shotEnd = CUE.gridSteepens;
+  // ---- Beat 9 (32.58-39.02s): freeze, transform into spacetime geometry -
+  // "But that's not really what a black hole is." The black hole
+  // crossfades into the reused SpacetimeGrid as the camera zooms through.
+  else if (frame < CUE.regionOfSpace) {
+    const shotStart = CUE.notReallyBlackHole;
+    const shotEnd = CUE.regionOfSpace;
     const crossfade = kf(frame, shotStart, shotEnd, 0, 1);
     s.blackHole = {
       visible: true,
       position: ORIGIN,
-      rotation: [-1.35, 0, 0],
+      rotation: [-0.4, 0.32, 0.08],
       scale: 1,
       opacity: 1 - crossfade,
       diskOpacity: 1 - crossfade,
-      haloOpacity: 0.5 * (1 - crossfade),
+      lensingOpacity: 1 - crossfade,
     };
     s.infall = {opacity: 1 - crossfade, progress: 1};
     s.grid = {
@@ -295,112 +285,103 @@ export const getSceneState = (frame: number): SceneState => {
       position: [0, -1.2, 0],
       rotation: [-Math.PI / 2, 0, 0],
       opacity: crossfade,
-      warpStrength: crossfade * 0.6,
+      warpStrength: crossfade * 0.5,
       wellPosition: [0, 0],
-      wellRadius: 3,
-      wellDepth: 2,
+      wellRadius: 3.2,
+      wellDepth: 1.8,
     };
-    s.starfieldOpacity = 0.4;
-    s.fillIntensity = 0.3;
+    s.starfieldOpacity = 0.5;
+    s.fillIntensity = 0.45;
   }
 
-  // ---- Beat 10 (50.66-56.18s): grid bends increasingly steep -------------
-  // "And I mean anything. You could have the fastest spaceship imaginable,
-  // and it wouldn't even matter." — the well deepens/narrows as she piles
-  // on emphasis, top-down descent (camera-side).
-  else if (frame < CUE.horizonForms) {
-    const shotStart = CUE.gridSteepens;
-    const shotEnd = CUE.horizonForms;
+  // ---- Beat 10 (39.02-45.72s): grid bends increasingly steeply -----------
+  // "A region of space where gravity has become extreme..." Per the
+  // visual spec, a black hole's well should be dramatically steep/deep,
+  // near-vertical close to center — top-down descent (camera-side).
+  else if (frame < CUE.crossBoundary) {
+    const shotStart = CUE.regionOfSpace;
+    const shotEnd = CUE.crossBoundary;
     s.grid = {
       visible: true,
       position: [0, -1.2, 0],
       rotation: [-Math.PI / 2, 0, 0],
       opacity: 1,
-      warpStrength: kf(frame, shotStart, shotEnd, 0.6, 1.3),
+      warpStrength: kf(frame, shotStart, shotEnd, 0.5, 1),
       wellPosition: [0, 0],
-      wellRadius: kf(frame, shotStart, shotEnd, 3, 2.1),
-      wellDepth: kf(frame, shotStart, shotEnd, 2, 4.5),
+      wellRadius: kf(frame, shotStart, shotEnd, 3.2, 1.9),
+      wellDepth: kf(frame, shotStart, shotEnd, 1.8, 6.5),
     };
-    s.starfieldOpacity = 0.4;
-    s.fillIntensity = 0.3;
+    s.starfieldOpacity = 0.45;
+    s.fillIntensity = 0.4;
   }
 
-  // ---- Beat 11 (56.18-58.44s): bright circular event horizon forms ------
-  // "Nothing can escape this, not even light." Grid fades out as a bare,
-  // bright horizon fades in — push toward it (camera-side).
-  else if (frame < CUE.lightBendsIn) {
-    const shotStart = CUE.horizonForms;
-    const shotEnd = CUE.lightBendsIn;
+  // ---- Beat 11 (45.72-56.18s): bright circular event horizon forms ------
+  // "Once you cross a certain boundary..." Grid fades out as a bare,
+  // bright horizon fades in — straight push toward it (camera-side).
+  else if (frame < CUE.notEvenLight) {
+    const shotStart = CUE.crossBoundary;
+    const shotEnd = CUE.notEvenLight;
     const t = kf(frame, shotStart, shotEnd, 0, 1, true);
     s.grid = {
       visible: true,
       position: [0, -1.2, 0],
       rotation: [-Math.PI / 2, 0, 0],
       opacity: 1 - t,
-      warpStrength: 1.3,
+      warpStrength: 1,
       wellPosition: [0, 0],
-      wellRadius: 2.1,
-      wellDepth: 4.5,
+      wellRadius: 1.9,
+      wellDepth: 6.5,
     };
     s.blackHole = {
       visible: true,
       position: ORIGIN,
-      rotation: [-1.35, 0, 0],
+      rotation: [-0.4, 0.32, 0.08],
       scale: 1,
       opacity: t,
       diskOpacity: 0,
-      haloOpacity: t * 0.9,
+      lensingOpacity: t,
     };
-    s.starfieldOpacity = kf(frame, shotStart, shotEnd, 0.4, 0.6);
-    s.fillIntensity = 0.25;
+    s.starfieldOpacity = kf(frame, shotStart, shotEnd, 0.45, 0.6);
+    s.fillIntensity = 0.4;
   }
 
-  // ---- Beat 12 (58.44-60.5s): light beam bends inward, fades out ---------
-  // "And that boundary is called..." (first half) — follow the light.
-  else if (frame < CUE.horizonLocked) {
-    const shotStart = CUE.lightBendsIn;
-    const shotEnd = CUE.horizonLocked;
+  // ---- Beat 12 (56.18-58.44s): light beam bends inward, disappears -------
+  // "Nothing can escape. Not even light." Follow the light.
+  else if (frame < CUE.eventHorizonNamed) {
+    const shotStart = CUE.notEvenLight;
+    const shotEnd = CUE.eventHorizonNamed;
     s.blackHole = {
       visible: true,
       position: ORIGIN,
-      rotation: [-1.35, 0, 0],
+      rotation: [-0.4, 0.32, 0.08],
       scale: 1,
       opacity: 1,
       diskOpacity: 0,
-      haloOpacity: 0.9,
+      lensingOpacity: 1,
     };
-    // BUG FOUND + FIXED: the beam's visible-on-screen portion is only its
-    // horizon-adjacent end (LightBeam.tsx draws from a distant, off-frame
-    // start point, so at low `progress` only the off-screen part exists) —
-    // so "fully drawn" and "starts fading" used to be the SAME 15-frame
-    // window at the end of this beat, meaning the beam was never both
-    // on-screen AND at full brightness at once (confirmed by direct
-    // still-frame checks: invisible at low progress, already faded by the
-    // time enough was drawn to reach the horizon). Fixed by finishing the
-    // draw at 65% through the beat, leaving a real window where it's fully
-    // drawn and bright before the fade-out starts in just the last 10 frames.
-    const drawEnd = shotStart + (shotEnd - shotStart) * 0.65;
-    const beamProgress = kf(frame, shotStart, drawEnd, 0, 1, true);
-    s.lightBeam = {opacity: kf(frame, shotEnd - 10, shotEnd, 1, 0, true), progress: beamProgress};
+    const drawEnd = shotStart + (shotEnd - shotStart) * 0.7;
+    s.lightBeam = {
+      opacity: kf(frame, shotEnd - 8, shotEnd, 1, 0, true),
+      progress: kf(frame, shotStart, drawEnd, 0, 1, true),
+    };
     s.starfieldOpacity = 0.6;
-    s.fillIntensity = 0.25;
+    s.fillIntensity = 0.4;
   }
 
-  // ---- Beat 13 (60.5-62.92s): horizon becomes a clean glowing circle ----
-  // "...the event horizon." Locked, symmetrical shot (camera-side) — the
-  // term lands as the horizon settles into its final, clean form.
+  // ---- Beat 13 (58.44-62.92s): horizon becomes a clean glowing circle ---
+  // "That boundary is called the event horizon." Locked, symmetrical shot.
   else if (frame < CUE.section3Start) {
     s.blackHole = {
       visible: true,
       position: ORIGIN,
-      rotation: [-1.35, 0, 0],
+      rotation: [-0.4, 0.32, 0.08],
       scale: 1,
       opacity: 1,
       diskOpacity: 0,
-      haloOpacity: 1,
+      lensingOpacity: 1,
     };
     s.starfieldOpacity = 0.6;
-    s.fillIntensity = 0.25;
+    s.fillIntensity = 0.4;
   }
 
   return s;
